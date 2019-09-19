@@ -16,27 +16,8 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.prepare;
-
 /**
- * @author ikaddoura
+ * @author nagel
  *
  */
-public class PrepareScenario {
-
-	public static void main(String[] args) {
-		PrepareScenario prepareScenario = new PrepareScenario();
-		prepareScenario.run();
-	}
-	
-	private void run() {
-		
-		// prepare network
-		
-		// prepare population
-		
-		// ...
-		
-	}
-	
-}
+package org.matsim.gui;
