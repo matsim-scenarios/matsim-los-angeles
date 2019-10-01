@@ -22,8 +22,9 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.testcases.MatsimTestUtils;
 
@@ -37,13 +38,18 @@ public class HelloWorldTest {
 
 	@Test
 	public final void test() {
-		try {
-			Config config = ConfigUtils.loadConfig( "scenarios/equil/config.xml" ) ;
+		try {			
+			Config config = RunLosAngelesScenario.prepareConfig("scenarios/equil/config.xml");
 			config.controler().setWriteEventsInterval(1);
 			config.controler().setLastIteration(1);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
-			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-			RunMatsim.run( config );
+			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);	
+			
+			Scenario scenario = RunLosAngelesScenario.prepareScenario(config);
+			
+			Controler controler = RunLosAngelesScenario.prepareControler(scenario);
+			controler.run();
+		
 		} catch ( Exception ee ) {
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
 
