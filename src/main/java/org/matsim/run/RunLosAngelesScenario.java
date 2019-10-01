@@ -37,7 +37,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 
 /**
- * @author nagel
+ * @author nagel, ikaddoura
  *
  */
 public class RunLosAngelesScenario {
