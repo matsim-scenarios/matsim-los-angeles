@@ -21,16 +21,16 @@
  */
 package org.matsim.prepare;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.algorithms.NetworkSimplifier;
 import org.matsim.core.network.io.NetworkWriter;
@@ -65,19 +65,28 @@ public class CreateNetwork {
 
 	private final String INPUT_OSMFILE ;
 	private final String outputDir;
-	private final String prefix;
 	private final String networkCS ;
 
 	private Network network = null;
 	private String outnetworkPrefix ;
 	
 	public static void main(String[] args) {
-		String osmfile = "/Users/ihab/Desktop/MATSim_LosAngeles/osm-data/socal-LA-network_2019-09-22.osm";
+		String rootDirectory = null;
 		
-		String prefix = "socal-LA-network_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-		String outDir = "/Users/ihab/Desktop/MATSim_LosAngeles/matsim-input-files/";
+		if (args.length == 1) {
+			rootDirectory = args[0];
+		} else {
+			throw new RuntimeException("Please set the root directory (the directory above 'scag_model'). Aborting...");
+		}
+		
+		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
+		
+		String osmfile = rootDirectory + "osm-data/socal-LA-network_2019-09-22.osm";
+		
+		String prefix = "scag-network_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+		String outDir = rootDirectory + "/matsim-input-files/network/";
 
-		String crs = "EPSG:3310";
+		String crs = "EPSG:4326";
 		CreateNetwork networkCreator = new CreateNetwork(osmfile, crs , outDir, prefix);
 
 		boolean keepPaths = false;
@@ -92,10 +101,15 @@ public class CreateNetwork {
 		this.INPUT_OSMFILE = inputOSMFile;
 		this.networkCS = networkCoordinateSystem;
 		this.outputDir = outputDir.endsWith("/")?outputDir:outputDir+"/";
-		this.prefix = prefix;
 		this.outnetworkPrefix = prefix;
+				
+		OutputDirectoryLogging.catchLogEntries();
+		try {
+			OutputDirectoryLogging.initLoggingWithOutputDirectory(outputDir);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		
-		initLogger();
 		log.info("--- set the coordinate system for network to be created to " + this.networkCS + " ---");
 	}
 
@@ -162,14 +176,5 @@ public class CreateNetwork {
 		log.info("number of links after cleaning:" + network.getLinks().size());
 		
 		log.info("checking if all count nodes are in the network..");		
-	}
-	
-	private void initLogger(){
-		FileAppender fa = new FileAppender();
-		fa.setFile(outputDir + prefix +"_LOG_" + CreateNetwork.class.getSimpleName() + outnetworkPrefix + ".txt");
-		fa.setName("LANetworkCreator");
-		fa.activateOptions();
-		fa.setLayout(new PatternLayout("%d{dd MMM yyyy HH:mm:ss,SSS} %-4r [%t] %-5p %c %x - %m%n"));
-	    log.addAppender(fa);
 	}
 }

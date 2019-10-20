@@ -55,7 +55,7 @@ public class RunLosAngelesScenario {
 		
 		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
 		
-		String configFile = rootDirectory + "matsim-input-files/2019-10-01_socal_LA_config.xml";
+		String configFile = rootDirectory + "matsim-input-files/scag-config_2019-10-21.xml";
 		
 		Config config = prepareConfig( configFile ) ;
 		Scenario scenario = prepareScenario( config ) ;

@@ -14,7 +14,7 @@
 	  <!--<matsim.version>11.0</matsim.version>-->
 
 	  <!--weekly "release":-->
-	  <matsim.version>12.0-2019w39-SNAPSHOT</matsim.version>
+	  <matsim.version>12.0-2019w41-SNAPSHOT</matsim.version>
 	</properties>
 
 	<repositories>

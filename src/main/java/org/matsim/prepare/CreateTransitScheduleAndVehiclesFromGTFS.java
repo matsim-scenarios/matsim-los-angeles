@@ -22,11 +22,15 @@
  */
 package org.matsim.prepare;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.gtfs.RunGTFS2MATSim;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.network.io.NetworkWriter;
 import org.matsim.core.scenario.ScenarioUtils;
@@ -36,7 +40,7 @@ import org.matsim.pt.transitSchedule.api.TransitScheduleReader;
 import org.matsim.pt.transitSchedule.api.TransitScheduleWriter;
 import org.matsim.pt.utils.CreatePseudoNetwork;
 import org.matsim.pt.utils.CreateVehiclesForSchedule;
-import org.matsim.vehicles.VehicleWriterV1;
+import org.matsim.vehicles.MatsimVehicleWriter;
 
 /**
  * @author  ikaddoura
@@ -54,15 +58,32 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 	
 	public static void main(String[] args) {
 		
+		String rootDirectory = null;
+		
+		if (args.length == 1) {
+			rootDirectory = args[0];
+		} else {
+			throw new RuntimeException("Please set the root directory (the directory above 'scag_model'). Aborting...");
+		}
+		
+		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
+		
 		//input data
-		String gtfsZipFile = "/Users/ihab/Documents/vsp/Projects/MATSim_LosAngeles/gtfs-data/la-metro_20101211_0848.zip"; 
-		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:3310");
+		String gtfsZipFile = rootDirectory + "gtfs-data/la-metro_20101211_0848.zip"; 
+		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:4326");
 		LocalDate date = LocalDate.parse("2010-12-01");
 
 		//output files 
-		String scheduleFile = "/Users/ihab/Documents/vsp/Projects/MATSim_LosAngeles/matsim-input-files/pt/LA_transitSchedule_GTFS_2019-10-01.xml.gz";
-		String networkFile = "/Users/ihab/Documents/vsp/Projects/MATSim_LosAngeles/matsim-input-files/pt/LA_network_with-pt_2019-10-01.xml.gz";
-		String transitVehiclesFile ="/Users/ihab/Documents/vsp/Projects/MATSim_LosAngeles/matsim-input-files/pt/LA_transitVehicles_GTFS_2019-10-01.xml.gz";
+		String scheduleFile = rootDirectory + "matsim-input-files/pt/scag-transitSchedule_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "xml.gz";
+		String networkFile = rootDirectory + "matsim-input-files/pt/scag-network-with-pt_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "xml.gz";
+		String transitVehiclesFile = rootDirectory + "matsim-input-files/pt/scag-transitVehicles_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "xml.gz";;
+		
+		OutputDirectoryLogging.catchLogEntries();
+		try {
+			OutputDirectoryLogging.initLoggingWithOutputDirectory(rootDirectory + "matsim-input-files/pt/");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		
 		//Convert GTFS
 		RunGTFS2MATSim.convertGtfs(gtfsZipFile, scheduleFile, date, ct, false);
@@ -72,7 +93,7 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 		new TransitScheduleReader(scenario).readFile(scheduleFile);
 		
 		//if neccessary, parse in an existing network file here:
-		new MatsimNetworkReader(scenario.getNetwork()).readFile("/Users/ihab/Documents/vsp/Projects/MATSim_LosAngeles/matsim-input-files/socal-LA-network_2019-09-22_network.xml.gz");
+		new MatsimNetworkReader(scenario.getNetwork()).readFile(rootDirectory + "matsim-input-files/scag-network_2019-10-21_network.xml.gz");
 		
 		//Create a network around the schedule
 		new CreatePseudoNetwork(scenario.getTransitSchedule(),scenario.getNetwork(),"pt_").createNetwork();
@@ -83,6 +104,7 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 		//Write out network, vehicles and schedule
 		new NetworkWriter(scenario.getNetwork()).write(networkFile);
 		new TransitScheduleWriter(scenario.getTransitSchedule()).writeFile(scheduleFile);
-		new VehicleWriterV1(scenario.getTransitVehicles()).writeFile(transitVehiclesFile);
+		new MatsimVehicleWriter(scenario.getTransitVehicles()).writeFile(transitVehiclesFile);
+//		new VehicleWriterV1(scenario.getTransitVehicles()).writeFile(transitVehiclesFile);
 	}
 }
