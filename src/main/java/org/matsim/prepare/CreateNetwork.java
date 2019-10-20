@@ -24,9 +24,12 @@ package org.matsim.prepare;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -86,7 +89,8 @@ public class CreateNetwork {
 		String prefix = "scag-network_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		String outDir = rootDirectory + "/matsim-input-files/network/";
 
-		String crs = "EPSG:4326";
+//		String crs = "EPSG:4326";
+		String crs = "EPSG:3310";
 		CreateNetwork networkCreator = new CreateNetwork(osmfile, crs , outDir, prefix);
 
 		boolean keepPaths = false;
@@ -94,9 +98,23 @@ public class CreateNetwork {
 		boolean simplify = false;
 		
 		networkCreator.createNetwork(keepPaths, simplify, clean);
+		networkCreator.adjustNetwork();		
 		networkCreator.writeNetwork();
 	}
 	
+	private void adjustNetwork() {
+		for (Link link : network.getLinks().values()) {
+			if (link.getAllowedModes().contains("car")) {
+				Set<String> modes = new HashSet<>();
+				modes.add("car");
+				modes.add("ride");
+				link.setAllowedModes(modes );
+			}
+		}
+		
+		// TODO: further modifications?
+	}
+
 	public CreateNetwork(String inputOSMFile, String networkCoordinateSystem, String outputDir, String prefix) {
 		this.INPUT_OSMFILE = inputOSMFile;
 		this.networkCS = networkCoordinateSystem;

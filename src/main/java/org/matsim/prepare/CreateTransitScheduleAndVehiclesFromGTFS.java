@@ -70,13 +70,13 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 		
 		//input data
 		String gtfsZipFile = rootDirectory + "gtfs-data/la-metro_20101211_0848.zip"; 
-		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:4326");
+		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:3310");
 		LocalDate date = LocalDate.parse("2010-12-01");
 
 		//output files 
-		String scheduleFile = rootDirectory + "matsim-input-files/pt/scag-transitSchedule_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "xml.gz";
-		String networkFile = rootDirectory + "matsim-input-files/pt/scag-network-with-pt_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "xml.gz";
-		String transitVehiclesFile = rootDirectory + "matsim-input-files/pt/scag-transitVehicles_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "xml.gz";;
+		String scheduleFile = rootDirectory + "matsim-input-files/pt/scag-transitSchedule_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";
+		String networkFile = rootDirectory + "matsim-input-files/pt/scag-network-with-pt_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";
+		String transitVehiclesFile = rootDirectory + "matsim-input-files/pt/scag-transitVehicles_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";;
 		
 		OutputDirectoryLogging.catchLogEntries();
 		try {
@@ -93,7 +93,7 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 		new TransitScheduleReader(scenario).readFile(scheduleFile);
 		
 		//if neccessary, parse in an existing network file here:
-		new MatsimNetworkReader(scenario.getNetwork()).readFile(rootDirectory + "matsim-input-files/scag-network_2019-10-21_network.xml.gz");
+		new MatsimNetworkReader(scenario.getNetwork()).readFile(rootDirectory + "matsim-input-files/network/scag-network_2019-10-21_network.xml.gz");
 		
 		//Create a network around the schedule
 		new CreatePseudoNetwork(scenario.getTransitSchedule(),scenario.getNetwork(),"pt_").createNetwork();

@@ -134,6 +134,32 @@ public class RunLosAngelesScenario {
 			config.planCalcScore().addActivityParams( new ActivityParams( "other_" + ii + ".0" ).setTypicalDuration( ii ) );
 		}
 		config.planCalcScore().addActivityParams( new ActivityParams( "freight" ).setTypicalDuration( 12.*3600. ) );
+		
+		config.planCalcScore().addActivityParams( new ActivityParams( "home" ).setTypicalDuration( 12.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "work" ).setTypicalDuration( 8.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "university" ).setTypicalDuration( 8.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "school" ).setTypicalDuration( 6.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "escort" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "schoolescort" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "schoolpureescort" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "schoolridesharing" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "non-schoolescort" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "shop" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "maintenance" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "HHmaintenance" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "personalmaintenance" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "eatout" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "eatoutbreakfast" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "eatoutlunch" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "eatoutdinner" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "visiting" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "discretionary" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "specialevent" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "atwork" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "atworkbusiness" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "atworklunch" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "atworkother" ).setTypicalDuration( 1.*3600. ) );
+		config.planCalcScore().addActivityParams( new ActivityParams( "business" ).setTypicalDuration( 1.*3600. ) );
 
 		return config ;
 	}
