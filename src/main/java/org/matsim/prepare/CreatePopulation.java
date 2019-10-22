@@ -63,8 +63,9 @@ public class CreatePopulation {
 	private final Random rnd = MatsimRandom.getRandom();
 //	private final String crs = "EPSG:4326";
 	private final String crs = "EPSG:3310";
-	private final String outputFilePrefix = "scag-population_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-
+	private final double sample = 0.001;
+	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+	
 	public static void main(String[] args) throws IOException {
 		String rootDirectory = null;
 		
@@ -112,69 +113,126 @@ public class CreatePopulation {
 		PopulationFactory populationFactory = scenario.getPopulation().getFactory();
 
 		// create persons and add person attributes
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(personFile)), csvFormat)) {		
-			String personId = csvRecord.get(0);
-			String householdId = csvRecord.get(2);
-			String age = csvRecord.get(4);
-			int genderCode = Integer.valueOf(csvRecord.get(5));
-			String genderString = getGenderString(genderCode);
+		log.info("Creating persons...");
 
-			Person person = populationFactory.createPerson(Id.createPersonId(personId));
-			person.getAttributes().putAttribute("householdId", householdId);
-			person.getAttributes().putAttribute("age", age);
-			person.getAttributes().putAttribute("gender", genderString);
+		int includedPersons = 0;
+		int excludedPersons = 0;
+		int personsInDataSet = 0;
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(personFile)), csvFormat)) {	
+			personsInDataSet++;
 			
-			// TODO: add person attributes for all (required) attributes
+			if (rnd.nextDouble() <= sample) {
+				String personId = csvRecord.get(0);
+				String householdId = csvRecord.get(2);
+				String age = csvRecord.get(4);
+				int genderCode = Integer.valueOf(csvRecord.get(5));
+				String genderString = getGenderString(genderCode);
 
-			scenario.getPopulation().addPerson(person);
+				Person person = populationFactory.createPerson(Id.createPersonId(personId));
+				person.getAttributes().putAttribute("householdId", householdId);
+				person.getAttributes().putAttribute("age", age);
+				person.getAttributes().putAttribute("gender", genderString);
+				
+				// TODO: add person attributes for all (required) attributes
+
+				scenario.getPopulation().addPerson(person);
+				includedPersons++;
+			} else {
+				excludedPersons++;
+			}
 		}
 		
+		log.info("Creating persons... Done.");
+		
+		log.info("Included persons: " + includedPersons);
+		log.info("Excluded persons: " + excludedPersons);
+		log.info("Total number of persons in data set: " + personsInDataSet);
+		
+		log.info("Creating plans...");
+		
 		// read trip data and create a plan
+		int tripsInDataSet = 0;
+		int includedTripsCounter = 0;
+		int excludedTripsCounter = 0;
 		boolean firstTrip;
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(tripFile)), csvFormat)) {		
-			Id<Person> personId = Id.createPersonId(csvRecord.get(4));
-			
-			Person person = scenario.getPopulation().getPersons().get(personId);
-			Plan plan; 
-			if (person.getPlans().size() > 0) {
-				plan = person.getPlans().get(0);
-				firstTrip = false;
-			} else {
-				plan = populationFactory.createPlan();
-				firstTrip = true;
-				person.addPlan(plan);	
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(tripFile)), csvFormat)) {	
+			tripsInDataSet++;
+			if (tripsInDataSet%1000000 == 0) {
+				log.info("trip record #" + tripsInDataSet );
 			}
 			
-			if (firstTrip) {	
-				// origin activity
-				int tripPurposeOriginCode = Integer.valueOf(csvRecord.get(18));
-				String tripPurposeOrigin = getTripPurposeString(tripPurposeOriginCode);		
-				String tripOriginTAZid = csvRecord.get(20);
-				Coord coord = getRandomCoord(tripOriginTAZid, geometries);
-				Activity act = populationFactory.createActivityFromCoord(tripPurposeOrigin, coord);
+			Id<Person> personId = Id.createPersonId(csvRecord.get(4));			
+			Person person = scenario.getPopulation().getPersons().get(personId);
+			if (person == null) {
+				// person was excluded from our sample
+				excludedTripsCounter++;
+			} else {
+				includedTripsCounter++;
+				Plan plan; 
+				if (person.getPlans().size() > 0) {
+					plan = person.getPlans().get(0);
+					firstTrip = false;
+				} else {
+					plan = populationFactory.createPlan();
+					firstTrip = true;
+					person.addPlan(plan);	
+				}
+				
+				if (firstTrip) {	
+					// origin activity
+					int tripPurposeOriginCode = Integer.valueOf(csvRecord.get(18));
+					String tripPurposeOrigin = getTripPurposeString(tripPurposeOriginCode);		
+					String tripOriginTAZid = csvRecord.get(20);
+					Coord coord = getRandomCoord(tripOriginTAZid, geometries);
+					Activity act = populationFactory.createActivityFromCoord(tripPurposeOrigin, coord);
+					plan.addActivity(act);
+				}
+				
+				// set end time of previous activity
+				double originEndTimeSec = Double.valueOf(csvRecord.get(23)) * 60.;
+				Activity previousActivity = (Activity) plan.getPlanElements().get(plan.getPlanElements().size() - 1);
+				previousActivity.setEndTime(originEndTimeSec);
+				
+				// trip
+				Integer modeCode = Integer.valueOf(csvRecord.get(25));
+				String mode = getModeString(modeCode);
+				Leg leg = populationFactory.createLeg(mode);		
+				plan.addLeg(leg);
+				
+				// destination activity
+				int tripPurposeDestinationCode = Integer.valueOf(csvRecord.get(19));
+				String tripPurposeDestination = getTripPurposeString(tripPurposeDestinationCode);
+				String tripDestinationTAZid = csvRecord.get(21);
+				Coord coord = getRandomCoord(tripDestinationTAZid, geometries);
+				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);	
 				plan.addActivity(act);
 			}
-			
-			// set end time of previous activity
-			double originEndTimeSec = Double.valueOf(csvRecord.get(23)) * 60.;
-			Activity previousActivity = (Activity) plan.getPlanElements().get(plan.getPlanElements().size() - 1);
-			previousActivity.setEndTime(originEndTimeSec);
-			
-			// trip
-			Integer modeCode = Integer.valueOf(csvRecord.get(25));
-			String mode = getModeString(modeCode);
-			Leg leg = populationFactory.createLeg(mode);		
-			plan.addLeg(leg);
-			
-			// destination activity
-			int tripPurposeDestinationCode = Integer.valueOf(csvRecord.get(19));
-			String tripPurposeDestination = getTripPurposeString(tripPurposeDestinationCode);
-			String tripDestinationTAZid = csvRecord.get(21);
-			Coord coord = getRandomCoord(tripDestinationTAZid, geometries);
-			Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);	
-			plan.addActivity(act);
 		}
+		
+		log.info("Included trips: " + includedTripsCounter);
+		log.info("Excluded trips: " + excludedTripsCounter);
+		log.info("Total number of trips in data set: " + tripsInDataSet);
+		
+		log.info("Creating plans... Done.");
 		log.info("Creating population... Done.");
+		
+		int stayHomePlansCounter = 0;
+		for (Person person : scenario.getPopulation().getPersons().values()) {
+			if (person.getPlans().size() == 0) {
+				// give the agent a stay-home plan
+
+				// TODO: Get the person's correct home location via the household ID, this also means we need to parse the household data
+				Activity act = populationFactory.createActivityFromCoord("home", new Coord(0.,0.));
+				
+				Plan plan = populationFactory.createPlan();
+				plan.addActivity(act);
+				person.addPlan(plan);
+				
+				stayHomePlansCounter++;
+			}
+		}
+		
+		log.info("Number of stay-home plans: " + stayHomePlansCounter);
 		
 		log.info("Writing population...");
 		PopulationWriter writer = new PopulationWriter(scenario.getPopulation());
