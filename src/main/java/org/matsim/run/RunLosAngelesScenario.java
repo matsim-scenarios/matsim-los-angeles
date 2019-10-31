@@ -55,7 +55,7 @@ public class RunLosAngelesScenario {
 		
 		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
 		
-		String configFile = rootDirectory + "matsim-input-files/scag-config_2019-10-21.xml";
+		String configFile = rootDirectory + "matsim-input-files/scag-config_2019-10-30.xml";
 		
 		Config config = prepareConfig( configFile ) ;
 		Scenario scenario = prepareScenario( config ) ;
@@ -114,7 +114,6 @@ public class RunLosAngelesScenario {
 		config.plansCalcRoute().setRoutingRandomness( 3. );
 		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride);
 		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
 		config.plansCalcRoute().removeModeRoutingParams("undefined");
 	
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles( true );

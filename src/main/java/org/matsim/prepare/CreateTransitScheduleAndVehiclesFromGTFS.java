@@ -69,18 +69,20 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
 		
 		//input data
-		String gtfsZipFile = rootDirectory + "gtfs-data/la-metro_20101211_0848.zip"; 
+		String fileName = "LA_METRO_RAIL_2019-10-29";
+		String gtfsZipFile = rootDirectory + "gtfs-data/latest_available_2019-10-30/" + fileName + ".zip"; 
+
 		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:3310");
-		LocalDate date = LocalDate.parse("2010-12-01");
+		LocalDate date = LocalDate.parse("2019-10-28");
 
 		//output files 
-		String scheduleFile = rootDirectory + "matsim-input-files/pt/scag-transitSchedule_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";
-		String networkFile = rootDirectory + "matsim-input-files/pt/scag-network-with-pt_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";
-		String transitVehiclesFile = rootDirectory + "matsim-input-files/pt/scag-transitVehicles_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";;
+		String scheduleFile = rootDirectory + "matsim-input-files/pt/" + fileName + "/scag-transitSchedule_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";
+		String networkFile = rootDirectory + "matsim-input-files/pt/" + fileName + "/scag-network-with-pt_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";
+		String transitVehiclesFile = rootDirectory + "matsim-input-files/pt/" + fileName + "/scag-transitVehicles_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";;
 		
 		OutputDirectoryLogging.catchLogEntries();
 		try {
-			OutputDirectoryLogging.initLoggingWithOutputDirectory(rootDirectory + "matsim-input-files/pt/");
+			OutputDirectoryLogging.initLoggingWithOutputDirectory(rootDirectory + "matsim-input-files/pt/" + fileName + "/");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
