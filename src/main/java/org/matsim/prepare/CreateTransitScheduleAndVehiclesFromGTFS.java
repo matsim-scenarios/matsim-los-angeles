@@ -69,11 +69,11 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
 		
 		//input data
-		String fileName = "LA_METRO_RAIL_2019-10-29";
+		String fileName = "LA_DOT_2019-07-12";
 		String gtfsZipFile = rootDirectory + "gtfs-data/latest_available_2019-10-30/" + fileName + ".zip"; 
 
 		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:3310");
-		LocalDate date = LocalDate.parse("2019-10-28");
+		LocalDate date = LocalDate.parse("2019-07-08");
 
 		//output files 
 		String scheduleFile = rootDirectory + "matsim-input-files/pt/" + fileName + "/scag-transitSchedule_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";
