@@ -31,7 +31,6 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.gtfs.RunGTFS2MATSim;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.OutputDirectoryLogging;
-import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.network.io.NetworkWriter;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
@@ -39,7 +38,6 @@ import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.pt.transitSchedule.api.TransitScheduleReader;
 import org.matsim.pt.transitSchedule.api.TransitScheduleWriter;
 import org.matsim.pt.utils.CreatePseudoNetwork;
-import org.matsim.pt.utils.CreateVehiclesForSchedule;
 import org.matsim.vehicles.MatsimVehicleWriter;
 
 /**
@@ -68,12 +66,29 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 		
 		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
 		
-		//input data
-		String fileName = "LA_DOT_2019-07-12";
-		String gtfsZipFile = rootDirectory + "gtfs-data/latest_available_2019-10-30/" + fileName + ".zip"; 
+		// input data
+//		String fileName = "LA_DOT_2019-07-12";
+//		String gtfsZipFile = rootDirectory + "gtfs-data/latest_available_2019-10-30/" + fileName + ".zip";
+//		int vehicleCapacity = 100;
+//		String dateString = "2019-07-08"; // previous monday
+		
+//		String fileName = "LA_GO_BUS_2019-10-02";
+//		String gtfsZipFile = rootDirectory + "gtfs-data/latest_available_2019-10-30/" + fileName + ".zip";
+//		int vehicleCapacity = 100;
+//		String dateString = "2019-09-30"; // previous monday
+		
+//		String fileName = "LA_METRO_BUS_2019-10-04";
+//		String gtfsZipFile = rootDirectory + "gtfs-data/latest_available_2019-10-30/" + fileName + ".zip";
+//		int vehicleCapacity = 100;
+//		String dateString = "2019-09-30"; // previous monday
+		
+		String fileName = "LA_METRO_RAIL_2019-10-29";
+		String gtfsZipFile = rootDirectory + "gtfs-data/latest_available_2019-10-30/" + fileName + ".zip";
+		int vehicleCapacity = 500;
+		String dateString = "2019-10-28"; // previous monday
 
 		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:3310");
-		LocalDate date = LocalDate.parse("2019-07-08");
+		LocalDate date = LocalDate.parse(dateString);
 
 		//output files 
 		String scheduleFile = rootDirectory + "matsim-input-files/pt/" + fileName + "/scag-transitSchedule_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".xml.gz";
@@ -95,18 +110,17 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 		new TransitScheduleReader(scenario).readFile(scheduleFile);
 		
 		//if neccessary, parse in an existing network file here:
-		new MatsimNetworkReader(scenario.getNetwork()).readFile(rootDirectory + "matsim-input-files/network/scag-network_2019-10-21_network.xml.gz");
+//		new MatsimNetworkReader(scenario.getNetwork()).readFile(rootDirectory + "matsim-input-files/network/scag-network_2019-10-21_network.xml.gz");
 		
 		//Create a network around the schedule
-		new CreatePseudoNetwork(scenario.getTransitSchedule(),scenario.getNetwork(),"pt_").createNetwork();
+		new CreatePseudoNetwork(scenario.getTransitSchedule(),scenario.getNetwork(),"pt_" + fileName + "_").createNetwork();
 		
 		//Create simple transit vehicles
-		new CreateVehiclesForSchedule(scenario.getTransitSchedule(), scenario.getTransitVehicles()).run();
+		new CreateVehiclesForSchedule(scenario.getTransitSchedule(), scenario.getTransitVehicles(), vehicleCapacity, "pt_" + fileName + "_").run();
 		
 		//Write out network, vehicles and schedule
 		new NetworkWriter(scenario.getNetwork()).write(networkFile);
 		new TransitScheduleWriter(scenario.getTransitSchedule()).writeFile(scheduleFile);
 		new MatsimVehicleWriter(scenario.getTransitVehicles()).writeFile(transitVehiclesFile);
-//		new VehicleWriterV1(scenario.getTransitVehicles()).writeFile(transitVehiclesFile);
 	}
 }
