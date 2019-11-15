@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.gtfs.RunGTFS2MATSim;
 import org.matsim.core.config.ConfigUtils;
@@ -35,10 +36,18 @@ import org.matsim.core.network.io.NetworkWriter;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
+import org.matsim.pt.transitSchedule.api.Departure;
+import org.matsim.pt.transitSchedule.api.TransitLine;
+import org.matsim.pt.transitSchedule.api.TransitRoute;
+import org.matsim.pt.transitSchedule.api.TransitSchedule;
 import org.matsim.pt.transitSchedule.api.TransitScheduleReader;
 import org.matsim.pt.transitSchedule.api.TransitScheduleWriter;
 import org.matsim.pt.utils.CreatePseudoNetwork;
 import org.matsim.vehicles.MatsimVehicleWriter;
+import org.matsim.vehicles.Vehicle;
+import org.matsim.vehicles.VehicleType;
+import org.matsim.vehicles.Vehicles;
+import org.matsim.vehicles.VehiclesFactory;
 
 /**
  * @author  ikaddoura
@@ -116,11 +125,31 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 		new CreatePseudoNetwork(scenario.getTransitSchedule(),scenario.getNetwork(),"pt_" + fileName + "_").createNetwork();
 		
 		//Create simple transit vehicles
-		new CreateVehiclesForSchedule(scenario.getTransitSchedule(), scenario.getTransitVehicles(), vehicleCapacity, "pt_" + fileName + "_").run();
+		createTransitVehiclesForSchedule(scenario.getTransitSchedule(), scenario.getTransitVehicles(), vehicleCapacity, "pt_" + fileName + "_");
 		
 		//Write out network, vehicles and schedule
 		new NetworkWriter(scenario.getNetwork()).write(networkFile);
 		new TransitScheduleWriter(scenario.getTransitSchedule()).writeFile(scheduleFile);
 		new MatsimVehicleWriter(scenario.getTransitVehicles()).writeFile(transitVehiclesFile);
+	}
+	
+	private static void createTransitVehiclesForSchedule(final TransitSchedule schedule, final Vehicles vehicles, final int seats, final String idPrefix) {
+		VehiclesFactory vehFactotry = vehicles.getFactory();
+		VehicleType vehicleType = vehFactotry.createVehicleType(Id.create(idPrefix + "defaultTransitVehicleType", VehicleType.class));
+		vehicleType.getCapacity().setSeats( seats );
+		vehicleType.getCapacity().setStandingRoom( 0 );
+		vehicleType.setPcuEquivalents(0.);
+		vehicles.addVehicleType(vehicleType);
+
+		long vehId = 0;
+		for (TransitLine line : schedule.getTransitLines().values()) {
+			for (TransitRoute route : line.getRoutes().values()) {
+				for (Departure departure : route.getDepartures().values()) {
+					Vehicle veh = vehFactotry.createVehicle(Id.create(idPrefix + Long.toString(vehId++), Vehicle.class), vehicleType);
+					vehicles.addVehicle(veh);
+					departure.setVehicleId(veh.getId());
+				}
+			}
+		}
 	}
 }
