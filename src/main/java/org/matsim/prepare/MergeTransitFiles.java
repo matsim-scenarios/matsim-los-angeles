@@ -81,11 +81,13 @@ public class MergeTransitFiles {
 		String transitScheduleFile2 = rootDirectory + "/matsim-input-files/pt/LA_GO_BUS_2019-10-02/scag-transitSchedule_2019-11-01.xml.gz";
 		String transitScheduleFile3 = rootDirectory + "/matsim-input-files/pt/LA_METRO_BUS_2019-10-04/scag-transitSchedule_2019-11-01.xml.gz";
 		String transitScheduleFile4 = rootDirectory + "/matsim-input-files/pt/LA_METRO_RAIL_2019-10-29/scag-transitSchedule_2019-11-01.xml.gz";
+		String transitScheduleFile5 = rootDirectory + "/matsim-input-files/pt/METROLINK_2019-10-15/scag-transitSchedule_2019-11-19.xml.gz";
 
 		String transitVehiclesFile1 = rootDirectory + "/matsim-input-files/pt/LA_DOT_2019-07-12/scag-transitVehicles_2019-11-01.xml.gz";
 		String transitVehiclesFile2 = rootDirectory + "/matsim-input-files/pt/LA_GO_BUS_2019-10-02/scag-transitVehicles_2019-11-01.xml.gz";
 		String transitVehiclesFile3 = rootDirectory + "/matsim-input-files/pt/LA_METRO_BUS_2019-10-04/scag-transitVehicles_2019-11-01.xml.gz";
 		String transitVehiclesFile4 = rootDirectory + "/matsim-input-files/pt/LA_METRO_RAIL_2019-10-29/scag-transitVehicles_2019-11-01.xml.gz";
+		String transitVehiclesFile5 = rootDirectory + "/matsim-input-files/pt/METROLINK_2019-10-15/scag-transitVehicles_2019-11-19.xml.gz";
 
 		String crs = "EPSG:3310";
 		MergeTransitFiles ptMerger = new MergeTransitFiles(crs, outDir, prefix);
@@ -101,6 +103,7 @@ public class MergeTransitFiles {
 		Scenario scenario2 = ptMerger.loadScenario(transitScheduleFile2, transitVehiclesFile2);
 		Scenario scenario3 = ptMerger.loadScenario(transitScheduleFile3, transitVehiclesFile3);
 		Scenario scenario4 = ptMerger.loadScenario(transitScheduleFile4, transitVehiclesFile4);
+		Scenario scenario5 = ptMerger.loadScenario(transitScheduleFile5, transitVehiclesFile5);
 
 		MergeTransitFiles.mergeSchedule(baseTransitSchedule, "LA_DOT", scenario1.getTransitSchedule());
 		MergeTransitFiles.mergeVehicles(baseTransitVehicles, scenario1.getTransitVehicles());
@@ -113,6 +116,9 @@ public class MergeTransitFiles {
 
 		MergeTransitFiles.mergeSchedule(baseTransitSchedule, "LA_METRO_RAIL", scenario4.getTransitSchedule());
 		MergeTransitFiles.mergeVehicles(baseTransitVehicles, scenario4.getTransitVehicles());
+		
+		MergeTransitFiles.mergeSchedule(baseTransitSchedule, "METROLINK", scenario5.getTransitSchedule());
+		MergeTransitFiles.mergeVehicles(baseTransitVehicles, scenario5.getTransitVehicles());
 
 		ptMerger.writeFiles(baseTransitSchedule, baseTransitVehicles);
 	}

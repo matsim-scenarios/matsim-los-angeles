@@ -73,6 +73,7 @@ public class MergeNetworks {
 		String networkFile2 = rootDirectory + "/matsim-input-files/pt/LA_GO_BUS_2019-10-02/scag-network-with-pt_2019-11-01.xml.gz";
 		String networkFile3 = rootDirectory + "/matsim-input-files/pt/LA_METRO_BUS_2019-10-04/scag-network-with-pt_2019-11-01.xml.gz";
 		String networkFile4 = rootDirectory + "/matsim-input-files/pt/LA_METRO_RAIL_2019-10-29/scag-network-with-pt_2019-11-01.xml.gz";
+		String networkFile5 = rootDirectory + "/matsim-input-files/pt/METROLINK_2019-10-15/scag-network-with-pt_2019-11-19.xml.gz";
 
 		String crs = "EPSG:3310";
 		MergeNetworks networkMerger = new MergeNetworks(crs, outDir, prefix);
@@ -83,7 +84,8 @@ public class MergeNetworks {
 		MergeNetworks.merge(baseNetwork, "", networkMerger.createNetwork(networkFile2));
 		MergeNetworks.merge(baseNetwork, "", networkMerger.createNetwork(networkFile3));
 		MergeNetworks.merge(baseNetwork, "", networkMerger.createNetwork(networkFile4));
-		
+		MergeNetworks.merge(baseNetwork, "", networkMerger.createNetwork(networkFile5));
+
 		networkMerger.writeNetwork(baseNetwork);
 	}
 	

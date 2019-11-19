@@ -91,10 +91,15 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 //		int vehicleCapacity = 100;
 //		String dateString = "2019-09-30"; // previous monday
 		
-		String fileName = "LA_METRO_RAIL_2019-10-29";
+//		String fileName = "LA_METRO_RAIL_2019-10-29";
+//		String gtfsZipFile = rootDirectory + "gtfs-data/latest_available_2019-10-30/" + fileName + ".zip";
+//		int vehicleCapacity = 500;
+//		String dateString = "2019-10-28"; // previous monday
+		
+		String fileName = "METROLINK_2019-10-15";
 		String gtfsZipFile = rootDirectory + "gtfs-data/latest_available_2019-10-30/" + fileName + ".zip";
 		int vehicleCapacity = 500;
-		String dateString = "2019-10-28"; // previous monday
+		String dateString = "2019-10-14"; // previous monday
 
 		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.WGS84, "EPSG:3310");
 		LocalDate date = LocalDate.parse(dateString);
