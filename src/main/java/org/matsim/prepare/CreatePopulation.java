@@ -64,7 +64,7 @@ public class CreatePopulation {
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
-	private final double sample = 0.001;
+	private final double sample = 0.0001;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	public static void main(String[] args) throws IOException {
@@ -86,9 +86,12 @@ public class CreatePopulation {
 		
 //		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
 //		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+
 		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
 		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
 		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+		
 		final String tazShpFile = rootDirectory + "LA012.2013-20_SCAG/shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
 		final String outputDirectory = rootDirectory + "matsim-input-files/population/";
 		
@@ -100,7 +103,8 @@ public class CreatePopulation {
 		}
 		
 		log.info("Loading shape file...");
-		final Map<String, Geometry> geometries = loadGeometries(tazShpFile, "OBJECTID");
+		final Map<String, Geometry> objectId2geometries = loadGeometries(tazShpFile, "OBJECTID");
+		final Map<String, Geometry> tierTazId2geometries = loadGeometries(tazShpFile, "Tier2");
 		log.info("Loading shape file... Done.");
 		
 		log.info("Creating scenario...");
@@ -187,7 +191,7 @@ public class CreatePopulation {
 					int tripPurposeOriginCode = Integer.valueOf(csvRecord.get(18));
 					String tripPurposeOrigin = getTripPurposeString(tripPurposeOriginCode);		
 					String tripOriginTAZid = csvRecord.get(20);
-					Coord coord = getRandomCoord(tripOriginTAZid, geometries);
+					Coord coord = getRandomCoord(tripOriginTAZid, objectId2geometries);
 					Activity act = populationFactory.createActivityFromCoord(tripPurposeOrigin, coord);
 					plan.addActivity(act);
 				}
@@ -208,7 +212,7 @@ public class CreatePopulation {
 				int tripPurposeDestinationCode = Integer.valueOf(csvRecord.get(19));
 				String tripPurposeDestination = getTripPurposeString(tripPurposeDestinationCode);
 				String tripDestinationTAZid = csvRecord.get(21);
-				Coord coord = getRandomCoord(tripDestinationTAZid, geometries);
+				Coord coord = getRandomCoord(tripDestinationTAZid, objectId2geometries);
 				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);	
 				plan.addActivity(act);
 			}
@@ -226,12 +230,12 @@ public class CreatePopulation {
 		
 		// This also means we need to parse the household data
 		log.info("Reading household data...");
-		Map<String, String> hhId2TazId = new HashMap<>();
+		Map<String, String> hhId2tierTazId = new HashMap<>();
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(householdFile)), csvFormat)) {	
 			String householdId = csvRecord.get(0);
 			if (householdIdsOfIncludedPersons.contains(householdId)) {
 				String hhTAZid = csvRecord.get(2);
-				hhId2TazId.put(householdFile, hhTAZid);
+				hhId2tierTazId.put(householdId, hhTAZid);
 			}
 		}
 		log.info("Reading household data... Done.");
@@ -241,7 +245,11 @@ public class CreatePopulation {
 			if (person.getPlans().size() == 0) {
 				// give the agent a stay-home plan
 
-				Coord coord = getRandomCoord(hhId2TazId.get(person.getAttributes().getAttribute("householdId")), geometries);
+				String hhId = (String) person.getAttributes().getAttribute("householdId");
+				String tierTazId = hhId2tierTazId.get(hhId);
+				log.info("householdId: " + hhId);
+				log.info("tierTazId: " + tierTazId);
+				Coord coord = getRandomCoord(hhId2tierTazId.get(hhId), tierTazId2geometries);
 				Activity act = populationFactory.createActivityFromCoord("home", coord);
 				
 				Plan plan = populationFactory.createPlan();
