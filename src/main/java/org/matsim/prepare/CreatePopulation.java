@@ -63,7 +63,7 @@ public class CreatePopulation {
 	private final Random rnd = MatsimRandom.getRandom();
 //	private final String crs = "EPSG:4326";
 	private final String crs = "EPSG:3310";
-	private final double sample = 0.001;
+	private final double sample = 0.1;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	public static void main(String[] args) throws IOException {
@@ -192,6 +192,7 @@ public class CreatePopulation {
 				double originEndTimeSec = Double.valueOf(csvRecord.get(23)) * 60.;
 				Activity previousActivity = (Activity) plan.getPlanElements().get(plan.getPlanElements().size() - 1);
 				previousActivity.setEndTime(originEndTimeSec);
+				// TODO: set duration instead of end time for short activities
 				
 				// trip
 				Integer modeCode = Integer.valueOf(csvRecord.get(25));
@@ -279,13 +280,13 @@ public class CreatePopulation {
 			  // SOV
 			  return "car";
 		  case 2:
-			  // HOV2Dr // TODO: check
+			  // HOV2Dr
 			  return "car";
 		  case 3:
-			  // HOV3Dr // TODO: check
+			  // HOV3Dr
 			  return "car";
 		  case 4:
-			  // HOVPass // TODO: check
+			  // HOVPass
 			  return "ride";		   
 		  case 5:
 			  // Walk_Bus
@@ -310,10 +311,10 @@ public class CreatePopulation {
 		  case 12:
 			  return "bike";
 		  case 13:
-			  return "car"; // TODO: how do we deal with that?
+			  return "ride_taxi";
 		  case 14:
-			  // School_Bus // TODO: how do we deal with that?
-			  return "car";
+			  // School_Bus
+			  return "school_bus";
 		}
 		throw new RuntimeException("Unknown trip mode. Aborting...");
 	}
