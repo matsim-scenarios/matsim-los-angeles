@@ -26,8 +26,10 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -61,9 +63,8 @@ public class CreatePopulation {
 	
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
-//	private final String crs = "EPSG:4326";
 	private final String crs = "EPSG:3310";
-	private final double sample = 0.1;
+	private final double sample = 0.001;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	public static void main(String[] args) throws IOException {
@@ -85,6 +86,7 @@ public class CreatePopulation {
 		
 //		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
 //		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
 		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
 		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
 		final String tazShpFile = rootDirectory + "LA012.2013-20_SCAG/shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
@@ -118,12 +120,14 @@ public class CreatePopulation {
 		int includedPersons = 0;
 		int excludedPersons = 0;
 		int personsInDataSet = 0;
+		Set<String> householdIdsOfIncludedPersons = new HashSet<>();
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(personFile)), csvFormat)) {	
 			personsInDataSet++;
 			
 			if (rnd.nextDouble() <= sample) {
 				String personId = csvRecord.get(0);
 				String householdId = csvRecord.get(2);
+				householdIdsOfIncludedPersons.add(householdId);
 				String age = csvRecord.get(4);
 				int genderCode = Integer.valueOf(csvRecord.get(5));
 				String genderString = getGenderString(genderCode);
@@ -217,13 +221,28 @@ public class CreatePopulation {
 		log.info("Creating plans... Done.");
 		log.info("Creating population... Done.");
 		
+		log.info("Handling stay home plans...");
+		// Get the person's correct home location via the household ID.
+		
+		// This also means we need to parse the household data
+		log.info("Reading household data...");
+		Map<String, String> hhId2TazId = new HashMap<>();
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(householdFile)), csvFormat)) {	
+			String householdId = csvRecord.get(0);
+			if (householdIdsOfIncludedPersons.contains(householdId)) {
+				String hhTAZid = csvRecord.get(2);
+				hhId2TazId.put(householdFile, hhTAZid);
+			}
+		}
+		log.info("Reading household data... Done.");
+		
 		int stayHomePlansCounter = 0;
 		for (Person person : scenario.getPopulation().getPersons().values()) {
 			if (person.getPlans().size() == 0) {
 				// give the agent a stay-home plan
 
-				// TODO: Get the person's correct home location via the household ID, this also means we need to parse the household data
-				Activity act = populationFactory.createActivityFromCoord("home", new Coord(0.,0.));
+				Coord coord = getRandomCoord(hhId2TazId.get(person.getAttributes().getAttribute("householdId")), geometries);
+				Activity act = populationFactory.createActivityFromCoord("home", coord);
 				
 				Plan plan = populationFactory.createPlan();
 				plan.addActivity(act);
@@ -234,6 +253,8 @@ public class CreatePopulation {
 		}
 		
 		log.info("Number of stay-home plans: " + stayHomePlansCounter);
+		
+		log.info("Handling stay home plans... Done.");
 		
 		log.info("Writing population...");
 		PopulationWriter writer = new PopulationWriter(scenario.getPopulation());
