@@ -103,8 +103,8 @@ public class CreatePopulation {
 		}
 		
 		log.info("Loading shape file...");
-		final Map<String, Geometry> objectId2geometries = loadGeometries(tazShpFile, "OBJECTID");
-		final Map<String, Geometry> tierTazId2geometries = loadGeometries(tazShpFile, "Tier2");
+		final Map<String, Geometry> objectId2geometries = loadGeometries(tazShpFile, "OBJECTID"); // geometry IDs given in the trip table
+		final Map<String, Geometry> tierTazId2geometries = loadGeometries(tazShpFile, "Tier2"); // geometry IDs given in the household table
 		log.info("Loading shape file... Done.");
 		
 		log.info("Creating scenario...");
