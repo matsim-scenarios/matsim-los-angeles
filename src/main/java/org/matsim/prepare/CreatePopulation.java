@@ -44,6 +44,7 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
+import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.OutputDirectoryLogging;
@@ -64,7 +65,7 @@ public class CreatePopulation {
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
-	private final double sample = 0.0001;
+	private final double sample = 1;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	public static void main(String[] args) throws IOException {
@@ -82,15 +83,16 @@ public class CreatePopulation {
 		createPopulation.run(rootDirectory);
 	}
 	
+	@SuppressWarnings("resource")
 	private void run(String rootDirectory) throws NumberFormatException, IOException {
 		
-//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
-//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
-//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
+		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
 
-		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
-		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
-		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
+//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
+//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
 		
 		final String tazShpFile = rootDirectory + "LA012.2013-20_SCAG/shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
 		final String outputDirectory = rootDirectory + "matsim-input-files/population/";
@@ -163,7 +165,7 @@ public class CreatePopulation {
 		int includedTripsCounter = 0;
 		int excludedTripsCounter = 0;
 		boolean firstTrip;
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(tripFile)), csvFormat)) {	
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(tripFile)),csvFormat)) {	
 			tripsInDataSet++;
 			if (tripsInDataSet%1000000 == 0) {
 				log.info("trip record #" + tripsInDataSet );
@@ -196,24 +198,31 @@ public class CreatePopulation {
 					plan.addActivity(act);
 				}
 				
+				Double tripStartTime = Double.valueOf(csvRecord.get(23)) * 60.;
+				String tripEndTimeString = csvRecord.get(40);
+				Double tripEndTime = Double.valueOf(tripEndTimeString) * 60.;
+				double travelTime = tripEndTime - tripStartTime ;
+				
+				if (travelTime < 0.) {
+					throw new RuntimeException("Travel time is < 0. Aborting..." + csvRecord);
+				}
+
 				// set end time of previous activity
-				double originEndTimeSec = Double.valueOf(csvRecord.get(23)) * 60.;
 				Activity previousActivity = (Activity) plan.getPlanElements().get(plan.getPlanElements().size() - 1);
-				previousActivity.setEndTime(originEndTimeSec);
-				// TODO: set duration instead of end time for short activities
+				previousActivity.setEndTime(tripStartTime);
+				previousActivity.getAttributes().putAttribute("initialEndTime", tripStartTime);
 				
 				// trip
-				Integer modeCode = Integer.valueOf(csvRecord.get(25));
-				String mode = getModeString(modeCode);
-				Leg leg = populationFactory.createLeg(mode);		
+				String mode = getModeString(Integer.valueOf(csvRecord.get(25)));
+				Leg leg = populationFactory.createLeg(mode);	
+				leg.setTravelTime(travelTime);
 				plan.addLeg(leg);
 				
 				// destination activity
-				int tripPurposeDestinationCode = Integer.valueOf(csvRecord.get(19));
-				String tripPurposeDestination = getTripPurposeString(tripPurposeDestinationCode);
-				String tripDestinationTAZid = csvRecord.get(21);
-				Coord coord = getRandomCoord(tripDestinationTAZid, objectId2geometries);
-				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);	
+				String tripPurposeDestination = getTripPurposeString(Integer.valueOf(csvRecord.get(19)));
+				Coord coord = getRandomCoord(csvRecord.get(21), objectId2geometries);
+				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);
+				act.getAttributes().putAttribute("initialStartTime", tripEndTime);
 				plan.addActivity(act);
 			}
 		}
@@ -227,7 +236,6 @@ public class CreatePopulation {
 		
 		log.info("Handling stay home plans...");
 		// Get the person's correct home location via the household ID.
-		
 		// This also means we need to parse the household data
 		log.info("Reading household data...");
 		Map<String, String> hhId2tierTazId = new HashMap<>();
@@ -261,8 +269,17 @@ public class CreatePopulation {
 		}
 		
 		log.info("Number of stay-home plans: " + stayHomePlansCounter);
-		
 		log.info("Handling stay home plans... Done.");
+		
+		// now define duration-specific activities
+		for (Person person : scenario.getPopulation().getPersons().values()) {
+			for (Plan plan : person.getPlans()) {				
+				log.info("First, setting activity types according to duration (time bin size: 600 sec).");				
+				setActivityTypesAccordingToDuration(plan, 600.);
+				log.info("Second, merging evening and morning activity if they have the same (base) type.");
+				mergeOvernightActivities(plan);				
+			}
+		}
 		
 		log.info("Writing population...");
 		PopulationWriter writer = new PopulationWriter(scenario.getPopulation());
@@ -416,6 +433,54 @@ public class CreatePopulation {
     		}
         }
         return zones;
+	}
+	
+	private static void setActivityTypesAccordingToDuration(Plan plan, double timeCategorySize) {		
+		for (PlanElement pE : plan.getPlanElements()) {				
+			if (pE instanceof Activity) {				
+				Activity act = (Activity) pE;
+				
+				double startTime = Double.NEGATIVE_INFINITY;
+				double endTime = Double.NEGATIVE_INFINITY;
+			
+				if (act.getAttributes().getAttribute("initialStartTime") == null) {
+					startTime = 0.;
+				} else {
+					startTime = (double) act.getAttributes().getAttribute("initialStartTime");
+				}
+				
+				if (act.getAttributes().getAttribute("initialEndTime") == null) {
+					endTime = 24 * 3600.;
+				} else {
+					endTime = (double) act.getAttributes().getAttribute("initialEndTime");
+				} 
+						
+				int durationCategoryNr = (int) Math.round( ((endTime - startTime) / timeCategorySize) ) ;		
+				if (durationCategoryNr <= 0) {
+					durationCategoryNr = 1;
+				}
+				
+				String newType = act.getType() + "_" + (durationCategoryNr * timeCategorySize);
+				act.setType(newType);				
+			}
+		}
+	}
+	
+	private static void mergeOvernightActivities(Plan plan) {	
+		if (plan.getPlanElements().size() > 1) {	
+		
+			Activity firstActivity = (Activity) plan.getPlanElements().get(0);
+			Activity lastActivity = (Activity) plan.getPlanElements().get(plan.getPlanElements().size() - 1);
+			
+			String firstBaseActivity = firstActivity.getType().split("_")[0];
+			String lastBaseActivity = lastActivity.getType().split("_")[0];
+			
+			if (firstBaseActivity.equals(lastBaseActivity)) {		
+				double mergedDuration = Double.parseDouble(firstActivity.getType().split("_")[1]) + Double.parseDouble(lastActivity.getType().split("_")[1]);			
+				firstActivity.setType(firstBaseActivity + "_" + mergedDuration);
+				lastActivity.setType(lastBaseActivity + "_" + mergedDuration);
+			}		
+		}
 	}
 
 }
