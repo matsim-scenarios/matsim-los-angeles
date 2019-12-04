@@ -272,12 +272,16 @@ public class CreatePopulation {
 		log.info("Handling stay home plans... Done.");
 		
 		// now define duration-specific activities
+		final double timeBinSize = 600.;
+		final double useDurationInsteadOfEndTimeThreshold = 7200.;
 		for (Person person : scenario.getPopulation().getPersons().values()) {
 			for (Plan plan : person.getPlans()) {				
-				log.info("First, setting activity types according to duration (time bin size: 600 sec).");				
-				setActivityTypesAccordingToDuration(plan, 600.);
-				log.info("Second, merging evening and morning activity if they have the same (base) type.");
-				mergeOvernightActivities(plan);				
+				log.info("Setting activity types according to duration (time bin size: " + timeBinSize + ").");				
+				setActivityTypesAccordingToDuration(plan, timeBinSize);
+				log.info("Merging evening and morning activity if they have the same (base) type.");
+				mergeOvernightActivities(plan);
+				log.info("Use duration instead of end time for short activities (short: <" + useDurationInsteadOfEndTimeThreshold + ").");
+				useDurationInsteadOfEndTime(plan, useDurationInsteadOfEndTimeThreshold);
 			}
 		}
 		
@@ -285,6 +289,24 @@ public class CreatePopulation {
 		PopulationWriter writer = new PopulationWriter(scenario.getPopulation());
 		writer.write(outputDirectory + outputFilePrefix + ".xml.gz");
 		log.info("Writing population... Done.");	
+	}
+
+	private void useDurationInsteadOfEndTime(Plan plan, double useDurationInsteadOfEndTimeThreshold) {
+		for (PlanElement pE : plan.getPlanElements()) {
+			if (pE instanceof Activity) {
+				Activity act = (Activity) pE;
+				if (act.getAttributes().getAttribute("initialStartTime") != null && act.getAttributes().getAttribute("initialEndTime") != null) {
+					double startTime = (double) act.getAttributes().getAttribute("initialStartTime");
+					double endTime = (double) act.getAttributes().getAttribute("initialEndTime");
+					double duration = endTime - startTime;
+					
+					if (duration <= useDurationInsteadOfEndTimeThreshold) {
+						act.setMaximumDuration(duration);
+						act.setEndTime(Double.NEGATIVE_INFINITY); // don't use the end time
+					}
+				}
+			}
+		}
 	}
 
 	private Coord getRandomCoord(String tazId, Map<String, Geometry> geometries) {
