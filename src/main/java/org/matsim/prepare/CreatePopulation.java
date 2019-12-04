@@ -65,7 +65,7 @@ public class CreatePopulation {
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
-	private final double sample = 1;
+	private final double sample = 0.01;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	public static void main(String[] args) throws IOException {
@@ -86,13 +86,13 @@ public class CreatePopulation {
 	@SuppressWarnings("resource")
 	private void run(String rootDirectory) throws NumberFormatException, IOException {
 		
-		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
-		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
-		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
+//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
 
-//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
-//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
-//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
+		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
+		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
 		
 		final String tazShpFile = rootDirectory + "LA012.2013-20_SCAG/shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
 		final String outputDirectory = rootDirectory + "matsim-input-files/population/";
@@ -254,9 +254,6 @@ public class CreatePopulation {
 				// give the agent a stay-home plan
 
 				String hhId = (String) person.getAttributes().getAttribute("householdId");
-				String tierTazId = hhId2tierTazId.get(hhId);
-				log.info("householdId: " + hhId);
-				log.info("tierTazId: " + tierTazId);
 				Coord coord = getRandomCoord(hhId2tierTazId.get(hhId), tierTazId2geometries);
 				Activity act = populationFactory.createActivityFromCoord("home", coord);
 				
@@ -274,13 +271,13 @@ public class CreatePopulation {
 		// now define duration-specific activities
 		final double timeBinSize = 600.;
 		final double useDurationInsteadOfEndTimeThreshold = 7200.;
+		log.info("1) Setting activity types according to duration (time bin size: " + timeBinSize + ").");				
+		log.info("2) Merging evening and morning activity if they have the same (base) type.");
+		log.info("3) Use duration instead of end time for short activities (short: <" + useDurationInsteadOfEndTimeThreshold + ").");
 		for (Person person : scenario.getPopulation().getPersons().values()) {
 			for (Plan plan : person.getPlans()) {				
-				log.info("Setting activity types according to duration (time bin size: " + timeBinSize + ").");				
 				setActivityTypesAccordingToDuration(plan, timeBinSize);
-				log.info("Merging evening and morning activity if they have the same (base) type.");
 				mergeOvernightActivities(plan);
-				log.info("Use duration instead of end time for short activities (short: <" + useDurationInsteadOfEndTimeThreshold + ").");
 				useDurationInsteadOfEndTime(plan, useDurationInsteadOfEndTimeThreshold);
 			}
 		}
