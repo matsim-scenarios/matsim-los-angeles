@@ -2,7 +2,7 @@
 
 ### About this project
 
-This repository provides an open MATSim transport model for Los Angeles, developed by [Institute of Transportation Studies](https://its.ucdavis.edu) at [University of California, Davis](https://www.ucdavis.edu) and by the [Transport Systems Planning and Transport Telematics group](https://www.vsp.tu-berlin.de) of [Technische Universität Berlin](http://www.tu-berlin.de).
+This repository provides an open MATSim transport model for Los Angeles, developed by the [Institute of Transportation Studies](https://its.ucdavis.edu) at [University of California, Davis](https://www.ucdavis.edu) and by the [Transport Systems Planning and Transport Telematics group](https://www.vsp.tu-berlin.de) of [Technische Universität Berlin](http://www.tu-berlin.de).
 
 ### Note
 
