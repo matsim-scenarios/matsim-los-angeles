@@ -588,7 +588,7 @@ public class CreatePopulation {
 					durationCategoryNr = 1;
 				}
 				
-				String newType = act.getType() + "_" + (durationCategoryNr * timeCategorySize);
+				String newType = act.getType() + "_" + (int) (durationCategoryNr * timeCategorySize);
 				act.setType(newType);				
 			}
 		}

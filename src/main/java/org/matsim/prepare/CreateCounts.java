@@ -73,7 +73,7 @@ public class CreateCounts {
 		
 		final String prefix = "scag-counts_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		final String outputDirectory = rootDirectory + "matsim-input-files/counts/";
-		final String countId2matsimLinkIdcsvFile = rootDirectory + "calibration-data/PEMS/Station_Region2_Matched.csv";
+		final String countId2matsimLinkIdcsvFile = rootDirectory + "calibration-data/PEMS/Station_Matched.csv";
 		final String countsDataDirectory = rootDirectory + "calibration-data/PEMS/";	
 		final String year = "2016";
 		final String countsDataDescription = "PEMS_http://pems.dot.ca.gov";
