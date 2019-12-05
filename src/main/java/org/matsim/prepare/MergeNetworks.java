@@ -68,7 +68,7 @@ public class MergeNetworks {
 				
 		String prefix = "scag-network_with-merged-pt_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		String outDir = rootDirectory + "/matsim-input-files/network-with-pt/";
-		String networkFile0 = rootDirectory + "/matsim-input-files/network/scag-network_2019-10-21_network.xml.gz";
+		String networkFile0 = rootDirectory + "/matsim-input-files/network/scag-network_2019-12-05_network.xml.gz";
 		String networkFile1 = rootDirectory + "/matsim-input-files/pt/LA_DOT_2019-07-12/scag-network-with-pt_2019-11-01.xml.gz";
 		String networkFile2 = rootDirectory + "/matsim-input-files/pt/LA_GO_BUS_2019-10-02/scag-network-with-pt_2019-11-01.xml.gz";
 		String networkFile3 = rootDirectory + "/matsim-input-files/pt/LA_METRO_BUS_2019-10-04/scag-network-with-pt_2019-11-01.xml.gz";

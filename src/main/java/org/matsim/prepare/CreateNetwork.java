@@ -89,7 +89,6 @@ public class CreateNetwork {
 		String prefix = "scag-network_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		String outDir = rootDirectory + "/matsim-input-files/network/";
 
-//		String crs = "EPSG:4326";
 		String crs = "EPSG:3310";
 		CreateNetwork networkCreator = new CreateNetwork(osmfile, crs , outDir, prefix);
 
@@ -108,7 +107,9 @@ public class CreateNetwork {
 				Set<String> modes = new HashSet<>();
 				modes.add("car");
 				modes.add("ride");
-				link.setAllowedModes(modes );
+				modes.add("ride_taxi");
+				modes.add("ride_school_bus");
+				link.setAllowedModes(modes);
 			}
 		}
 		

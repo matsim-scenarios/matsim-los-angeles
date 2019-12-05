@@ -69,8 +69,8 @@ public class CreatePopulation {
 	private final double sample = 0.01;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
-	// some statistics
-	int freightTripCounter = 0;
+	private int freightTripCounter = 0;
+	private int warnCounterTripTimes = 0;
 	
 	public static void main(String[] args) throws IOException {
 		String rootDirectory = null;
@@ -90,13 +90,13 @@ public class CreatePopulation {
 	@SuppressWarnings("resource")
 	private void run(String rootDirectory) throws NumberFormatException, IOException {
 		
-		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
-		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
-		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
+//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
 
-//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
-//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
-//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
+		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
+		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
 		
 		final String freightTripTableAM = rootDirectory + "LA012c/AM_OD_Trips_Table.csv";
 		final String freightTripTableEVE = rootDirectory + "LA012c/EVE_OD_Trips_Table.csv";
@@ -236,7 +236,9 @@ public class CreatePopulation {
 				if (!firstTrip) {
 					double previousTripEndTime = (double) previousActivity.getAttributes().getAttribute("initialStartTime");
 					if (previousTripEndTime > tripStartTime) {
-						throw new RuntimeException("Start time of current trip is smaller than end time of the previous trip. Aborting..." + csvRecord);
+						if (warnCounterTripTimes <= 5) log.warn("Start time of current trip is smaller than end time of the previous trip. Aborting..." + csvRecord);
+						if (warnCounterTripTimes == 5) log.warn("Further types of this warning will not be printed.");
+						warnCounterTripTimes++;
 					}
 				}
 				
@@ -482,7 +484,7 @@ public class CreatePopulation {
 			  return "ride_taxi";
 		  case 14:
 			  // School_Bus
-			  return "school_bus";
+			  return "ride_school_bus";
 		}
 		throw new RuntimeException("Unknown trip mode. Aborting...");
 	}
