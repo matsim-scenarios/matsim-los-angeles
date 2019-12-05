@@ -348,7 +348,7 @@ public class CreatePopulation {
 
 	private void generateTrips(
 			String name, 
-			int lhdt,
+			int trips,
 			Population population,
 			String fromZoneId,
 			String toZoneId,
@@ -358,7 +358,7 @@ public class CreatePopulation {
 		
 		final PopulationFactory populationFactory = population.getFactory();
 
-		for (int trip = 0; trip < lhdt; trip++) {
+		for (int trip = 0; trip < trips; trip++) {
 			if (rnd.nextDouble() <= sample) {
 				
 				Coord coordFrom = getRandomCoord(fromZoneId, idTaz12a2geometries);
@@ -372,7 +372,14 @@ public class CreatePopulation {
 					Plan plan = populationFactory.createPlan();
 
 					Activity fromAct = populationFactory.createActivityFromCoord("freightStart", coordFrom);
+					
+					if (toTime < fromTime) {
+						toTime = toTime + (24 * 3600.);
+					}
 					double tripStartTime = fromTime + (toTime - fromTime) * rnd.nextDouble();
+					if (tripStartTime > (24 * 3600.)) {
+						tripStartTime = tripStartTime - (24 * 3600.);
+					}
 					fromAct.setEndTime(tripStartTime);
 					plan.addActivity(fromAct);
 					
