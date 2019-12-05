@@ -220,8 +220,7 @@ public class CreatePopulation {
 				}
 				
 				Double tripStartTime = Double.valueOf(csvRecord.get(23)) * 60.;
-				String tripEndTimeString = csvRecord.get(40);
-				Double tripEndTime = Double.valueOf(tripEndTimeString) * 60.;
+				Double tripEndTime = Double.valueOf(csvRecord.get(40)) * 60.;
 				double travelTime = tripEndTime - tripStartTime;
 				
 				if (travelTime < 0.) {
