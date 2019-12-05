@@ -106,6 +106,7 @@ public class CreateNetwork {
 			if (link.getAllowedModes().contains("car")) {
 				Set<String> modes = new HashSet<>();
 				modes.add("car");
+				modes.add("freight");
 				modes.add("ride");
 				modes.add("ride_taxi");
 				modes.add("ride_school_bus");
