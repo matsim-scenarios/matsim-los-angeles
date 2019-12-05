@@ -65,7 +65,7 @@ public class CreatePopulation {
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
-	private final double sample = 0.01;
+	private final double sample = 0.0001;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	public static void main(String[] args) throws IOException {
@@ -164,6 +164,8 @@ public class CreatePopulation {
 		int tripsInDataSet = 0;
 		int includedTripsCounter = 0;
 		int excludedTripsCounter = 0;
+		int personTripsCounter = 0;
+		int personTripNumber = 0;
 		boolean firstTrip;
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(tripFile)),csvFormat)) {	
 			tripsInDataSet++;
@@ -180,12 +182,19 @@ public class CreatePopulation {
 				includedTripsCounter++;
 				Plan plan; 
 				if (person.getPlans().size() > 0) {
+					// check if persTripNum in trip dataset matches actual trip counter for each person
+					personTripsCounter++;
+					personTripNumber = Integer.valueOf(csvRecord.get(6));
+					if (personTripsCounter != personTripNumber) {
+						throw new RuntimeException("Current trip counter for person " + personId + " is not equal to persTripNum. Aborting..." + csvRecord);
+					}
 					plan = person.getPlans().get(0);
 					firstTrip = false;
 				} else {
 					plan = populationFactory.createPlan();
 					firstTrip = true;
-					person.addPlan(plan);	
+					person.addPlan(plan);
+					personTripsCounter = 1;
 				}
 				
 				if (firstTrip) {	
@@ -201,7 +210,7 @@ public class CreatePopulation {
 				Double tripStartTime = Double.valueOf(csvRecord.get(23)) * 60.;
 				String tripEndTimeString = csvRecord.get(40);
 				Double tripEndTime = Double.valueOf(tripEndTimeString) * 60.;
-				double travelTime = tripEndTime - tripStartTime ;
+				double travelTime = tripEndTime - tripStartTime;
 				
 				if (travelTime < 0.) {
 					throw new RuntimeException("Travel time is < 0. Aborting..." + csvRecord);
