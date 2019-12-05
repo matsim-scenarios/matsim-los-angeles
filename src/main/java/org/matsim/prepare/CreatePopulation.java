@@ -66,7 +66,7 @@ public class CreatePopulation {
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
-	private final double sample = 0.01;
+	private final double sample = 0.0001;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	private int freightTripCounter = 0;
@@ -155,7 +155,7 @@ public class CreatePopulation {
 				person.getAttributes().putAttribute("age", age);
 				person.getAttributes().putAttribute("gender", genderString);
 				
-				// TODO: add person attributes for all (required) attributes
+				// TODO: add person attributes for all (required) attributes: e.g. personType, numberOfCarsPerHH, incomePerHH
 
 				scenario.getPopulation().addPerson(person);
 				includedPersons++;
@@ -225,6 +225,10 @@ public class CreatePopulation {
 				
 				if (travelTime < 0.) {
 					throw new RuntimeException("Travel time is < 0. Aborting..." + csvRecord);
+				}
+				
+				if (tripStartTime < 0. || tripEndTime < 0.) {
+					throw new RuntimeException("Time is < 0. Aborting..." + csvRecord);
 				}
 
 				// set end time of previous activity
@@ -372,7 +376,7 @@ public class CreatePopulation {
 					fromAct.setEndTime(tripStartTime);
 					plan.addActivity(fromAct);
 					
-					Leg leg = populationFactory.createLeg("freight_"+ name);	
+					Leg leg = populationFactory.createLeg("freight");	
 					plan.addLeg(leg);
 					
 					Activity toAct = populationFactory.createActivityFromCoord("freightEnd", coordTo);
