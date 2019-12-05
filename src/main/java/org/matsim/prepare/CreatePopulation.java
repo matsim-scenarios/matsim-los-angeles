@@ -65,7 +65,7 @@ public class CreatePopulation {
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
-	private final double sample = 1;
+	private final double sample = 0.01;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	public static void main(String[] args) throws IOException {
@@ -86,13 +86,13 @@ public class CreatePopulation {
 	@SuppressWarnings("resource")
 	private void run(String rootDirectory) throws NumberFormatException, IOException {
 		
-		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
-		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
-		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
+//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
 
-//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
-//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
-//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
+		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
+		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
 		
 		final String tazShpFile = rootDirectory + "LA012.2013-20_SCAG/shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
 		final String outputDirectory = rootDirectory + "matsim-input-files/population/";
