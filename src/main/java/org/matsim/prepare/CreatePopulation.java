@@ -312,11 +312,11 @@ public class CreatePopulation {
 		}
 		
 		log.info("Reading freight trip tables and generate freight agents...");
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableAM, 5. * 3600, 11. * 3600);
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableMD, 11. * 3600, 14. * 3600);
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTablePM, 14. * 3600, 17. * 3600);
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableEVE, 17. * 3600, 23. * 3600);
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableNT, 23. * 3600, 5. * 3600);
+		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableAM, 6. * 3600, 9. * 3600);
+		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableMD, 9. * 3600, 15. * 3600);
+		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTablePM, 15. * 3600, 19. * 3600);
+		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableEVE, 19. * 3600, 21. * 3600);
+		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableNT, 21. * 3600, 6. * 3600);
 		log.info("Number of freight trips: " + freightTripCounter);
 		log.info("Reading freight trip tables and generate freight agents... Done.");
 
