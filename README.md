@@ -40,7 +40,7 @@ Handling of large files within git is not without problems (git lfs files are no
 ##### Initial stuff (needs to be done once)
 
 1. Install git for the command line.
-1. Type `git clone https://github.com/matsim-vsp/matsim-los-angeles.git` in the command line.
+1. Type `git clone https://github.com/matsim-scenarios/matsim-los-angeles.git` in the command line.
 
 (Or use your IDE, e.g. Eclipse, IntelliJ, to clone the repository.)
 
@@ -92,13 +92,13 @@ This will update your repository to the newest version.
 
 ```xml
 <dependency>
-  <groupId>com.github.matsim-vsp</groupId>
+  <groupId>com.github.matsim-scenarios</groupId>
   <artifactId>los-angeles</artifactId>
   <version>master-SNAPSHOT</version>
 </dependency>
 ```
 
-Or use a release number or commit hashId instead of 'master-SNAPSHOT'. See here: https://jitpack.io/#matsim-vsp/matsim-los-angeles
+Or use a release number or commit hashId instead of 'master-SNAPSHOT'. See here: https://jitpack.io/#matsim-scenarios/matsim-los-angeles
 
 3. Write your own run class and make sure to execute the required public methods in RunLosAngelesScenario:
 
