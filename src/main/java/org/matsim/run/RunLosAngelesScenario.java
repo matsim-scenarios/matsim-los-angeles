@@ -132,12 +132,6 @@ public class RunLosAngelesScenario {
 				
 		// activities:
 		for ( long ii = 600 ; ii <= 97200; ii+=600 ) {
-			config.planCalcScore().addActivityParams( new ActivityParams( "home_" + ii + ".0" ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "work_" + ii + ".0" ).setTypicalDuration( ii ).setOpeningTime(6. * 3600. ).setClosingTime(20. * 3600. ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "leisure_" + ii + ".0" ).setTypicalDuration( ii ).setOpeningTime(9. * 3600. ).setClosingTime(27. * 3600. ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "shopping_" + ii + ".0" ).setTypicalDuration( ii ).setOpeningTime(8. * 3600. ).setClosingTime(20. * 3600. ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "other_" + ii + ".0" ).setTypicalDuration( ii ) );
-			
 			config.planCalcScore().addActivityParams( new ActivityParams( "home" + ii + ".0" ).setTypicalDuration( ii ) );
 			config.planCalcScore().addActivityParams( new ActivityParams( "work" + ii + ".0" ).setTypicalDuration( ii ) );
 			config.planCalcScore().addActivityParams( new ActivityParams( "university" + ii + ".0" ).setTypicalDuration( ii ) );
