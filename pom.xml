@@ -2,19 +2,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.hjchai</groupId>
-	<artifactId>matsim-SCAG</artifactId>
+	<groupId>com.github.matsim-scenarios</groupId>
+	<artifactId>matsim-los-angeles</artifactId>
 	<version>v1.0-SNAPSHOT</version>
 
-	<name>MATSim SCAG project</name>
-	<description>MATSim SCAG project</description>
+	<name>MATSim open Los Angeles project</name>
+	<description>MATSim open Los Angeles project</description>
 
 	<properties>
 	  <!-- release> -->
 	  <!--<matsim.version>11.0</matsim.version>-->
 
 	  <!--weekly "release":-->
-	  <matsim.version>12.0-2019w41-SNAPSHOT</matsim.version>
+	  <matsim.version>12.0-2019w45-SNAPSHOT</matsim.version>
 	</properties>
 
 	<repositories>
