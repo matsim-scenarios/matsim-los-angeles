@@ -135,7 +135,7 @@ public class RunLosAngelesScenario {
 			config.planCalcScore().addActivityParams( new ActivityParams( "home" + ii ).setTypicalDuration( ii ) );
 			config.planCalcScore().addActivityParams( new ActivityParams( "work" + ii ).setTypicalDuration( ii ) );
 			config.planCalcScore().addActivityParams( new ActivityParams( "university" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "school" + ii ).setTypicalDuration( ii ) );
+			config.planCalcScore().addActivityParams( new ActivityParams( "school" + ii ).setTypicalDuration( ii ).setOpeningTime(8*3600.).setClosingTime(18*3600.) );
 			config.planCalcScore().addActivityParams( new ActivityParams( "escort" + ii ).setTypicalDuration( ii ) );
 			config.planCalcScore().addActivityParams( new ActivityParams( "schoolescort" + ii ).setTypicalDuration( ii ) );
 			config.planCalcScore().addActivityParams( new ActivityParams( "schoolpureescort" + ii ).setTypicalDuration( ii ) );
