@@ -67,7 +67,7 @@ public class CreatePopulation {
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
 
-	private final double sample = 1.0;
+	private final double sample = 0.000001;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	private int freightTripCounter = 0;
@@ -91,17 +91,23 @@ public class CreatePopulation {
 	@SuppressWarnings("resource")
 	private void run(String rootDirectory) throws NumberFormatException, IOException {
 		
-		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
-		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
-		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
-		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_pp.csv";
-		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_hh.csv";
-
-//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
-//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
-//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
-//		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_pp.csv";
-//		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_hh.csv";
+//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
+//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+//		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_pp.csv";
+//		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_hh.csv";
+//		
+//		final String freightTripTableAM = rootDirectory + "LA012.2013-20_SCAG/test-data/test_AM_OD_Trips_Table.csv";
+//		final String freightTripTableEVE = rootDirectory + "LA012.2013-20_SCAG/test-data/test_EVE_OD_Trips_Table.csv";
+//		final String freightTripTableMD = rootDirectory + "LA012.2013-20_SCAG/test-data/test_MD_OD_Trips_Table.csv";
+//		final String freightTripTableNT = rootDirectory + "LA012.2013-20_SCAG/test-data/test_NT_OD_Trips_Table.csv";
+//		final String freightTripTablePM = rootDirectory + "LA012.2013-20_SCAG/test-data/test_PM_OD_Trips_Table.csv";
+		
+		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
+		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
+		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_pp.csv";
+		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_hh.csv";
 		
 		final String freightTripTableAM = rootDirectory + "LA012c/AM_OD_Trips_Table.csv";
 		final String freightTripTableEVE = rootDirectory + "LA012c/EVE_OD_Trips_Table.csv";
@@ -153,7 +159,7 @@ public class CreatePopulation {
 				householdIdsOfIncludedPersons.add(householdId);
 				if (householdId2PersonIds.containsKey(householdId)) {
 					Set<Id<Person>> personIds = householdId2PersonIds.get(householdId);
-					if (!personIds.contains(personId)) personIds.add(Id.createPersonId(personId));
+					if (!personIds.contains(Id.createPersonId(personId))) personIds.add(Id.createPersonId(personId));
 				} else {
 					Set<Id<Person>> personIds = new HashSet<Id<Person>>();
 					personIds.add(Id.createPersonId(personId));
@@ -168,8 +174,6 @@ public class CreatePopulation {
 				person.getAttributes().putAttribute("householdId", householdId);
 				person.getAttributes().putAttribute("age", age);
 				person.getAttributes().putAttribute("gender", genderString);
-				
-				// TODO: add person attributes for all (required) attributes: e.g. personType, numberOfCarsPerHH, incomePerHH	
 				
 				scenario.getPopulation().addPerson(person);
 				includedPersons++;
@@ -200,7 +204,7 @@ public class CreatePopulation {
 				person.getAttributes().putAttribute("wkind20", wkind20CodeString);
 				person.getAttributes().putAttribute("wkocc24", wkocc24CodeString);
 				person.getAttributes().putAttribute("schg", schgCodeString);
-				person.getAttributes().putAttribute("aduatt", eduattCodeString);
+				person.getAttributes().putAttribute("eduatt", eduattCodeString);
 			}
 		}
 		
@@ -215,13 +219,13 @@ public class CreatePopulation {
 					String tenCodeString = csvRecord.get(10);
 					String hhSizeCodeString = csvRecord.get(7);
 					String hhIncomeCodeString = csvRecord.get(8);
-					int hhTypeCode = Integer.valueOf(csvRecord.get(9));
-					String hhType = getHHTypeString(hhTypeCode);
+					int hTypeCode = Integer.valueOf(csvRecord.get(9));
+					String hType = getHHTypeString(hTypeCode);
 					
 					person.getAttributes().putAttribute("ten", tenCodeString);
 					person.getAttributes().putAttribute("hhsize", hhSizeCodeString);
 					person.getAttributes().putAttribute("hhinc", hhIncomeCodeString);
-					person.getAttributes().putAttribute("hhtype", hhType);
+					person.getAttributes().putAttribute("htype", hType);
 				}
 			}
 		}
@@ -319,7 +323,7 @@ public class CreatePopulation {
 				if (!firstTrip) {
 					double previousTripEndTime = (double) previousActivity.getAttributes().getAttribute("initialStartTime");
 					if (previousTripEndTime > tripStartTime) {
-						if (warnCounterTripTimes <= 5) log.warn("Start time of current trip is smaller than end time of the previous trip. Aborting..." + csvRecord);
+						if (warnCounterTripTimes <= 5) log.warn("Start time of current trip is smaller than end time of the previous trip.");
 						if (warnCounterTripTimes == 5) log.warn("Further types of this warning will not be printed.");
 						warnCounterTripTimes++;
 					}
@@ -327,7 +331,7 @@ public class CreatePopulation {
 				
 				// check start_time of second trip is larger than start_time of previous trip
 				if (!firstTrip) {
-					if (previousTripStartTime != tripStartTime) log.warn("Trip start time in wrong order.");
+					if (previousTripStartTime >= tripStartTime) log.warn("Trip start time in wrong order.");
 				}
 				
 				// check end location of previous trip is the same as the start location of the second trip
