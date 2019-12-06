@@ -69,7 +69,7 @@ public class CreatePopulation {
 	private final double timeBinSizeForDurationBasedActivityTypes = 600.;
 	private final double useDurationInsteadOfEndTimeThreshold = 7200.;
 
-	private final double sample = 0.01;
+	private final double sample = 0.001;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	private int freightTripCounter = 0;
@@ -277,6 +277,9 @@ public class CreatePopulation {
 		int previousTripDestination = 0;
 		double previousTripStartTime = 0.;
 		
+		final Map<Id<Person>, Coord> personId2homeCoord = new HashMap<>();
+		final Map<Id<Person>, String> personId2homeZoneId = new HashMap<>();
+		
 		boolean firstTrip;
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(tripFile)),csvFormat)) {	
 			tripsInDataSet++;
@@ -317,6 +320,12 @@ public class CreatePopulation {
 					String tripOriginIdTAZ12b = internalSeqTAZtoTAZ12b.get(tripOriginInternalSeqTAZid);
 					if (tripOriginIdTAZ12b == null) throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripOriginInternalSeqTAZid + " Aborting... " + csvRecord);
 					Coord coord = getRandomCoord(tripOriginIdTAZ12b, idTaz12b2geometries);
+					
+					// store the home coordinate for that person to make sure all other home activities have the exact same coordinate
+					if(tripPurposeOrigin.startsWith("home")) {
+						personId2homeCoord.put(personId, coord);
+						personId2homeZoneId.put(personId, tripOriginIdTAZ12b);
+					}
 					
 					Activity act = populationFactory.createActivityFromCoord(tripPurposeOrigin, coord);
 					act.getAttributes().putAttribute("zoneId", tripOriginIdTAZ12b);
@@ -401,7 +410,17 @@ public class CreatePopulation {
 				String tripDestinationInternalSeqTAZid = csvRecord.get(21);
 				String tripDestinationIdTAZ12b = internalSeqTAZtoTAZ12b.get(tripDestinationInternalSeqTAZid);
 				if (tripDestinationIdTAZ12b == null) throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripDestinationInternalSeqTAZid + " Aborting... " + csvRecord);
-				Coord coord = getRandomCoord(tripDestinationIdTAZ12b, idTaz12b2geometries);
+				Coord coord = null;
+				if (tripPurposeDestination.startsWith("home") && personId2homeCoord.get(personId) != null) {
+					if (personId2homeZoneId.get(personId).equals(tripDestinationIdTAZ12b)) {
+						// same home zone Id
+						coord = personId2homeCoord.get(personId);
+					} else {
+						log.warn("Person " + personId + " will have different home activity zone IDs in different home activities.");
+						coord = getRandomCoord(tripDestinationIdTAZ12b, idTaz12b2geometries);
+					}
+				}
+				coord = getRandomCoord(tripDestinationIdTAZ12b, idTaz12b2geometries);
 				
 				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);
 				act.getAttributes().putAttribute("initialStartTime", tripEndTime);
