@@ -66,12 +66,15 @@ public class CreatePopulation {
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
+	private final double timeBinSizeForDurationBasedActivityTypes = 600.;
+	private final double useDurationInsteadOfEndTimeThreshold = 7200.;
 
-	private final double sample = 0.000001;
+	private final double sample = 0.01;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	private int freightTripCounter = 0;
 	private int warnCounterTripTimes = 0;
+	private int warnCounterActivityDuration = 0;
 	
 	public static void main(String[] args) throws IOException {
 		String rootDirectory = null;
@@ -108,6 +111,7 @@ public class CreatePopulation {
 		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
 		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_pp.csv";
 		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_hh.csv";
+		final String internalTAZtoTAZmappingFile = rootDirectory + "LA012.2013-20_SCAG/abm/TAZEQCOUNTY_TIER2.csv";
 		
 		final String freightTripTableAM = rootDirectory + "LA012c/AM_OD_Trips_Table.csv";
 		final String freightTripTableEVE = rootDirectory + "LA012c/EVE_OD_Trips_Table.csv";
@@ -126,10 +130,20 @@ public class CreatePopulation {
 		}
 		
 		log.info("Loading shape file...");
-		final Map<String, Geometry> objectId2geometries = loadGeometries(tazShpFile, "OBJECTID"); // geometry IDs given in the trip table
+//		final Map<String, Geometry> objectId2geometries = loadGeometries(tazShpFile, "OBJECTID"); // geometry IDs given in the trip table
 		final Map<String, Geometry> tierTazId2geometries = loadGeometries(tazShpFile, "Tier2"); // geometry IDs given in the household table
 		final Map<String, Geometry> idTaz12a2geometries = loadGeometries(tazShpFile, "ID_TAZ12a"); // geometry IDs given in the freight trip table
+		final Map<String, Geometry> idTaz12b2geometries = loadGeometries(tazShpFile, "ID_TAZ12b");
 		log.info("Loading shape file... Done.");
+		
+		log.info("Reading TAZ ID mapping file...");
+		final Map<String, String> internalTAZtoTAZ = new HashMap<>();
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(internalTAZtoTAZmappingFile)), csvFormat)) {	
+			String idInternalTAZ = csvRecord.get(9); // TODO: Check if this is correct.
+			String idTAZ = csvRecord.get(0);
+			internalTAZtoTAZ.put(idInternalTAZ, idTAZ);
+		}
+		log.info("Reading TAZ ID mapping file... Done.");
 		
 		log.info("Creating scenario...");
 				
@@ -297,28 +311,48 @@ public class CreatePopulation {
 					int tripPurposeOriginCode = Integer.valueOf(csvRecord.get(18));
 					String tripPurposeOrigin = getTripPurposeString(tripPurposeOriginCode);		
 					String tripOriginTAZid = csvRecord.get(20);
-					Coord coord = getRandomCoord(tripOriginTAZid, objectId2geometries);
+//					Coord coord = getRandomCoord(tripOriginTAZid, objectId2geometries);
+					if (internalTAZtoTAZ.get(tripOriginTAZid) == null) throw new RuntimeException("Can't identify TAZ based on internal TAZ: " + tripOriginTAZid + " Aborting... " + csvRecord);
+					Coord coord = getRandomCoord(internalTAZtoTAZ.get(tripOriginTAZid), idTaz12b2geometries);
 					Activity act = populationFactory.createActivityFromCoord(tripPurposeOrigin, coord);
 					plan.addActivity(act);
 				}
 				
-				Double tripStartTime = Double.valueOf(csvRecord.get(23)) * 60.;
-				Double tripEndTime = Double.valueOf(csvRecord.get(40)) * 60.;
-				double travelTime = tripEndTime - tripStartTime;
-				
-				if (travelTime < 0.) {
-					throw new RuntimeException("Travel time is < 0. Aborting..." + csvRecord);
-				}
-				
-				if (tripStartTime < 0. || tripEndTime < 0.) {
-					throw new RuntimeException("Time is < 0. Aborting..." + csvRecord);
-				}
+				double tripStartTime = Double.valueOf(csvRecord.get(23)) * 60.;
+				double previousActivityEndTime = tripStartTime;
 
 				// set end time of previous activity
 				Activity previousActivity = (Activity) plan.getPlanElements().get(plan.getPlanElements().size() - 1);
-				previousActivity.setEndTime(tripStartTime);
-				previousActivity.getAttributes().putAttribute("initialEndTime", tripStartTime);
-				
+				previousActivity.getAttributes().putAttribute("initialEndTime", previousActivityEndTime);
+
+				if (previousActivity.getAttributes().getAttribute("initialStartTime") != null) {
+					double previousActivityStartTime = (double) previousActivity.getAttributes().getAttribute("initialStartTime");
+					double activityDuration = previousActivityEndTime - previousActivityStartTime;
+					
+					if (activityDuration <= useDurationInsteadOfEndTimeThreshold) {
+						final double minimumDuration = 300.;
+						if (activityDuration <= 0.) {
+							if (warnCounterActivityDuration <= 5) log.warn("------------------------------------");
+							if (warnCounterActivityDuration <= 5) log.warn("Activity duration of person is " + activityDuration + " which is either 0 or below 0.");
+							if (warnCounterActivityDuration <= 5) log.warn("Trip record: " + csvRecord);
+							if (warnCounterActivityDuration <= 5) log.warn("Setting the activity duration to a minimum value of: " + minimumDuration);
+							if (warnCounterActivityDuration <= 5) log.warn("------------------------------------");
+							if (warnCounterActivityDuration == 5) log.warn("Further types of this warning will not be printed.");
+							warnCounterActivityDuration++;
+							activityDuration = minimumDuration;
+						}
+						// use the duration instead of the end time
+						previousActivity.setMaximumDuration(activityDuration);
+						previousActivity.setEndTime(Double.NEGATIVE_INFINITY);
+					} else {
+						// use the end time
+						previousActivity.setEndTime(previousActivityEndTime);
+					}
+				} else {
+					// the first activity does not have a start time, thus use the end time
+					previousActivity.setEndTime(previousActivityEndTime);
+				}
+								
 				// (only if it is not the first trip) check if start_time of the current trip is after the end_time of the previous trip
 				if (!firstTrip) {
 					double previousTripEndTime = (double) previousActivity.getAttributes().getAttribute("initialStartTime");
@@ -342,6 +376,17 @@ public class CreatePopulation {
 					}
 				}
 				// trip
+				double tripEndTime = Double.valueOf(csvRecord.get(40)) * 60.;
+				double travelTime = tripEndTime - tripStartTime;
+				
+				if (travelTime < 0.) {
+					throw new RuntimeException("Travel time is < 0. Aborting..." + csvRecord);
+				}
+				
+				if (tripStartTime < 0. || tripEndTime < 0.) {
+					throw new RuntimeException("Trip start or and time is < 0. Aborting..." + csvRecord);
+				}
+				
 				String mode = getModeString(Integer.valueOf(csvRecord.get(25)));
 				Leg leg = populationFactory.createLeg(mode);	
 				leg.setTravelTime(travelTime);
@@ -349,7 +394,10 @@ public class CreatePopulation {
 				
 				// destination activity
 				String tripPurposeDestination = getTripPurposeString(Integer.valueOf(csvRecord.get(19)));
-				Coord coord = getRandomCoord(csvRecord.get(21), objectId2geometries);
+				String tripDestinationTAZid = csvRecord.get(21);
+//				Coord coord = getRandomCoord(tripDestinationTAZid, objectId2geometries);
+				if (internalTAZtoTAZ.get(tripDestinationTAZid) == null) throw new RuntimeException("Can't identify TAZ based on internal TAZ: " + tripDestinationTAZid + " Aborting... " + csvRecord);
+				Coord coord = getRandomCoord(internalTAZtoTAZ.get(tripDestinationTAZid), idTaz12b2geometries);
 				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);
 				act.getAttributes().putAttribute("initialStartTime", tripEndTime);
 				plan.addActivity(act);
@@ -367,7 +415,6 @@ public class CreatePopulation {
 		
 		log.info("Handling stay home plans...");
 		// Get the person's correct home location via the household ID.
-		// This also means we need to parse the household data
 		log.info("Reading household data...");
 		Map<String, String> hhId2tierTazId = new HashMap<>();
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(householdFile)), csvFormat)) {	
@@ -400,16 +447,12 @@ public class CreatePopulation {
 		log.info("Handling stay home plans... Done.");
 		
 		// now define duration-specific activities
-		final double timeBinSize = 600.;
-		final double useDurationInsteadOfEndTimeThreshold = 7200.;
-		log.info("1) Setting activity types according to duration (time bin size: " + timeBinSize + ").");				
+		log.info("1) Setting activity types according to duration (time bin size: " + timeBinSizeForDurationBasedActivityTypes + ").");				
 		log.info("2) Merging evening and morning activity if they have the same (base) type.");
-		log.info("3) Use duration instead of end time for short activities (short: <" + useDurationInsteadOfEndTimeThreshold + ").");
 		for (Person person : scenario.getPopulation().getPersons().values()) {
 			for (Plan plan : person.getPlans()) {				
-				setActivityTypesAccordingToDuration(plan, timeBinSize);
+				setActivityTypesAccordingToDuration(plan, timeBinSizeForDurationBasedActivityTypes);
 				mergeOvernightActivities(plan);
-				useDurationInsteadOfEndTime(plan, useDurationInsteadOfEndTimeThreshold);
 			}
 		}
 		
@@ -477,6 +520,9 @@ public class CreatePopulation {
 					if (tripStartTime > (24 * 3600.)) {
 						tripStartTime = tripStartTime - (24 * 3600.);
 					}
+					
+					if (tripStartTime < 0.) throw new RuntimeException("freight trip start time is < 0. Aborting...");
+					
 					fromAct.setEndTime(tripStartTime);
 					plan.addActivity(fromAct);
 					
@@ -496,24 +542,6 @@ public class CreatePopulation {
 				
 			} else {
 				// skip trip
-			}
-		}
-	}
-
-	private void useDurationInsteadOfEndTime(Plan plan, double useDurationInsteadOfEndTimeThreshold) {
-		for (PlanElement pE : plan.getPlanElements()) {
-			if (pE instanceof Activity) {
-				Activity act = (Activity) pE;
-				if (act.getAttributes().getAttribute("initialStartTime") != null && act.getAttributes().getAttribute("initialEndTime") != null) {
-					double startTime = (double) act.getAttributes().getAttribute("initialStartTime");
-					double endTime = (double) act.getAttributes().getAttribute("initialEndTime");
-					double duration = endTime - startTime;
-					
-					if (duration <= useDurationInsteadOfEndTimeThreshold) {
-						act.setMaximumDuration(duration);
-						act.setEndTime(Double.NEGATIVE_INFINITY); // don't use the end time
-					}
-				}
 			}
 		}
 	}
