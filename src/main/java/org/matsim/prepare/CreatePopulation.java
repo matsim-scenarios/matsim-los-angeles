@@ -73,8 +73,6 @@ public class CreatePopulation {
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	private int freightTripCounter = 0;
-	private int warnCounterTripTimes = 0;
-	private int warnCounterActivityDuration = 0;
 	
 	public static void main(String[] args) throws IOException {
 		String rootDirectory = null;
@@ -111,7 +109,7 @@ public class CreatePopulation {
 		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
 		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_pp.csv";
 		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_hh.csv";
-		final String internalTAZtoTAZmappingFile = rootDirectory + "LA012.2013-20_SCAG/abm/TAZEQCOUNTY_TIER2.csv";
+		final String internalSeqTAZtoTAZ12bMappingFile = rootDirectory + "LA012.2013-20_SCAG/abm/TAZEQCOUNTY_TIER2.csv";
 		
 		final String freightTripTableAM = rootDirectory + "LA012c/AM_OD_Trips_Table.csv";
 		final String freightTripTableEVE = rootDirectory + "LA012c/EVE_OD_Trips_Table.csv";
@@ -130,18 +128,16 @@ public class CreatePopulation {
 		}
 		
 		log.info("Loading shape file...");
-//		final Map<String, Geometry> objectId2geometries = loadGeometries(tazShpFile, "OBJECTID"); // geometry IDs given in the trip table
-		final Map<String, Geometry> tierTazId2geometries = loadGeometries(tazShpFile, "Tier2"); // geometry IDs given in the household table
-		final Map<String, Geometry> idTaz12a2geometries = loadGeometries(tazShpFile, "ID_TAZ12a"); // geometry IDs given in the freight trip table
-		final Map<String, Geometry> idTaz12b2geometries = loadGeometries(tazShpFile, "ID_TAZ12b");
+		final Map<String, Geometry> idTaz12b2geometries = loadGeometries(tazShpFile, "ID_TAZ12b"); // (=Tier2) geometry IDs given in household and trip file
+		final Map<String, Geometry> idTaz12a2geometries = loadGeometries(tazShpFile, "ID_TAZ12a"); // (=Tier1) geometry IDs given in the freight trip table
 		log.info("Loading shape file... Done.");
 		
 		log.info("Reading TAZ ID mapping file...");
-		final Map<String, String> internalTAZtoTAZ = new HashMap<>();
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(internalTAZtoTAZmappingFile)), csvFormat)) {	
-			String idInternalTAZ = csvRecord.get(9); // TODO: Check if this is correct.
-			String idTAZ = csvRecord.get(0);
-			internalTAZtoTAZ.put(idInternalTAZ, idTAZ);
+		final Map<String, String> internalSeqTAZtoTAZ12b = new HashMap<>();
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(internalSeqTAZtoTAZ12bMappingFile)), csvFormat)) {	
+			String idInternalSeqTAZ = csvRecord.get(9);
+			String idTAZ12b = csvRecord.get(0);
+			internalSeqTAZtoTAZ12b.put(idInternalSeqTAZ, idTAZ12b);
 		}
 		log.info("Reading TAZ ID mapping file... Done.");
 		
@@ -265,16 +261,22 @@ public class CreatePopulation {
 		log.info("Excluded persons: " + excludedPersons);
 		log.info("Total number of persons in data set: " + personsInDataSet);
 		
-		log.info("Creating plans...");
-		
+		log.info("Creating plans...");	
 		// read trip data and create a plan
+		
+		// some statistics
 		int tripsInDataSet = 0;
 		int includedTripsCounter = 0;
 		int excludedTripsCounter = 0;
+		int warnCounterActivityDuration = 0;
+		int warnCounterTripTime = 0;
+		
+		// for consistency checks
 		int personTripsCounter = 0;
 		int personTripNumber = 0;
 		int previousTripDestination = 0;
-		Double previousTripStartTime = 0.;
+		double previousTripStartTime = 0.;
+		
 		boolean firstTrip;
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(tripFile)),csvFormat)) {	
 			tripsInDataSet++;
@@ -308,13 +310,16 @@ public class CreatePopulation {
 				
 				if (firstTrip) {	
 					// origin activity
+					
 					int tripPurposeOriginCode = Integer.valueOf(csvRecord.get(18));
 					String tripPurposeOrigin = getTripPurposeString(tripPurposeOriginCode);		
-					String tripOriginTAZid = csvRecord.get(20);
-//					Coord coord = getRandomCoord(tripOriginTAZid, objectId2geometries);
-					if (internalTAZtoTAZ.get(tripOriginTAZid) == null) throw new RuntimeException("Can't identify TAZ based on internal TAZ: " + tripOriginTAZid + " Aborting... " + csvRecord);
-					Coord coord = getRandomCoord(internalTAZtoTAZ.get(tripOriginTAZid), idTaz12b2geometries);
+					String tripOriginInternalSeqTAZid = csvRecord.get(20);
+					String tripOriginIdTAZ12b = internalSeqTAZtoTAZ12b.get(tripOriginInternalSeqTAZid);
+					if (tripOriginIdTAZ12b == null) throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripOriginInternalSeqTAZid + " Aborting... " + csvRecord);
+					Coord coord = getRandomCoord(tripOriginIdTAZ12b, idTaz12b2geometries);
+					
 					Activity act = populationFactory.createActivityFromCoord(tripPurposeOrigin, coord);
+					act.getAttributes().putAttribute("zoneId", tripOriginIdTAZ12b);
 					plan.addActivity(act);
 				}
 				
@@ -352,30 +357,28 @@ public class CreatePopulation {
 					// the first activity does not have a start time, thus use the end time
 					previousActivity.setEndTime(previousActivityEndTime);
 				}
-								
-				// (only if it is not the first trip) check if start_time of the current trip is after the end_time of the previous trip
-				if (!firstTrip) {
-					double previousTripEndTime = (double) previousActivity.getAttributes().getAttribute("initialStartTime");
-					if (previousTripEndTime > tripStartTime) {
-						if (warnCounterTripTimes <= 5) log.warn("Start time of current trip is smaller than end time of the previous trip.");
-						if (warnCounterTripTimes == 5) log.warn("Further types of this warning will not be printed.");
-						warnCounterTripTimes++;
-					}
-				}
 				
 				// check start_time of second trip is larger than start_time of previous trip
 				if (!firstTrip) {
-					if (previousTripStartTime >= tripStartTime) log.warn("Trip start time in wrong order.");
+					if (previousTripStartTime >= tripStartTime) {
+						if (warnCounterTripTime <= 5) log.warn("------------------------------------");
+						if (warnCounterTripTime <= 5) log.warn("Trip start time in wrong order: " + csvRecord);
+						if (warnCounterTripTime == 5) log.warn("Further types of this warning will not be printed.");
+						if (warnCounterTripTime <= 5) log.warn("------------------------------------");
+						warnCounterTripTime++;
+					}
 				}
 				
 				// check end location of previous trip is the same as the start location of the second trip
 				if (!firstTrip) {
 					int currentTripOrigin = Integer.valueOf(csvRecord.get(20));
 					if (currentTripOrigin != previousTripDestination) {
-						log.warn("Previous trip destination is not the same as the current trip origin.");
+						throw new RuntimeException("Previous trip destination is not the same as the current trip origin.");
 					}
 				}
+				
 				// trip
+				
 				double tripEndTime = Double.valueOf(csvRecord.get(40)) * 60.;
 				double travelTime = tripEndTime - tripStartTime;
 				
@@ -393,13 +396,16 @@ public class CreatePopulation {
 				plan.addLeg(leg);
 				
 				// destination activity
+				
 				String tripPurposeDestination = getTripPurposeString(Integer.valueOf(csvRecord.get(19)));
-				String tripDestinationTAZid = csvRecord.get(21);
-//				Coord coord = getRandomCoord(tripDestinationTAZid, objectId2geometries);
-				if (internalTAZtoTAZ.get(tripDestinationTAZid) == null) throw new RuntimeException("Can't identify TAZ based on internal TAZ: " + tripDestinationTAZid + " Aborting... " + csvRecord);
-				Coord coord = getRandomCoord(internalTAZtoTAZ.get(tripDestinationTAZid), idTaz12b2geometries);
+				String tripDestinationInternalSeqTAZid = csvRecord.get(21);
+				String tripDestinationIdTAZ12b = internalSeqTAZtoTAZ12b.get(tripDestinationInternalSeqTAZid);
+				if (tripDestinationIdTAZ12b == null) throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripDestinationInternalSeqTAZid + " Aborting... " + csvRecord);
+				Coord coord = getRandomCoord(tripDestinationIdTAZ12b, idTaz12b2geometries);
+				
 				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);
 				act.getAttributes().putAttribute("initialStartTime", tripEndTime);
+				act.getAttributes().putAttribute("zoneId", tripDestinationIdTAZ12b);
 				plan.addActivity(act);
 				previousTripDestination = Integer.valueOf(csvRecord.get(21));
 				previousTripStartTime = tripStartTime;
@@ -409,6 +415,8 @@ public class CreatePopulation {
 		log.info("Included trips: " + includedTripsCounter);
 		log.info("Excluded trips: " + excludedTripsCounter);
 		log.info("Total number of trips in data set: " + tripsInDataSet);
+		log.info("Number of activities with negative duration: " + warnCounterActivityDuration);
+		log.info("Number of trips with start time after start time of previous trip: " + warnCounterTripTime);
 		
 		log.info("Creating plans... Done.");
 		log.info("Creating population... Done.");
@@ -432,8 +440,10 @@ public class CreatePopulation {
 				// give the agent a stay-home plan
 
 				String hhId = (String) person.getAttributes().getAttribute("householdId");
-				Coord coord = getRandomCoord(hhId2tierTazId.get(hhId), tierTazId2geometries);
+				String hhZoneId = hhId2tierTazId.get(hhId);
+				Coord coord = getRandomCoord(hhZoneId, idTaz12b2geometries);
 				Activity act = populationFactory.createActivityFromCoord("home", coord);
+				act.getAttributes().putAttribute("zoneId", hhZoneId); // TAZ_Tier2
 				
 				Plan plan = populationFactory.createPlan();
 				plan.addActivity(act);
@@ -512,6 +522,7 @@ public class CreatePopulation {
 					Plan plan = populationFactory.createPlan();
 
 					Activity fromAct = populationFactory.createActivityFromCoord("freightStart", coordFrom);
+					fromAct.getAttributes().putAttribute("zoneId", fromZoneId);
 					
 					if (toTime < fromTime) {
 						toTime = toTime + (24 * 3600.);
@@ -530,6 +541,7 @@ public class CreatePopulation {
 					plan.addLeg(leg);
 					
 					Activity toAct = populationFactory.createActivityFromCoord("freightEnd", coordTo);
+					toAct.getAttributes().putAttribute("zoneId", toZoneId);
 					plan.addActivity(toAct);
 					
 					person.addPlan(plan);
