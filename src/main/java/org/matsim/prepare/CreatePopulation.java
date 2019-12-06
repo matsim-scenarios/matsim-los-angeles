@@ -66,7 +66,8 @@ public class CreatePopulation {
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
-	private final double sample = 1;
+
+	private final double sample = 1.0;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	private int freightTripCounter = 0;
@@ -745,7 +746,7 @@ public class CreatePopulation {
 			String lastBaseActivity = lastActivity.getType().split("_")[0];
 			
 			if (firstBaseActivity.equals(lastBaseActivity)) {		
-				double mergedDuration = Double.parseDouble(firstActivity.getType().split("_")[1]) + Double.parseDouble(lastActivity.getType().split("_")[1]);			
+				int mergedDuration = Integer.parseInt(firstActivity.getType().split("_")[1]) + Integer.parseInt(lastActivity.getType().split("_")[1]);			
 				firstActivity.setType(firstBaseActivity + "_" + mergedDuration);
 				lastActivity.setType(lastBaseActivity + "_" + mergedDuration);
 			}		
