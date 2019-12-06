@@ -66,7 +66,7 @@ public class CreatePopulation {
 	private final CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 	private final Random rnd = MatsimRandom.getRandom();
 	private final String crs = "EPSG:3310";
-	private final double sample = 0.0001;
+	private final double sample = 1;
 	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	private int freightTripCounter = 0;
@@ -90,13 +90,17 @@ public class CreatePopulation {
 	@SuppressWarnings("resource")
 	private void run(String rootDirectory) throws NumberFormatException, IOException {
 		
-//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
-//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
-//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
+		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_pp.csv";
+		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_hh.csv";
 
-		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
-		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
-		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
+//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
+//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+//		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_pp.csv";
+//		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_hh.csv";
 		
 		final String freightTripTableAM = rootDirectory + "LA012c/AM_OD_Trips_Table.csv";
 		final String freightTripTableEVE = rootDirectory + "LA012c/EVE_OD_Trips_Table.csv";
@@ -138,6 +142,7 @@ public class CreatePopulation {
 		int excludedPersons = 0;
 		int personsInDataSet = 0;
 		Set<String> householdIdsOfIncludedPersons = new HashSet<>();
+		Map<String, Set<Id<Person>>> householdId2PersonIds = new HashMap<>();
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(personFile)), csvFormat)) {	
 			personsInDataSet++;
 			
@@ -145,6 +150,14 @@ public class CreatePopulation {
 				String personId = csvRecord.get(0);
 				String householdId = csvRecord.get(2);
 				householdIdsOfIncludedPersons.add(householdId);
+				if (householdId2PersonIds.containsKey(householdId)) {
+					Set<Id<Person>> personIds = householdId2PersonIds.get(householdId);
+					if (!personIds.contains(personId)) personIds.add(Id.createPersonId(personId));
+				} else {
+					Set<Id<Person>> personIds = new HashSet<Id<Person>>();
+					personIds.add(Id.createPersonId(personId));
+					householdId2PersonIds.put(householdId, personIds);
+				}
 				String age = csvRecord.get(4);
 				int genderCode = Integer.valueOf(csvRecord.get(5));
 				String genderString = getGenderString(genderCode);
@@ -155,12 +168,75 @@ public class CreatePopulation {
 				person.getAttributes().putAttribute("age", age);
 				person.getAttributes().putAttribute("gender", genderString);
 				
-				// TODO: add person attributes for all (required) attributes: e.g. personType, numberOfCarsPerHH, incomePerHH
-
+				// TODO: add person attributes for all (required) attributes: e.g. personType, numberOfCarsPerHH, incomePerHH	
+				
 				scenario.getPopulation().addPerson(person);
 				includedPersons++;
 			} else {
 				excludedPersons++;
+			}
+		}
+		
+		log.info("Adding person attributes from expand_pp file...");
+		// add more person attributes from expand_pp file
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(expandPPFile)), csvFormat)) {
+			Id<Person> personId = Id.createPersonId(csvRecord.get(0));
+			Person person = scenario.getPopulation().getPersons().get(personId);
+			if (person != null) {
+				int raceCode = Integer.valueOf(csvRecord.get(6));
+				String race = getRaceString(raceCode);
+				String esrCodeString = csvRecord.get(7);
+				int workerCode = Integer.valueOf(csvRecord.get(8));
+				String worker = getWorkerString(workerCode);
+				String wkind20CodeString = csvRecord.get(9);
+				String wkocc24CodeString = csvRecord.get(10);
+				String schgCodeString = csvRecord.get(11);
+				String eduattCodeString = csvRecord.get(12);
+				
+				person.getAttributes().putAttribute("race", race);
+				person.getAttributes().putAttribute("ESR", esrCodeString);
+				person.getAttributes().putAttribute("worker", worker);
+				person.getAttributes().putAttribute("wkind20", wkind20CodeString);
+				person.getAttributes().putAttribute("wkocc24", wkocc24CodeString);
+				person.getAttributes().putAttribute("schg", schgCodeString);
+				person.getAttributes().putAttribute("aduatt", eduattCodeString);
+			}
+		}
+		
+		// add more person attributes from expand_hh file
+		log.info("Adding more person attributes from expand_hh file...");
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(expandHHFile)), csvFormat)) {
+			String householdId = csvRecord.get(0);
+			if (householdIdsOfIncludedPersons.contains(householdId)) {
+				for (Id<Person> personId: householdId2PersonIds.get(householdId)) {
+					Person person = scenario.getPopulation().getPersons().get(personId);
+					
+					String tenCodeString = csvRecord.get(10);
+					String hhSizeCodeString = csvRecord.get(7);
+					String hhIncomeCodeString = csvRecord.get(8);
+					int hhTypeCode = Integer.valueOf(csvRecord.get(9));
+					String hhType = getHHTypeString(hhTypeCode);
+					
+					person.getAttributes().putAttribute("ten", tenCodeString);
+					person.getAttributes().putAttribute("hhsize", hhSizeCodeString);
+					person.getAttributes().putAttribute("hhinc", hhIncomeCodeString);
+					person.getAttributes().putAttribute("hhtype", hhType);
+				}
+			}
+		}
+		
+		// add more person attributes (auto ownership) from household file
+		log.info("Adding more person attributes from household file...");
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(householdFile)), csvFormat)) {
+			String householdId = csvRecord.get(0);
+			if (householdIdsOfIncludedPersons.contains(householdId)) {
+				for (Id<Person> personId: householdId2PersonIds.get(householdId)) {
+					Person person = scenario.getPopulation().getPersons().get(personId);
+					
+					String hhNumAutos = csvRecord.get(4);
+					
+					person.getAttributes().putAttribute("hhnumautos", hhNumAutos);
+				}
 			}
 		}
 		
@@ -178,6 +254,8 @@ public class CreatePopulation {
 		int excludedTripsCounter = 0;
 		int personTripsCounter = 0;
 		int personTripNumber = 0;
+		int previousTripDestination = 0;
+		Double previousTripStartTime = 0.;
 		boolean firstTrip;
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(tripFile)),csvFormat)) {	
 			tripsInDataSet++;
@@ -246,6 +324,18 @@ public class CreatePopulation {
 					}
 				}
 				
+				// check start_time of second trip is larger than start_time of previous trip
+				if (!firstTrip) {
+					if (previousTripStartTime != tripStartTime) log.warn("Trip start time in wrong order.");
+				}
+				
+				// check end location of previous trip is the same as the start location of the second trip
+				if (!firstTrip) {
+					int currentTripOrigin = Integer.valueOf(csvRecord.get(20));
+					if (currentTripOrigin != previousTripDestination) {
+						log.warn("Previous trip destination is not the same as the current trip origin.");
+					}
+				}
 				// trip
 				String mode = getModeString(Integer.valueOf(csvRecord.get(25)));
 				Leg leg = populationFactory.createLeg(mode);	
@@ -258,6 +348,8 @@ public class CreatePopulation {
 				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);
 				act.getAttributes().putAttribute("initialStartTime", tripEndTime);
 				plan.addActivity(act);
+				previousTripDestination = Integer.valueOf(csvRecord.get(21));
+				previousTripStartTime = tripStartTime;
 			}
 		}
 		
@@ -453,6 +545,48 @@ public class CreatePopulation {
 			  return "female";
 		}
 		throw new RuntimeException("Unknown gender. Aborting...");
+	}
+	
+	private static String getRaceString(int raceCode) {
+		switch (raceCode) {
+		  case 1:
+			  return "HP";
+		  case 2:
+			  return "NHW";
+		  case 3:
+			  return "NHB";
+		  case 4:
+			  return "NHAI";
+		  case 5:
+			  return "NHAS";
+		  case 6:
+			  return "NHO";
+		}
+		throw new RuntimeException("Unkonwn race. Aborting...");
+	}
+	
+	private static String getWorkerString(int workerCode) {
+		switch (workerCode) {
+		  case 1:
+			  return "employed";
+		  case 2:
+			  return "unemployed";
+		}
+		throw new RuntimeException("Unknown worker status. Aborting...");
+	}
+	
+	private static String getHHTypeString(int hhTypeCode) {
+		switch (hhTypeCode) {
+		  case 1:
+			  return "SFD";
+		  case 2:
+			  return "SFA";
+		  case 3:
+			  return "Multiple";
+		  case 4:
+			  return "Others";
+		}
+		throw new RuntimeException("Unknown hhtype. Aborting...");
 	}
 
 	private static String getModeString(Integer modeCode) {
