@@ -411,16 +411,23 @@ public class CreatePopulation {
 				String tripDestinationIdTAZ12b = internalSeqTAZtoTAZ12b.get(tripDestinationInternalSeqTAZid);
 				if (tripDestinationIdTAZ12b == null) throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripDestinationInternalSeqTAZid + " Aborting... " + csvRecord);
 				Coord coord = null;
-				if (tripPurposeDestination.startsWith("home") && personId2homeCoord.get(personId) != null) {
-					if (personId2homeZoneId.get(personId).equals(tripDestinationIdTAZ12b)) {
-						// same home zone Id
+				if (tripPurposeDestination.startsWith("home")) {
+					if (personId2homeCoord.get(personId) != null && personId2homeZoneId.get(personId).equals(tripDestinationIdTAZ12b)) {
+						// get previous home coordinate
 						coord = personId2homeCoord.get(personId);
 					} else {
-						log.warn("Person " + personId + " will have different home activity zone IDs in different home activities.");
+						// get random home coordinate
 						coord = getRandomCoord(tripDestinationIdTAZ12b, idTaz12b2geometries);
+						
+						if (personId2homeCoord.get(personId) == null) {
+							personId2homeCoord.put(personId, coord);
+						} else {
+							log.warn("Person " + personId + " has different home activity zone IDs in different home activities.");
+						}
 					}
+				} else {
+					coord = getRandomCoord(tripDestinationIdTAZ12b, idTaz12b2geometries);
 				}
-				coord = getRandomCoord(tripDestinationIdTAZ12b, idTaz12b2geometries);
 				
 				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);
 				act.getAttributes().putAttribute("initialStartTime", tripEndTime);
