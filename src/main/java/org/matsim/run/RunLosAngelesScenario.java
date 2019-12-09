@@ -37,6 +37,7 @@ import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import ch.sbb.matsim.config.SwissRailRaptorConfigGroup;
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 
 /**
@@ -111,8 +112,22 @@ public class RunLosAngelesScenario {
 		OutputDirectoryLogging.catchLogEntries();
 		
 		String[] typedArgs = Arrays.copyOfRange( args, 1, args.length );
-
-		final Config config = ConfigUtils.loadConfig( args[ 0 ], customModules );
+		
+		ConfigGroup[] customModulesToAdd = new ConfigGroup[]{ new SwissRailRaptorConfigGroup() };
+		ConfigGroup[] customModulesAll = new ConfigGroup[customModules.length + customModulesToAdd.length];
+		
+		int counter = 0;
+		for (ConfigGroup customModule : customModules) {
+			customModulesAll[counter] = customModule;
+			counter++;
+		}
+		
+		for (ConfigGroup customModule : customModulesToAdd) {
+			customModulesAll[counter] = customModule;
+			counter++;
+		}
+		
+		final Config config = ConfigUtils.loadConfig( args[ 0 ], customModulesAll );
 		
 		config.controler().setRoutingAlgorithmType( FastAStarLandmarks );
 		
