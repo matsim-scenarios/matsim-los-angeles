@@ -39,7 +39,8 @@ public class HelloWorldTest {
 	@Test
 	public final void test() {
 		try {			
-			Config config = RunLosAngelesScenario.prepareConfig("scenarios/equil/config.xml");
+			String[] args = new String[] { "scenarios/equil/config.xml" };
+			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setWriteEventsInterval(1);
 			config.controler().setLastIteration(1);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
