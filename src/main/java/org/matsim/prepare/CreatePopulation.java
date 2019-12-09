@@ -70,7 +70,7 @@ public class CreatePopulation {
 	private final double useDurationInsteadOfEndTimeThreshold = 7200.;
 
 	private final double sample = 0.001;
-	private final String outputFilePrefix = "scag-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+	private final String outputFilePrefix = "los-angeles-v1.0-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	private int freightTripCounter = 0;
 	
