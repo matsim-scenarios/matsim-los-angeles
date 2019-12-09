@@ -20,10 +20,13 @@ package org.matsim.run;
 
 import static org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType.FastAStarLandmarks;
 
+import java.util.Arrays;
+
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.config.groups.QSimConfigGroup.TrafficDynamics;
@@ -45,19 +48,15 @@ public class RunLosAngelesScenario {
 
 	public static void main(String[] args) {
 		
-		String rootDirectory = null;
-		
-		if (args.length == 1) {
-			rootDirectory = args[0];
-		} else {
-			throw new RuntimeException("Please set the root directory (the directory above 'matsim-input-files'). Aborting...");
+		for (String arg : args) {
+			log.info( arg );
 		}
 		
-		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
-		
-		String configFile = rootDirectory + "matsim-input-files/scag-config_2019-12-06.xml";
-		
-		Config config = prepareConfig( configFile ) ;
+		if ( args.length==0 ) {
+			args = new String[] {"./scenarios/los-angeles-v1.0/input/los-angeles-v1.0-0.1pct.config.xml"}  ;
+		}
+				
+		Config config = prepareConfig( args ) ;
 		Scenario scenario = prepareScenario( config ) ;
 		Controler controler = prepareControler( scenario ) ;
 		controler.run() ;
@@ -108,10 +107,12 @@ public class RunLosAngelesScenario {
 		return scenario;
 	}
 	
-	public static Config prepareConfig(String configFile) {
+	public static Config prepareConfig(String [] args, ConfigGroup... customModules) {
 		OutputDirectoryLogging.catchLogEntries();
 		
-		final Config config = ConfigUtils.loadConfig(configFile);
+		String[] typedArgs = Arrays.copyOfRange( args, 1, args.length );
+
+		final Config config = ConfigUtils.loadConfig( args[ 0 ], customModules );
 		
 		config.controler().setRoutingAlgorithmType( FastAStarLandmarks );
 		
@@ -160,6 +161,8 @@ public class RunLosAngelesScenario {
 		}
 		config.planCalcScore().addActivityParams( new ActivityParams( "freightStart" ).setTypicalDuration( 12.*3600. ) );
 		config.planCalcScore().addActivityParams( new ActivityParams( "freightEnd" ).setTypicalDuration( 12.*3600. ) );
+
+		ConfigUtils.applyCommandline( config, typedArgs ) ;
 
 		return config ;
 	}
