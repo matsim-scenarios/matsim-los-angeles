@@ -24,10 +24,6 @@
 		<param name="inputPlansFile" value="population/los-angeles-v1.0-population-0.1pct_2019-12-09.xml.gz" /> <!-- Should be set depending on the sample size. -->
 		<param name="removingUnnecessaryPlanAttributes" value="true" />
 	</module>
-	<module name="counts" >
-		<param name="countsScaleFactor" value="1000.0" /> <!-- Should be set depending on the sample size. -->
-		<param name="inputCountsFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-counts_2019-12-05.xml.gz" />
-	</module>
 	<module name="vehicles" >
 		<param name="vehiclesFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-mode-vehicle-types_2019-12-05.xml" />
 	</module>
