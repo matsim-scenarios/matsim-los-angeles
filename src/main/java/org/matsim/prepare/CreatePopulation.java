@@ -97,11 +97,11 @@ public class CreatePopulation {
 	
 	private void run(String rootDirectory) throws NumberFormatException, IOException {
 		
-		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
-		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
-		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
-		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_pp.csv";
-		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_hh.csv";
+//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
+//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+//		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_pp.csv";
+//		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_hh.csv";
 //		
 //		final String freightTripTableAM = rootDirectory + "LA012.2013-20_SCAG/test-data/test_AM_OD_Trips_Table.csv";
 //		final String freightTripTableEVE = rootDirectory + "LA012.2013-20_SCAG/test-data/test_EVE_OD_Trips_Table.csv";
@@ -109,11 +109,11 @@ public class CreatePopulation {
 //		final String freightTripTableNT = rootDirectory + "LA012.2013-20_SCAG/test-data/test_NT_OD_Trips_Table.csv";
 //		final String freightTripTablePM = rootDirectory + "LA012.2013-20_SCAG/test-data/test_PM_OD_Trips_Table.csv";
 		
-//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
-//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
-//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
-//		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_pp.csv";
-//		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_hh.csv";
+		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
+		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
+		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_pp.csv";
+		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_hh.csv";
 		final String internalSeqTAZtoTAZ12bMappingFile = rootDirectory + "LA012.2013-20_SCAG/abm/TAZEQCOUNTY_TIER2.csv";
 		
 		final String freightTripTableAM = rootDirectory + "LA012c/AM_OD_Trips_Table.csv";
