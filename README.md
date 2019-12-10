@@ -1,12 +1,13 @@
 # The MATSim Open Los Angeles Scenario
-![Los Angeles MATSim network and agents)](scenarios/los-angeles-v1.0/visualization-los-angeles.png "Los Angeles MATSim network and agents")
+![Los Angeles MATSim network and agents](scenarios/los-angeles-v1.0/visualization-los-angeles.png "Los Angeles MATSim network and agents")
 
 ### About this project
 
 This repository provides an open MATSim transport model for Los Angeles, developed by the [Institute of Transportation Studies](https://its.ucdavis.edu) at [University of California, Davis](https://www.ucdavis.edu) and by the [Transport Systems Planning and Transport Telematics group](https://www.vsp.tu-berlin.de) of [Technische Universität Berlin](http://www.tu-berlin.de).
 
-![UCDavisLogo)](logos/UC-Davis-Logo.png "UC Davis Logo")
-![TUBLogo)](logos/TU_Logo.png "TU Berlin Logo")
+![UCDavisLogo](logos/UC-Davis-Logo.png "UC Davis Logo")
+
+<img src="logos/TU_Logo.png" width="25%" height="25%">
 
 ### Note
 
