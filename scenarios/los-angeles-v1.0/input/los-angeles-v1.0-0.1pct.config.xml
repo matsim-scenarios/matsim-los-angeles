@@ -116,21 +116,22 @@
 		<param name="vspDefaultsCheckingLevel" value="abort" />
 	</module>
 	<module name="planCalcScore" >
+		<param name="writeExperiencedPlans" value="true" />
 		<param name="fractionOfIterationsToStartScoreMSA" value="1.0" />
-		<parameterset type="scoringParameters" >
-			
+		<parameterset type="scoringParameters" >	
+			<param name="performing" value="9.84" />	
 			<parameterset type="modeParams" >
-				<param name="constant" value="-1.0" />
+				<param name="constant" value="0.0" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 				<param name="mode" value="car" />
-				<param name="monetaryDistanceRate" value="-0.0003" />
-				<param name="dailyMonetaryConstant" value="-5.3" />
+				<param name="monetaryDistanceRate" value="-0.000104" />
+				<param name="dailyMonetaryConstant" value="-15.47" />
 			</parameterset>
 			<parameterset type="modeParams" >
 				<param name="constant" value="-0.0" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 				<param name="mode" value="ride" />
-				<param name="monetaryDistanceRate" value="-0.0003" />
+				<param name="monetaryDistanceRate" value="-0.000104" />
 				<param name="dailyMonetaryConstant" value="-0.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
@@ -153,7 +154,7 @@
 				<param name="monetaryDistanceRate" value="-0.0006" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="constant" value="-1.0" />
+				<param name="constant" value="-1.5" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 				<param name="mode" value="pt" />
 				<param name="dailyMonetaryConstant" value="0.0" />
