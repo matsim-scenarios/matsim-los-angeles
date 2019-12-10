@@ -19,6 +19,7 @@
 
 package org.matsim.prepare;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -45,7 +46,6 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
-import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.OutputDirectoryLogging;
@@ -74,6 +74,12 @@ public class CreatePopulation {
 	
 	private int freightTripCounter = 0;
 	
+	private Map<String, Geometry> idTaz12b2geometries = new HashMap<>();
+	private Map<String, Geometry> idTaz12a2geometries = new HashMap<>();
+	private Map<String, Geometry> internalSeqTazForFreight2geometries = new HashMap<>();
+	
+	private Scenario scenario;
+	
 	public static void main(String[] args) throws IOException {
 		String rootDirectory = null;
 		
@@ -89,7 +95,6 @@ public class CreatePopulation {
 		createPopulation.run(rootDirectory);
 	}
 	
-	@SuppressWarnings("resource")
 	private void run(String rootDirectory) throws NumberFormatException, IOException {
 		
 //		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
@@ -116,8 +121,10 @@ public class CreatePopulation {
 		final String freightTripTableMD = rootDirectory + "LA012c/MD_OD_Trips_Table.csv";
 		final String freightTripTableNT = rootDirectory + "LA012c/NT_OD_Trips_Table.csv";
 		final String freightTripTablePM = rootDirectory + "LA012c/PM_OD_Trips_Table.csv";
-
+		
+		final String freightZoneCoordinatesShapeFile = rootDirectory + "SCAG_T1_external_Airport_Seaport/SCAG_T1_external_Airport_Seaport.shp";
 		final String tazShpFile = rootDirectory + "LA012.2013-20_SCAG/shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
+		
 		final String outputDirectory = rootDirectory + "matsim-input-files/population/";
 		
 		OutputDirectoryLogging.catchLogEntries();
@@ -127,10 +134,11 @@ public class CreatePopulation {
 			e1.printStackTrace();
 		}
 		
-		log.info("Loading shape file...");
-		final Map<String, Geometry> idTaz12b2geometries = loadGeometries(tazShpFile, "ID_TAZ12b"); // (=Tier2) geometry IDs given in household and trip file
-		final Map<String, Geometry> idTaz12a2geometries = loadGeometries(tazShpFile, "ID_TAZ12a"); // (=Tier1) geometry IDs given in the freight trip table
-		log.info("Loading shape file... Done.");
+		log.info("Loading shape files...");
+		idTaz12b2geometries = loadGeometries(tazShpFile, "ID_TAZ12b"); // (=Tier2) geometry IDs given in household and trip file
+		idTaz12a2geometries = loadGeometries(tazShpFile, "ID_TAZ12a"); // (=Tier1) geometry IDs given in the freight trip table
+		internalSeqTazForFreight2geometries = loadGeometries(freightZoneCoordinatesShapeFile, "ID"); //
+		log.info("Loading shape files... Done.");
 		
 		log.info("Reading TAZ ID mapping file...");
 		final Map<String, String> internalSeqTAZtoTAZ12b = new HashMap<>();
@@ -143,7 +151,7 @@ public class CreatePopulation {
 		
 		log.info("Creating scenario...");
 				
-		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());	
+		scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());	
 		scenario.getConfig().global().setCoordinateSystem(crs );
 		
 		log.info("Creating scenario... Done.");
@@ -281,7 +289,9 @@ public class CreatePopulation {
 		final Map<Id<Person>, String> personId2homeZoneId = new HashMap<>();
 		
 		boolean firstTrip;
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(tripFile)),csvFormat)) {	
+		BufferedReader br = Files.newBufferedReader(Paths.get(tripFile));
+		CSVParser csvParser = new CSVParser(br,csvFormat);
+		for (CSVRecord csvRecord : csvParser) {	
 			tripsInDataSet++;
 			if (tripsInDataSet%1000000 == 0) {
 				log.info("trip record #" + tripsInDataSet );
@@ -300,6 +310,7 @@ public class CreatePopulation {
 					personTripsCounter++;
 					personTripNumber = Integer.valueOf(csvRecord.get(6));
 					if (personTripsCounter != personTripNumber) {
+						csvParser.close();
 						throw new RuntimeException("Current trip counter for person " + personId + " is not equal to persTripNum. Aborting..." + csvRecord);
 					}
 					plan = person.getPlans().get(0);
@@ -318,7 +329,10 @@ public class CreatePopulation {
 					String tripPurposeOrigin = getTripPurposeString(tripPurposeOriginCode);		
 					String tripOriginInternalSeqTAZid = csvRecord.get(20);
 					String tripOriginIdTAZ12b = internalSeqTAZtoTAZ12b.get(tripOriginInternalSeqTAZid);
-					if (tripOriginIdTAZ12b == null) throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripOriginInternalSeqTAZid + " Aborting... " + csvRecord);
+					if (tripOriginIdTAZ12b == null) {
+						csvParser.close();
+						throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripOriginInternalSeqTAZid + " Aborting... " + csvRecord);
+					}
 					Coord coord = getRandomCoord(tripOriginIdTAZ12b, idTaz12b2geometries);
 					
 					// store the home coordinate for that person to make sure all other home activities have the exact same coordinate
@@ -382,6 +396,7 @@ public class CreatePopulation {
 				if (!firstTrip) {
 					int currentTripOrigin = Integer.valueOf(csvRecord.get(20));
 					if (currentTripOrigin != previousTripDestination) {
+						csvParser.close();
 						throw new RuntimeException("Previous trip destination is not the same as the current trip origin.");
 					}
 				}
@@ -392,10 +407,12 @@ public class CreatePopulation {
 				double travelTime = tripEndTime - tripStartTime;
 				
 				if (travelTime < 0.) {
+					csvParser.close();
 					throw new RuntimeException("Travel time is < 0. Aborting..." + csvRecord);
 				}
 				
 				if (tripStartTime < 0. || tripEndTime < 0.) {
+					csvParser.close();
 					throw new RuntimeException("Trip start or and time is < 0. Aborting..." + csvRecord);
 				}
 				
@@ -409,7 +426,10 @@ public class CreatePopulation {
 				String tripPurposeDestination = getTripPurposeString(Integer.valueOf(csvRecord.get(19)));
 				String tripDestinationInternalSeqTAZid = csvRecord.get(21);
 				String tripDestinationIdTAZ12b = internalSeqTAZtoTAZ12b.get(tripDestinationInternalSeqTAZid);
-				if (tripDestinationIdTAZ12b == null) throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripDestinationInternalSeqTAZid + " Aborting... " + csvRecord);
+				if (tripDestinationIdTAZ12b == null) {
+					csvParser.close();
+					throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripDestinationInternalSeqTAZid + " Aborting... " + csvRecord);
+				}
 				Coord coord = null;
 				if (tripPurposeDestination.startsWith("home")) {
 					if (personId2homeCoord.get(personId) != null && personId2homeZoneId.get(personId).equals(tripDestinationIdTAZ12b)) {
@@ -437,6 +457,7 @@ public class CreatePopulation {
 				previousTripStartTime = tripStartTime;
 			}
 		}
+		csvParser.close();
 		
 		log.info("Included trips: " + includedTripsCounter);
 		log.info("Excluded trips: " + excludedTripsCounter);
@@ -448,7 +469,7 @@ public class CreatePopulation {
 		log.info("Creating population... Done.");
 		
 		log.info("Handling stay home plans...");
-		// Get the person's correct home location via the household ID.
+		// Get the person's home location via the household ID.
 		log.info("Reading household data...");
 		Map<String, String> hhId2tierTazId = new HashMap<>();
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(householdFile)), csvFormat)) {	
@@ -493,11 +514,11 @@ public class CreatePopulation {
 		}
 		
 		log.info("Reading freight trip tables and generate freight agents...");
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableAM, 6. * 3600, 9. * 3600);
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableMD, 9. * 3600, 15. * 3600);
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTablePM, 15. * 3600, 19. * 3600);
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableEVE, 19. * 3600, 21. * 3600);
-		addFreightAgents(scenario.getPopulation(), idTaz12a2geometries, freightTripTableNT, 21. * 3600, 6. * 3600);
+		addFreightAgents(freightTripTableAM, 6. * 3600, 9. * 3600);
+		addFreightAgents(freightTripTableMD, 9. * 3600, 15. * 3600);
+		addFreightAgents(freightTripTablePM, 15. * 3600, 19. * 3600);
+		addFreightAgents(freightTripTableEVE, 19. * 3600, 21. * 3600);
+		addFreightAgents(freightTripTableNT, 21. * 3600, 6. * 3600);
 		log.info("Number of freight trips: " + freightTripCounter);
 		log.info("Reading freight trip tables and generate freight agents... Done.");
 
@@ -507,7 +528,7 @@ public class CreatePopulation {
 		log.info("Writing population... Done.");	
 	}
 
-	private void addFreightAgents(Population population, Map<String, Geometry> idTaz12a2geometries, String freightTripFile, double fromTime, double toTime) throws IOException {
+	private void addFreightAgents(String freightTripFile, double fromTime, double toTime) throws IOException {
 				
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(freightTripFile)), csvFormat)) {	
 			String fromZoneId = csvRecord.get(0);
@@ -516,28 +537,27 @@ public class CreatePopulation {
 			int mhdt = (int) Math.round(Double.valueOf(csvRecord.get(6)));
 			int hhdt = (int) Math.round(Double.valueOf(csvRecord.get(7)));
 			
-			generateTrips("LHDT", lhdt, population, fromZoneId, toZoneId, fromTime, toTime, idTaz12a2geometries);
-			generateTrips("MHDT", mhdt, population, fromZoneId, toZoneId, fromTime, toTime, idTaz12a2geometries);
-			generateTrips("HHDT", hhdt, population, fromZoneId, toZoneId, fromTime, toTime, idTaz12a2geometries);
+			generateTrips("LHDT", lhdt, fromZoneId, toZoneId, fromTime, toTime);
+			generateTrips("MHDT", mhdt, fromZoneId, toZoneId, fromTime, toTime);
+			generateTrips("HHDT", hhdt, fromZoneId, toZoneId, fromTime, toTime);
 		}
 	}
 
 	private void generateTrips(
 			String name, 
 			int trips,
-			Population population,
 			String fromZoneId,
 			String toZoneId,
 			double fromTime,
-			double toTime,
-			Map<String, Geometry> idTaz12a2geometries) {
+			double toTime) {
 		
-		final PopulationFactory populationFactory = population.getFactory();
+		final PopulationFactory populationFactory = scenario.getPopulation().getFactory();
 
 		for (int trip = 0; trip < trips; trip++) {
 			if (rnd.nextDouble() <= sample) {
 				
 				Coord coordFrom = getRandomCoord(fromZoneId, idTaz12a2geometries);
+				if (coordFrom == null) getRandomCoord(fromZoneId, this.internalSeqTazForFreight2geometries);
 				Coord coordTo = getRandomCoord(toZoneId, idTaz12a2geometries);
 				
 				if (coordFrom != null && coordTo != null) {
@@ -571,7 +591,7 @@ public class CreatePopulation {
 					plan.addActivity(toAct);
 					
 					person.addPlan(plan);
-					population.addPerson(person);	
+					scenario.getPopulation().addPerson(person);	
 					
 					freightTripCounter++;
 				} else {
