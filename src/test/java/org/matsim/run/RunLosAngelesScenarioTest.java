@@ -43,7 +43,7 @@ public class RunLosAngelesScenarioTest {
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
-
+			config.global().setNumberOfThreads(1);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 			config.plans().setInputFile("../../../test/input/test-agents.xml.gz");
