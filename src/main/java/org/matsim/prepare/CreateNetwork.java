@@ -22,12 +22,23 @@
 package org.matsim.prepare;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
@@ -39,8 +50,11 @@ import org.matsim.core.network.algorithms.NetworkSimplifier;
 import org.matsim.core.network.io.NetworkWriter;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
+import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
+import org.matsim.core.utils.gis.ShapeFileReader;
 import org.matsim.core.utils.io.OsmNetworkReader;
+import org.opengis.feature.simple.SimpleFeature;
 
 
 /**
@@ -64,7 +78,9 @@ import org.matsim.core.utils.io.OsmNetworkReader;
  */
 public class CreateNetwork {
 	
-	private final Logger log = Logger.getLogger(CreateNetwork.class);
+	private final static Logger log = Logger.getLogger(CreateNetwork.class);
+	
+	private final static CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader();
 
 	private final String INPUT_OSMFILE ;
 	private final String outputDir;
@@ -73,7 +89,10 @@ public class CreateNetwork {
 	private Network network = null;
 	private String outnetworkPrefix ;
 	
-	public static void main(String[] args) {
+	private static Collection<SimpleFeature> features = null;
+	private static Map<String, Map<String, Double>> tier2TAZ2PCosts = new HashMap<>();
+	
+	public static void main(String[] args) throws NumberFormatException, IOException {
 		String rootDirectory = null;
 		
 		if (args.length == 1) {
@@ -85,6 +104,10 @@ public class CreateNetwork {
 		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
 		
 		String osmfile = rootDirectory + "osm-data/socal-LA-network_2019-09-22.osm";
+		String shapefile = rootDirectory + "shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
+		// TODO: check if external taz has parking cost??
+//		String shapefileExternal = rootDirectory + "shp-files/SCAG_T1_external_Airport_Seaport/SCAG_T1_external_Airport_Seaport.shp";
+		String sedfile = rootDirectory + "LA012.2013-20_SCAG/Zonal SED/sed_data.csv";
 		
 		String prefix = "scag-network_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		String outDir = rootDirectory + "/matsim-input-files/network/";
@@ -95,6 +118,26 @@ public class CreateNetwork {
 		boolean keepPaths = false;
 		boolean clean = true;
 		boolean simplify = false;
+		
+		features = ShapeFileReader.getAllFeatures(shapefile);
+		
+		log.info("Reading sed_data...");
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(sedfile)), csvFormat)) {
+			String tier2TAZId = csvRecord.get(1);
+			double dailyPCost = Double.valueOf(csvRecord.get(57));
+			double oneHourPCost = Double.valueOf(csvRecord.get(58));
+			double extraHourPCost = Double.valueOf(csvRecord.get(59));
+			double maxDailyPCost = Double.valueOf(csvRecord.get(60));
+			
+			Map<String, Double> pCosts = new HashMap<>();
+			pCosts.put("dailyPCost", dailyPCost);
+			pCosts.put("oneHourPCost", oneHourPCost);
+			pCosts.put("extraHourPCost", extraHourPCost);
+			pCosts.put("maxDailyPCost", maxDailyPCost);
+			
+			tier2TAZ2PCosts.put(tier2TAZId, pCosts);		
+		}
+		log.info("Reading sed_data done!...");
 		
 		networkCreator.createNetwork(keepPaths, simplify, clean);
 		networkCreator.adjustNetwork();		
@@ -115,6 +158,35 @@ public class CreateNetwork {
 		}
 		
 		// TODO: further modifications?
+		int externalLinkCounter = 0;
+		int linkCounter = 0;
+		for (Link link: network.getLinks().values()) {
+			Coord coord = link.getCoord();
+			Point point = MGC.coord2Point(coord);
+			boolean foundFeature = false;
+			for (SimpleFeature feature : features ) {
+				String tier2TAZId = feature.getAttribute("Tier2").toString();
+				Geometry geometry = (Geometry) feature.getDefaultGeometry();
+				if (geometry.contains(point)) {
+					link.getAttributes().putAttribute("dailyPCost", tier2TAZ2PCosts.get(tier2TAZId).get("dailyPCost"));
+					link.getAttributes().putAttribute("oneHourPCost", tier2TAZ2PCosts.get(tier2TAZId).get("oneHourPCost"));
+					link.getAttributes().putAttribute("extraHourPCost", tier2TAZ2PCosts.get(tier2TAZId).get("extraHourPCost"));
+					link.getAttributes().putAttribute("maxDailyPCost", tier2TAZ2PCosts.get(tier2TAZId).get("maxDailyPCost"));
+//					log.info("Link " + link.getId() + " found within TAZ map...");
+					foundFeature = true;
+					break;
+				}
+			}
+			if (!foundFeature) {
+				if (externalLinkCounter <=5) log.info("Link " + link.getId() + " is not within TAZ map...");
+				if (externalLinkCounter == 5) log.info("Further types of this warning will not be printed.");
+				externalLinkCounter++;
+			}
+			if (linkCounter % 100000 == 0) {
+				log.info(linkCounter + " links have been processed.");
+			}
+			linkCounter++;
+		}
 	}
 
 	public CreateNetwork(String inputOSMFile, String networkCoordinateSystem, String outputDir, String prefix) {
