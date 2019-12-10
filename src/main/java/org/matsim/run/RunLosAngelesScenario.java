@@ -63,9 +63,7 @@ public class RunLosAngelesScenario {
 		controler.run() ;
 	}
 	
-	public static Controler prepareControler( Scenario scenario ) {
-		// note that for something like signals, and presumably drt, one needs the controler object
-		
+	public static Controler prepareControler( Scenario scenario ) {		
 		Gbl.assertNotNull(scenario);
 		
 		final Controler controler = new Controler( scenario );
