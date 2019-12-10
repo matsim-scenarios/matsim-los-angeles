@@ -96,6 +96,15 @@ public class RunLosAngelesScenario {
 				addTravelDisutilityFactoryBinding( "ride_school_bus" ).to( carTravelDisutilityFactoryKey() );
 			}
 		} );
+		
+		// use income dependent marginal utility of money
+		IncomeDependentPlanScoringFunctionFactory initialPlanScoringFunctionFactory = new IncomeDependentPlanScoringFunctionFactory(controler.getScenario());
+		controler.addOverridingModule(new AbstractModule() {
+			@Override
+			public void install() {
+				this.bindScoringFunctionFactory().toInstance(initialPlanScoringFunctionFactory);
+			}
+		});
 
 		return controler;
 	}
