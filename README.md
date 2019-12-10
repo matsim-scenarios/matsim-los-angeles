@@ -1,8 +1,12 @@
 # The MATSim Open Los Angeles Scenario
+![Los Angeles MATSim network and agents)](scenarios/los-angeles-v1.0/visualization-los-angeles.png "Los Angeles MATSim network and agents")
 
 ### About this project
 
 This repository provides an open MATSim transport model for Los Angeles, developed by the [Institute of Transportation Studies](https://its.ucdavis.edu) at [University of California, Davis](https://www.ucdavis.edu) and by the [Transport Systems Planning and Transport Telematics group](https://www.vsp.tu-berlin.de) of [Technische Universität Berlin](http://www.tu-berlin.de).
+
+![UCDavisLogo)](logos/UC-Davis-Logo.png "UC Davis Logo")
+![TUBLogo)](logos/TU_Logo.png "TU Berlin Logo")
 
 ### Note
 
@@ -11,14 +15,14 @@ Handling of large files within git is not without problems (git lfs files are no
 ----
 ### Simple things (without installing/running MATSim)
 
-##### Movies
+##### Movies (TODO / Work in Progress)
 
 1. Go [here](https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles)
 1. Decide for a scenario that you find interesting and go into that directory.
 1. Inside there, look for an `output-*` directory that you find interesting and go into that directory.
 1. Inside there, look for `movie-*` files.  You can't view them directly, but you there are various ways to download them, and you can view them then.  Try that.
 
-##### Run VIA on output files
+##### Run VIA on output files (TODO / Work in Progress)
 
 1. Get VIA from https://www.simunto.com/via/.  (There is a free license for a small number of agents; that will probably work but only display a small number of vehicles/agents.)
 1. Go [here](https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles) .
@@ -58,7 +62,7 @@ This will update your repository to the newest version.
 ----
 ### Run the MATSim Los Angeles scenario
 
-##### ... using a runnable jar file
+##### ... using a runnable jar file (TODO / Work in Progress)
 (Requires either cloning or downloading the repository.)
 
 1. There should be a *.jar file directly in the `matsim-los-angeles` directory.
@@ -115,3 +119,11 @@ Controler controler = RunLosAngelesScenario.prepareControler( scenario ) ;
 controler.run
 
 ```
+
+### More information
+
+For more information about MATSim, see here: https://www.matsim.org/. For more information about the demand generation, see here: http://www.scag.ca.gov/.
+
+### Acknowledgements
+
+We are greatful to the Southern California Association of Governments (http://www.scag.ca.gov/) for providing the travel demand data.
