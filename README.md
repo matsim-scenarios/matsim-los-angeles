@@ -127,4 +127,4 @@ For more information about MATSim, see here: https://www.matsim.org/. For more i
 
 ### Acknowledgements
 
-We are greatful to the Southern California Association of Governments (http://www.scag.ca.gov/) for providing the travel demand data.
+We are greatful to the Southern California Association of Governments (http://www.scag.ca.gov/) for supporting this model developing effort with data and staff time. We are also greatful to the California Department of Transportation for funding this research through their sustainable planning grant programs.
