@@ -29,10 +29,10 @@ import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.testcases.MatsimTestUtils;
 
 /**
- * @author nagel
+ * @author ikaddoura
  *
  */
-public class HelloWorldTest {
+public class RunEquiScenarioTest {
 	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 

@@ -82,6 +82,7 @@ final class ParkingCostHandler implements ActivityEndEventHandler, PersonDepartu
 	
 	@Override
 	public void handleEvent(PersonDepartureEvent event) {
+		
 		// There might be several departures during a single trip.
 		if (event.getLegMode().equals(parkingCostConfigGroup.getMode())) {
 			personId2relevantModeLinkId.put(event.getPersonId(), event.getLinkId());
@@ -103,30 +104,39 @@ final class ParkingCostHandler implements ActivityEndEventHandler, PersonDepartu
 			
 			Link link = scenario.getNetwork().getLinks().get(personId2relevantModeLinkId.get(event.getPersonId()));
 			
-			if (link.getAttributes().getAttribute(parkingCostConfigGroup.getDailyParkingCostLinkAttributeName()) != null 
-					&& link.getAttributes().getAttribute(parkingCostConfigGroup.getExtraHourParkingCostLinkAttributeName()) != null
-					&& link.getAttributes().getAttribute(parkingCostConfigGroup.getFirstHourParkingCostLinkAttributeName()) != null
-					&& link.getAttributes().getAttribute(parkingCostConfigGroup.getMaxDailyParkingCostLinkAttributeName()) != null) {
-				
-				double dailyParkingCosts = (double) link.getAttributes().getAttribute(parkingCostConfigGroup.getDailyParkingCostLinkAttributeName());
-				double extraHourParkingCosts = (double) link.getAttributes().getAttribute(parkingCostConfigGroup.getExtraHourParkingCostLinkAttributeName());
-				double firstHourParkingCosts = (double) link.getAttributes().getAttribute(parkingCostConfigGroup.getFirstHourParkingCostLinkAttributeName());
-				double maxDailyParkingCosts = (double) link.getAttributes().getAttribute(parkingCostConfigGroup.getMaxDailyParkingCostLinkAttributeName());
-				
-				double amount = 0.;
-				if (parkingDurationHrs > 0) {
-					amount += firstHourParkingCosts;
-					amount += (parkingDurationHrs - 1) * extraHourParkingCosts;
-				}
-				if (amount > dailyParkingCosts) {
-					amount = dailyParkingCosts;
-				}
-				if (amount > maxDailyParkingCosts) {
-					amount = maxDailyParkingCosts;
-				}
-				
-				if (amount > 0.) events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), amount));
+			double dailyParkingCosts = 0.;
+			if (link.getAttributes().getAttribute(parkingCostConfigGroup.getDailyParkingCostLinkAttributeName()) != null) {
+				dailyParkingCosts = (double) link.getAttributes().getAttribute(parkingCostConfigGroup.getDailyParkingCostLinkAttributeName());
 			}
+			
+			double extraHourParkingCosts = 0.;
+			if (link.getAttributes().getAttribute(parkingCostConfigGroup.getExtraHourParkingCostLinkAttributeName()) != null) {
+				extraHourParkingCosts = (double) link.getAttributes().getAttribute(parkingCostConfigGroup.getExtraHourParkingCostLinkAttributeName());
+			}
+			
+			double firstHourParkingCosts = 0.;
+			if (link.getAttributes().getAttribute(parkingCostConfigGroup.getFirstHourParkingCostLinkAttributeName()) != null) {
+				firstHourParkingCosts = (double) link.getAttributes().getAttribute(parkingCostConfigGroup.getFirstHourParkingCostLinkAttributeName());
+			}
+			
+			double maxDailyParkingCosts = 0.;
+			if (link.getAttributes().getAttribute(parkingCostConfigGroup.getMaxDailyParkingCostLinkAttributeName()) != null) {
+				maxDailyParkingCosts = (double) link.getAttributes().getAttribute(parkingCostConfigGroup.getMaxDailyParkingCostLinkAttributeName());
+			}
+			
+			double amount = 0.;
+			if (parkingDurationHrs > 0) {
+				amount += firstHourParkingCosts;
+				amount += (parkingDurationHrs - 1) * extraHourParkingCosts;
+			}
+			if (amount > dailyParkingCosts) {
+				amount = dailyParkingCosts;
+			}
+			if (amount > maxDailyParkingCosts) {
+				amount = maxDailyParkingCosts;
+			}
+			
+			if (amount > 0.) events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), amount));
 			
 		}
 	}
