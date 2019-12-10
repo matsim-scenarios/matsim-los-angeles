@@ -8,7 +8,7 @@
 		<param name="lastIteration" value="0" />
 		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
 		<param name="runId" value="los-angeles-v1.0-run0" />
-		<param name="outputDirectory" value="./scenarios/los-angeles-v1.0/los-angeles-v1.0-run0/" />
+		<param name="outputDirectory" value="./scenarios/los-angeles-v1.0/output/los-angeles-v1.0-run0/" />
 		<param name="writeEventsInterval" value="50" />
 		<param name="writePlansInterval" value="50" />
 	</module>
