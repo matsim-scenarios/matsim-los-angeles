@@ -74,9 +74,9 @@ public class CreatePopulation {
 	
 	private int freightTripCounter = 0;
 	
-	private Map<String, Geometry> idTaz12b2geometries = new HashMap<>();
-	private Map<String, Geometry> idTaz12a2geometries = new HashMap<>();
-	private Map<String, Geometry> internalSeqTazForFreight2geometries = new HashMap<>();
+	private Map<String, Geometry> internalTierTAZTwo2geometries = new HashMap<>();
+	private Map<String, Geometry> internalTierTAZOneForFreight2geometries = new HashMap<>();
+	private Map<String, Geometry> externalTierTAZOneForFreight2geometries = new HashMap<>();
 	
 	private Scenario scenario;
 	
@@ -97,11 +97,11 @@ public class CreatePopulation {
 	
 	private void run(String rootDirectory) throws NumberFormatException, IOException {
 		
-//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
-//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
-//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
-//		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_pp.csv";
-//		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_hh.csv";
+		final String personFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_persons.csv";
+		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_trips.csv";
+		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_households.csv";
+		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_pp.csv";
+		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/test-data/test_hh.csv";
 //		
 //		final String freightTripTableAM = rootDirectory + "LA012.2013-20_SCAG/test-data/test_AM_OD_Trips_Table.csv";
 //		final String freightTripTableEVE = rootDirectory + "LA012.2013-20_SCAG/test-data/test_EVE_OD_Trips_Table.csv";
@@ -109,11 +109,11 @@ public class CreatePopulation {
 //		final String freightTripTableNT = rootDirectory + "LA012.2013-20_SCAG/test-data/test_NT_OD_Trips_Table.csv";
 //		final String freightTripTablePM = rootDirectory + "LA012.2013-20_SCAG/test-data/test_PM_OD_Trips_Table.csv";
 		
-		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
-		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
-		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
-		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_pp.csv";
-		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_hh.csv";
+//		final String householdFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggHouseholdList.csv";
+//		final String personFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggPersonList.csv";
+//		final String tripFile = rootDirectory + "LA012.2013-20_SCAG/abm/output_disaggTripList.csv";
+//		final String expandPPFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_pp.csv";
+//		final String expandHHFile = rootDirectory + "LA012.2013-20_SCAG/popsyn/expand_hh.csv";
 		final String internalSeqTAZtoTAZ12bMappingFile = rootDirectory + "LA012.2013-20_SCAG/abm/TAZEQCOUNTY_TIER2.csv";
 		
 		final String freightTripTableAM = rootDirectory + "LA012c/AM_OD_Trips_Table.csv";
@@ -122,7 +122,7 @@ public class CreatePopulation {
 		final String freightTripTableNT = rootDirectory + "LA012c/NT_OD_Trips_Table.csv";
 		final String freightTripTablePM = rootDirectory + "LA012c/PM_OD_Trips_Table.csv";
 		
-		final String freightZoneCoordinatesShapeFile = rootDirectory + "SCAG_T1_external_Airport_Seaport/SCAG_T1_external_Airport_Seaport.shp";
+		final String freightZoneCoordinatesShapeFile = rootDirectory + "LA012c/SCAG_T1_external_Airport_Seaport_EPSG3310/SCAG_T1_external_Airport_Seaport_EPSG3310.shp";
 		final String tazShpFile = rootDirectory + "LA012.2013-20_SCAG/shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
 		
 		final String outputDirectory = rootDirectory + "matsim-input-files/population/";
@@ -135,9 +135,9 @@ public class CreatePopulation {
 		}
 		
 		log.info("Loading shape files...");
-		idTaz12b2geometries = loadGeometries(tazShpFile, "ID_TAZ12b"); // (=Tier2) geometry IDs given in household and trip file
-		idTaz12a2geometries = loadGeometries(tazShpFile, "ID_TAZ12a"); // (=Tier1) geometry IDs given in the freight trip table
-		internalSeqTazForFreight2geometries = loadGeometries(freightZoneCoordinatesShapeFile, "ID"); //
+		internalTierTAZTwo2geometries = loadGeometries(tazShpFile, "ID_TAZ12b"); // (=Tier2) geometry IDs given in household and trip file
+		internalTierTAZOneForFreight2geometries = loadGeometries(tazShpFile, "ID_TAZ12a"); // (=Tier1) geometry IDs given in the freight trip table
+		externalTierTAZOneForFreight2geometries = loadGeometries(freightZoneCoordinatesShapeFile, "TIER1TAZ"); //
 		log.info("Loading shape files... Done.");
 		
 		log.info("Reading TAZ ID mapping file...");
@@ -333,7 +333,14 @@ public class CreatePopulation {
 						csvParser.close();
 						throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripOriginInternalSeqTAZid + " Aborting... " + csvRecord);
 					}
-					Coord coord = getRandomCoord(tripOriginIdTAZ12b, idTaz12b2geometries);
+					Geometry geometry;	
+					if (internalTierTAZTwo2geometries.get(tripOriginIdTAZ12b) == null) {
+						csvParser.close();
+						throw new RuntimeException("Geometry with ID " + tripOriginIdTAZ12b + " is not in the Tier TAZ2 zone file.");
+					} else {
+						geometry = internalTierTAZTwo2geometries.get(tripOriginIdTAZ12b);
+					}
+					Coord coord = getRandomCoord(geometry);
 					
 					// store the home coordinate for that person to make sure all other home activities have the exact same coordinate
 					if(tripPurposeOrigin.startsWith("home")) {
@@ -437,7 +444,14 @@ public class CreatePopulation {
 						coord = personId2homeCoord.get(personId);
 					} else {
 						// get random home coordinate
-						coord = getRandomCoord(tripDestinationIdTAZ12b, idTaz12b2geometries);
+						Geometry geometry;	
+						if (internalTierTAZTwo2geometries.get(tripDestinationIdTAZ12b) == null) {
+							csvParser.close();
+							throw new RuntimeException("Geometry with ID " + tripDestinationIdTAZ12b + " is not in the Tier TAZ2 zone file.");
+						} else {
+							geometry = internalTierTAZTwo2geometries.get(tripDestinationIdTAZ12b);
+						}
+						coord = getRandomCoord(geometry);
 						
 						if (personId2homeCoord.get(personId) == null) {
 							personId2homeCoord.put(personId, coord);
@@ -446,7 +460,15 @@ public class CreatePopulation {
 						}
 					}
 				} else {
-					coord = getRandomCoord(tripDestinationIdTAZ12b, idTaz12b2geometries);
+					// compute new random coordinate for all non-home activities
+					Geometry geometry;	
+					if (internalTierTAZTwo2geometries.get(tripDestinationIdTAZ12b) == null) {
+						csvParser.close();
+						throw new RuntimeException("Geometry with ID " + tripDestinationIdTAZ12b + " is not in the Tier TAZ2 zone file.");
+					} else {
+						geometry = internalTierTAZTwo2geometries.get(tripDestinationIdTAZ12b);
+					}
+					coord = getRandomCoord(geometry);
 				}
 				
 				Activity act = populationFactory.createActivityFromCoord(tripPurposeDestination, coord);
@@ -488,7 +510,13 @@ public class CreatePopulation {
 
 				String hhId = (String) person.getAttributes().getAttribute("householdId");
 				String hhZoneId = hhId2tierTazId.get(hhId);
-				Coord coord = getRandomCoord(hhZoneId, idTaz12b2geometries);
+				Geometry geometry;	
+				if (internalTierTAZTwo2geometries.get(hhZoneId) == null) {
+					throw new RuntimeException("Geometry with ID " + hhZoneId + " is not in the Tier TAZ2 zone file.");
+				} else {
+					geometry = internalTierTAZTwo2geometries.get(hhZoneId);
+				}
+				Coord coord = getRandomCoord(geometry);
 				Activity act = populationFactory.createActivityFromCoord("home", coord);
 				act.getAttributes().putAttribute("zoneId", hhZoneId); // TAZ_Tier2
 				
@@ -555,10 +583,32 @@ public class CreatePopulation {
 
 		for (int trip = 0; trip < trips; trip++) {
 			if (rnd.nextDouble() <= sample) {
+					
+				Coord coordFrom;
+				if (internalTierTAZOneForFreight2geometries.get(fromZoneId) == null) {		
+					if (externalTierTAZOneForFreight2geometries.get(fromZoneId) == null) {
+						throw new RuntimeException("Geometry with ID " + fromZoneId + " is neither in internal nor the external Tier TAZ1 zone file. Aborting...");
+					} else {
+						Geometry geometry = externalTierTAZOneForFreight2geometries.get(fromZoneId);
+						coordFrom = getRandomCoordAroundGeometry(geometry, 1000.);
+					}	
+				} else {
+					Geometry geometry = internalTierTAZOneForFreight2geometries.get(fromZoneId);
+					coordFrom = getRandomCoord(geometry);
+				}
 				
-				Coord coordFrom = getRandomCoord(fromZoneId, idTaz12a2geometries);
-				if (coordFrom == null) getRandomCoord(fromZoneId, this.internalSeqTazForFreight2geometries);
-				Coord coordTo = getRandomCoord(toZoneId, idTaz12a2geometries);
+				Coord coordTo;
+				if (internalTierTAZOneForFreight2geometries.get(toZoneId) == null) {		
+					if (externalTierTAZOneForFreight2geometries.get(toZoneId) == null) {
+						throw new RuntimeException("Geometry with ID " + toZoneId + " is neither in internal nor the external Tier TAZ1 zone file. Aborting...");
+					} else {
+						Geometry geometry = externalTierTAZOneForFreight2geometries.get(toZoneId);
+						coordTo = getRandomCoordAroundGeometry(geometry, 1000.);
+					}	
+				} else {
+					Geometry geometry = internalTierTAZOneForFreight2geometries.get(toZoneId);
+					coordTo = getRandomCoord(geometry);
+				}
 				
 				if (coordFrom != null && coordTo != null) {
 					String personId = "freight_" +  name + "_" + fromZoneId + "_" + toZoneId + "_" + freightTripCounter;
@@ -595,7 +645,7 @@ public class CreatePopulation {
 					
 					freightTripCounter++;
 				} else {
-					log.warn("Couldn't add freight trip because of missing geometry information.");
+					throw new RuntimeException("Couldn't add freight trip because of missing geometry information.");
 				}
 				
 			} else {
@@ -604,14 +654,14 @@ public class CreatePopulation {
 		}
 	}
 
-	private Coord getRandomCoord(String tazId, Map<String, Geometry> geometries) {
-		Geometry tazGeometry;
-		if (geometries.get(tazId) == null) {
-			log.warn("Geometry with ID " + tazId + " is not in shape file.");
-			return null;
-		} else {
-			tazGeometry = geometries.get(tazId);
-		}
+	private Coord getRandomCoordAroundGeometry(Geometry geometry, double buffer) {		
+		Point point = geometry.getCentroid();
+		double x = point.getX() + (rnd.nextDouble() - 1.0) * buffer;
+		double y = point.getY() + (rnd.nextDouble() - 1.0) * buffer;
+		return new Coord(x,y);
+	}
+
+	private Coord getRandomCoord(Geometry tazGeometry) {
 		
 		Point p = null;
         double x, y;
