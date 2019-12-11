@@ -36,6 +36,8 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.parkingCost.ParkingCostConfigGroup;
+import org.matsim.parkingCost.ParkingCostModule;
 
 import ch.sbb.matsim.config.SwissRailRaptorConfigGroup;
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
@@ -70,12 +72,7 @@ public class RunLosAngelesScenario {
 		
 		if (controler.getConfig().transit().isUsingTransitInMobsim()) {
 			// use the sbb pt raptor router
-			controler.addOverridingModule( new AbstractModule() {
-				@Override
-				public void install() {
-					install( new SwissRailRaptorModule() );
-				}
-			} );
+			controler.addOverridingModule(new SwissRailRaptorModule());
 		} else {
 			log.warn("Public transit will be teleported and not simulated in the mobsim! "
 					+ "This will have a significant effect on pt-related parameters (travel times, modal split, and so on). "
@@ -105,6 +102,9 @@ public class RunLosAngelesScenario {
 				this.bindScoringFunctionFactory().toInstance(initialPlanScoringFunctionFactory);
 			}
 		});
+		
+		// use parking cost module
+		controler.addOverridingModule(new ParkingCostModule());
 
 		return controler;
 	}
@@ -120,7 +120,7 @@ public class RunLosAngelesScenario {
 		
 		String[] typedArgs = Arrays.copyOfRange( args, 1, args.length );
 		
-		ConfigGroup[] customModulesToAdd = new ConfigGroup[]{ new SwissRailRaptorConfigGroup() };
+		ConfigGroup[] customModulesToAdd = new ConfigGroup[]{ new SwissRailRaptorConfigGroup(), new ParkingCostConfigGroup() };
 		ConfigGroup[] customModulesAll = new ConfigGroup[customModules.length + customModulesToAdd.length];
 		
 		int counter = 0;

@@ -18,12 +18,13 @@
  * *********************************************************************** */
 package org.matsim.run;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.groups.VspExperimentalConfigGroup.VspDefaultsCheckingLevel;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.testcases.MatsimTestUtils;
@@ -45,16 +46,23 @@ public class RunEquiScenarioTest {
 			config.controler().setLastIteration(1);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);	
+			config.vspExperimental().setVspDefaultsCheckingLevel(VspDefaultsCheckingLevel.warn);
 			
 			Scenario scenario = RunLosAngelesScenario.prepareScenario(config);
 			
+			for (Link link : scenario.getNetwork().getLinks().values()) {
+				link.getAttributes().putAttribute("dailyPCost", 8.5);
+				link.getAttributes().putAttribute("oneHourPCost", 1.37);
+				link.getAttributes().putAttribute("extraHourPCost", 2.55);
+				link.getAttributes().putAttribute("maxDailyPCost", 4.888);
+			}
+			
 			Controler controler = RunLosAngelesScenario.prepareControler(scenario);
+			
 			controler.run();
 		
 		} catch ( Exception ee ) {
-			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
-
-			// if one catches an exception, then one needs to explicitly fail the test:
+			ee.printStackTrace();
 			Assert.fail();
 		}
 

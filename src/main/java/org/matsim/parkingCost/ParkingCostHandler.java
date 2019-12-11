@@ -93,7 +93,7 @@ final class ParkingCostHandler implements ActivityEndEventHandler, PersonDepartu
 	public void handleEvent(PersonEntersVehicleEvent event) {
 		
 		if (personId2relevantModeLinkId.get(event.getPersonId()) != null
-				&& personId2previousActivity.get(event.getPersonId()).startsWith(parkingCostConfigGroup.getHomeActivityPrefixToBeExcludedFromParkingCost())) {
+				&& !personId2previousActivity.get(event.getPersonId()).startsWith(parkingCostConfigGroup.getHomeActivityPrefixToBeExcludedFromParkingCost())) {
 			
 			// compute parking costs
 			double parkingStartTime = 0.;
