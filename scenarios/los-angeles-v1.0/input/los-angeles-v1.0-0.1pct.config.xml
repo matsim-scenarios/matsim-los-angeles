@@ -151,7 +151,7 @@
 			<parameterset type="modeParams" >
 				<param name="marginalUtilityOfTraveling_util_hr" value="-8.17" />
 				<param name="mode" value="freight" />
-				<param name="monetaryDistanceRate" value="-0.00125" />
+				<param name="monetaryDistanceRate" value="-0.00051" />
 			</parameterset>
 			<parameterset type="modeParams" >
 				<param name="constant" value="-1.5" />
