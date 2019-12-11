@@ -43,7 +43,7 @@ import org.matsim.core.scoring.functions.SubpopulationScoringParameters;
 public class IncomeDependentPlanScoringFunctionFactory implements ScoringFunctionFactory {
 	private static final Logger log = Logger.getLogger(IncomeDependentPlanScoringFunctionFactory.class );
 
-	private final double averageAnnualIncomePerPerson = 26633.76;
+	private final double averageAnnualIncomePerPerson = 35363.89;
 	private int warnCnt = 0;
 	
 	private final Config config;
