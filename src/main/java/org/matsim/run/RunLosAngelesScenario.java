@@ -72,7 +72,12 @@ public class RunLosAngelesScenario {
 		
 		if (controler.getConfig().transit().isUsingTransitInMobsim()) {
 			// use the sbb pt raptor router
-			controler.addOverridingModule(new SwissRailRaptorModule());
+			controler.addOverridingModule( new AbstractModule() {
+				@Override
+				public void install() {
+					install( new SwissRailRaptorModule() );
+				}
+			} );
 		} else {
 			log.warn("Public transit will be teleported and not simulated in the mobsim! "
 					+ "This will have a significant effect on pt-related parameters (travel times, modal split, and so on). "
