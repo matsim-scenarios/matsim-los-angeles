@@ -104,10 +104,10 @@ public class CreateNetwork {
 		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
 		
 		String osmfile = rootDirectory + "osm-data/socal-LA-network_2019-09-22.osm";
-		String shapefile = rootDirectory + "shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
+		String shapefile = rootDirectory + "LA012.2013-20_SCAG/shp-files/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310/Tier_2_Transportation_Analysis_Zones_TAZs_in_SCAG_EPSG3310.shp";
 		// TODO: check if external taz has parking cost??
 //		String shapefileExternal = rootDirectory + "shp-files/SCAG_T1_external_Airport_Seaport/SCAG_T1_external_Airport_Seaport.shp";
-		String sedfile = rootDirectory + "LA012.2013-20_SCAG/Zonal SED/sed_data.csv";
+		String sedfile = rootDirectory + "LA012.2013-20_SCAG/Zonal_SED/sed_data.csv";
 		
 		String prefix = "scag-network_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		String outDir = rootDirectory + "/matsim-input-files/network/";
