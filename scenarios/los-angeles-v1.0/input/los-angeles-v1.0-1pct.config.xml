@@ -3,6 +3,7 @@
 <config>
 	<module name="TimeAllocationMutator" >
 		<param name="mutationRange" value="7200.0" />
+		<param name="mutationAffectsDuration" value="false" />
 	</module>
 	<module name="controler" >
 		<param name="lastIteration" value="300" />
