@@ -124,19 +124,22 @@ final class ParkingCostHandler implements ActivityEndEventHandler, PersonDepartu
 				maxDailyParkingCosts = (double) link.getAttributes().getAttribute(parkingCostConfigGroup.getMaxDailyParkingCostLinkAttributeName());
 			}
 			
-			double amount = 0.;
+			double costs = 0.;
 			if (parkingDurationHrs > 0) {
-				amount += firstHourParkingCosts;
-				amount += (parkingDurationHrs - 1) * extraHourParkingCosts;
+				costs += firstHourParkingCosts;
+				costs += (parkingDurationHrs - 1) * extraHourParkingCosts;
 			}
-			if (amount > dailyParkingCosts) {
-				amount = dailyParkingCosts;
+			if (costs > dailyParkingCosts) {
+				costs = dailyParkingCosts;
 			}
-			if (amount > maxDailyParkingCosts) {
-				amount = maxDailyParkingCosts;
+			if (costs > maxDailyParkingCosts) {
+				costs = maxDailyParkingCosts;
 			}
 			
-			if (amount > 0.) events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), amount));
+			if (costs > 0.) {
+				double amount = -1. * costs;
+				events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), amount));
+			}
 			
 		}
 	}
