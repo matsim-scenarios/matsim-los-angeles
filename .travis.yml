@@ -8,7 +8,7 @@ env:
     - MAVEN_OPTS="-Xmx6g"
   matrix:
     - TEST=RunEquiScenarioTest
-    - TEST=RunLosAngelesScenarioTest
+#    - TEST=RunLosAngelesScenarioTest
     
 script:
   - mvn -Dtest=${TEST} test --batch-mode -Dmatsim.preferLocalDtds=true -Dmaven.javadoc.skip -e
