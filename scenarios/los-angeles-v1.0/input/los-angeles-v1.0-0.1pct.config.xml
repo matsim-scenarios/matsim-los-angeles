@@ -127,6 +127,7 @@
 				<param name="mode" value="car" />
 				<param name="monetaryDistanceRate" value="-0.000104" />
 				<param name="dailyMonetaryConstant" value="-15.47" />
+				<param name="dailyUtilityConstant" value="0.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
 				<param name="constant" value="-0.0" />
