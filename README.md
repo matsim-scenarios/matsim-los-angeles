@@ -129,5 +129,6 @@ For more information about MATSim, see here: https://www.matsim.org/. For more i
 
 ### Acknowledgements
 
-We are grateful to the Southern California Association of Governments (http://www.scag.ca.gov/) for supporting this model developing effort with data and staff time. We are also grateful to the California Department of Transportation for funding this research through their sustainable planning grant programs.
-<img src="logos/scagLogo.png" width="50%" height="50%">
+We are grateful to the Southern California Association of Governments (http://www.scag.ca.gov/) for supporting this model developing effort with data and staff time. We are also grateful to the California Department of Transportation (https://dot.ca.gov) for funding this research through their sustainable planning grant programs.
+
+<img src="logos/scagLogo.png" width="25%" height="25%">
