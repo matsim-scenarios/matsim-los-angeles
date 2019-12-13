@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/matsim-scenarios/matsim-los-angeles.svg?branch=master)](https://travis-ci.org/matsim-scenarios/matsim-los-angeles)
+
 # The MATSim Open Los Angeles Scenario
 ![Los Angeles MATSim network and agents](scenarios/los-angeles-v1.0/visualization-los-angeles.png "Los Angeles MATSim network and agents")
 
