@@ -36,9 +36,11 @@ import org.matsim.core.network.io.NetworkWriter;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
+import org.matsim.pt.transitSchedule.TransitStopFacilityImpl;
 import org.matsim.pt.transitSchedule.api.Departure;
 import org.matsim.pt.transitSchedule.api.TransitLine;
 import org.matsim.pt.transitSchedule.api.TransitRoute;
+import org.matsim.pt.transitSchedule.api.TransitRouteStop;
 import org.matsim.pt.transitSchedule.api.TransitSchedule;
 import org.matsim.pt.transitSchedule.api.TransitScheduleReader;
 import org.matsim.pt.transitSchedule.api.TransitScheduleWriter;
@@ -153,6 +155,11 @@ public class CreateTransitScheduleAndVehiclesFromGTFS {
 					Vehicle veh = vehFactotry.createVehicle(Id.create(idPrefix + Long.toString(vehId++), Vehicle.class), vehicleType);
 					vehicles.addVehicle(veh);
 					departure.setVehicleId(veh.getId());
+				}
+				
+				for (TransitRouteStop stop : route.getStops()) {
+					// make sure transit vehicles follow the schedule!
+					stop.setAwaitDepartureTime(true);
 				}
 			}
 		}
