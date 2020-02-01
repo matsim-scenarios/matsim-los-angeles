@@ -27,14 +27,14 @@ Handling of large files within git is not without problems (git lfs files are no
 ----
 ### Simple things (without installing/running MATSim)
 
-##### Movies (TODO / Work in Progress)
+##### Movies (Work in Progress)
 
 1. Go [here](https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles)
 1. Decide for a scenario that you find interesting and go into that directory.
 1. Inside there, look for an `output-*` directory that you find interesting and go into that directory.
 1. Inside there, look for `movie-*` files.  You can't view them directly, but you there are various ways to download them, and you can view them then.  Try that.
 
-##### Run VIA on output files (TODO / Work in Progress)
+##### Run VIA on output files (Work in Progress)
 
 1. Get VIA from https://www.simunto.com/via/.  (There is a free license for a small number of agents; that will probably work but only display a small number of vehicles/agents.)
 1. Go [here](https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles) .
@@ -74,7 +74,7 @@ This will update your repository to the newest version.
 ----
 ### Run the MATSim Los Angeles scenario
 
-##### ... using a runnable jar file (TODO / Work in Progress)
+##### ... using a runnable jar file
 (Requires either cloning or downloading the repository.)
 
 1. There should be a *.jar file directly in the `matsim-los-angeles` directory.
