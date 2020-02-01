@@ -3,7 +3,7 @@
 <config>
 	<module name="TimeAllocationMutator" >
 		<param name="mutationRange" value="7200.0" />
-		<param name="mutationAffectsDuration" value="false" />
+		<param name="mutationAffectsDuration" value="true" />
 	</module>
 	<module name="controler" >
 		<param name="lastIteration" value="300" />
@@ -29,7 +29,7 @@
 		<param name="vehiclesFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-mode-vehicle-types_2019-12-05.xml" />
 	</module>
 	<module name="transit" >
-		<param name="transitScheduleFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-transitSchedule_2019-11-19.xml.gz" />
+		<param name="transitScheduleFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-transitSchedule_2019-12-18.xml.gz" />
 		<param name="useTransit" value="true" />
 		<param name="vehiclesFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-transitVehicles_2019-11-19.xml.gz" />
 	</module>
@@ -37,24 +37,24 @@
 		<param name="networkModes" value="car,freight,ride,ride_taxi,ride_school_bus" />
 		<param name="clearDefaultTeleportedModeParams" value="true" />
 		<parameterset type="teleportedModeParameters" >
-			<param name="beelineDistanceFactor" value="1.3" />
+			<param name="beelineDistanceFactor" value="1.4" />
 			<param name="mode" value="bike" />
 			<param name="teleportedModeSpeed" value="3.1388889" />
 		</parameterset>
 		<parameterset type="teleportedModeParameters" >
-			<param name="beelineDistanceFactor" value="1.3" />
+			<param name="beelineDistanceFactor" value="1.4" />
 			<param name="mode" value="walk" />
 			<param name="teleportedModeSpeed" value="1.0555556" />
 		</parameterset>
 		<parameterset type="teleportedModeParameters" >
-			<param name="beelineDistanceFactor" value="1.3" />
+			<param name="beelineDistanceFactor" value="1.4" />
 			<param name="mode" value="non_network_walk" />
 			<param name="teleportedModeSpeed" value="1.0555556" />
 		</parameterset>
 		<parameterset type="teleportedModeParameters" >
-			<param name="beelineDistanceFactor" value="1.3" />
+			<param name="beelineDistanceFactor" value="1.4" />
 			<param name="mode" value="access_egress_pt" />
-			<param name="teleportedModeSpeed" value="6.7056" />
+			<param name="teleportedModeSpeed" value="4.16667" />
 		</parameterset>
 	</module>
 	<module name="qsim" >
@@ -120,14 +120,16 @@
 		<param name="writeExperiencedPlans" value="true" />
 		<param name="fractionOfIterationsToStartScoreMSA" value="1.0" />
 		<parameterset type="scoringParameters" >	
-			<param name="performing" value="9.84" />	
+			<param name="performing" value="9.84" />
+			<param name="waitingPt" value="-9.84" />
+			<param name="utilityOfLineSwitch" value="-2.46" />
 			<parameterset type="modeParams" >
 				<param name="constant" value="0.0" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 				<param name="mode" value="car" />
 				<param name="monetaryDistanceRate" value="-0.000104" />
 				<param name="dailyMonetaryConstant" value="-15.47" />
-				<param name="dailyUtilityConstant" value="0.0" />
+				<param name="dailyUtilityConstant" value="30.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
 				<param name="constant" value="-0.0" />
@@ -156,23 +158,26 @@
 				<param name="monetaryDistanceRate" value="-0.00051" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="constant" value="-1.5" />
-				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="constant" value="-18.0" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="-9.84" />
 				<param name="mode" value="pt" />
 				<param name="dailyMonetaryConstant" value="0.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="constant" value="-2.0" />
-				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="constant" value="-18.0" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="-9.84" />
+				<param name="marginalUtilityOfDistance_util_m" value="0.0" />
 				<param name="mode" value="bike" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="-9.84" />
+				<param name="marginalUtilityOfDistance_util_m" value="0.0" />
 				<param name="mode" value="walk" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="constant" value="-2.0" />
+				<param name="constant" value="-18.0" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="monetaryDistanceRate" value="-0.000104" />
 				<param name="mode" value="access_egress_pt" />
 			</parameterset>
 		</parameterset>
