@@ -35,11 +35,14 @@ import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.gbl.Gbl;
+import org.matsim.core.router.AnalysisMainModeIdentifier;
+import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.parkingCost.ParkingCostConfigGroup;
 import org.matsim.parkingCost.ParkingCostModule;
 
 import ch.sbb.matsim.config.SwissRailRaptorConfigGroup;
+import ch.sbb.matsim.routing.pt.raptor.RaptorIntermodalAccessEgress;
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 
 /**
@@ -99,6 +102,25 @@ public class RunLosAngelesScenario {
 			}
 		} );
 		
+		// use scoring parameters for intermodal PT routing
+		controler.addOverridingModule( new AbstractModule() {
+			@Override
+			public void install() {
+				bind(RaptorIntermodalAccessEgress.class).to(LosAngelesRaptorIntermodalAccessEgress.class);
+			}
+		} );
+		
+		// use our own Analysis(Main-)ModeIdentifier
+		controler.addOverridingModule( new AbstractModule() {
+			@Override
+			public void install() {
+				// mainly relevant for DRT applications:
+				bind(MainModeIdentifier.class).to(LosAngelesIntermodalPtDrtRouterModeIdentifier.class);
+				// in order to look into the different types of intermodal pt trips:
+				bind(AnalysisMainModeIdentifier.class).to(LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier.class);
+			}
+		} );
+		
 		// use income dependent marginal utility of money
 		IncomeDependentPlanScoringFunctionFactory initialPlanScoringFunctionFactory = new IncomeDependentPlanScoringFunctionFactory(controler.getScenario());
 		controler.addOverridingModule(new AbstractModule() {
@@ -146,9 +168,9 @@ public class RunLosAngelesScenario {
 		config.subtourModeChoice().setProbaForRandomSingleTripMode( 0.5 );
 		
 		config.plansCalcRoute().setRoutingRandomness( 3. );
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt);
-		config.plansCalcRoute().removeModeRoutingParams("undefined");
+		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride); // since we are using the (congested) car travel time
+		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt); // since we are using simulated public transit
+		config.plansCalcRoute().removeModeRoutingParams("undefined"); // since we don't have such a mode
 	
 		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles( true );
 				

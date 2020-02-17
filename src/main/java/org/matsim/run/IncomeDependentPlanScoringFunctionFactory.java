@@ -88,6 +88,8 @@ public class IncomeDependentPlanScoringFunctionFactory implements ScoringFunctio
 			warnCnt++;
 		}
 		double personSpecificMarginalUtilityOfMoney = averageAnnualIncomePerPerson  / personSpecificAnnualIncome ;
+		person.getAttributes().putAttribute("marginalUtilityOfMoney", personSpecificMarginalUtilityOfMoney);
+
 		sumScoringFunction.addScoringFunction(new CharyparNagelMoneyScoring(personSpecificMarginalUtilityOfMoney));		
 		sumScoringFunction.addScoringFunction(new CharyparNagelLegScoringWithPersonSpecificMarginalUtilityOfMoney( personSpecificMarginalUtilityOfMoney, parameters , this.network, config.transit().getTransitModes() ));
 
