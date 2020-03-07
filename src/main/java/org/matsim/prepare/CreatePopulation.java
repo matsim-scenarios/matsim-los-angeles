@@ -381,11 +381,11 @@ public class CreatePopulation {
 						previousActivity.setEndTime(Double.NEGATIVE_INFINITY);
 					} else {
 						// use the end time
-						previousActivity.setEndTime(previousActivityEndTime);
+						previousActivity.setEndTime(previousActivityEndTime + (int)((this.rnd.nextDouble() * 2.0 - 1.0) * 900.));
 					}
 				} else {
 					// the first activity does not have a start time, thus use the end time
-					previousActivity.setEndTime(previousActivityEndTime);
+					previousActivity.setEndTime(previousActivityEndTime + (int)((this.rnd.nextDouble() * 2.0 - 1.0) * 900.));
 				}
 				
 				// check start_time of second trip is larger than start_time of previous trip
