@@ -40,8 +40,8 @@ import org.matsim.core.scoring.functions.SubpopulationScoringParameters;
 * @author ikaddoura
 */
 
-public class IncomeDependentPlanScoringFunctionFactory implements ScoringFunctionFactory {
-	private static final Logger log = Logger.getLogger(IncomeDependentPlanScoringFunctionFactory.class );
+public class LosAngelesPlanScoringFunctionFactory implements ScoringFunctionFactory {
+	private static final Logger log = Logger.getLogger(LosAngelesPlanScoringFunctionFactory.class );
 
 	private final double averageAnnualIncomePerPerson = 35363.89;
 	private int warnCnt = 0;
@@ -51,12 +51,12 @@ public class IncomeDependentPlanScoringFunctionFactory implements ScoringFunctio
 
 	private final ScoringParametersForPerson params;
 
-	public IncomeDependentPlanScoringFunctionFactory( final Scenario sc ) {
+	public LosAngelesPlanScoringFunctionFactory( final Scenario sc ) {
 		this( sc.getConfig(), new SubpopulationScoringParameters( sc ) , sc.getNetwork() );
 	}
 
 	@Inject
-	IncomeDependentPlanScoringFunctionFactory(Config config, ScoringParametersForPerson params, Network network) {
+	LosAngelesPlanScoringFunctionFactory(Config config, ScoringParametersForPerson params, Network network) {
 		this.config = config;
 		this.params = params;
 		this.network = network;
@@ -68,7 +68,7 @@ public class IncomeDependentPlanScoringFunctionFactory implements ScoringFunctio
 		final ScoringParameters parameters = params.getScoringParameters( person );
 
 		SumScoringFunction sumScoringFunction = new SumScoringFunction();
-		sumScoringFunction.addScoringFunction(new CharyparNagelActivityScoring( parameters ));
+		sumScoringFunction.addScoringFunction(new CharyparNagelActivityScoring( parameters, new PersonSpecificActivityTypeOpeningIntervalCalculator(parameters) ));
 		sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring( parameters ));
 
 		double personSpecificAnnualIncome = averageAnnualIncomePerPerson;

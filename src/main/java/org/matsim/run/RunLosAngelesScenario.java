@@ -122,7 +122,7 @@ public class RunLosAngelesScenario {
 		} );
 		
 		// use income dependent marginal utility of money
-		IncomeDependentPlanScoringFunctionFactory initialPlanScoringFunctionFactory = new IncomeDependentPlanScoringFunctionFactory(controler.getScenario());
+		LosAngelesPlanScoringFunctionFactory initialPlanScoringFunctionFactory = new LosAngelesPlanScoringFunctionFactory(controler.getScenario());
 		controler.addOverridingModule(new AbstractModule() {
 			@Override
 			public void install() {
