@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.matsim.analysis.ScoreStatsControlerListener.ScoreItem;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.controler.Controler;
@@ -52,6 +53,32 @@ public class RunLosAngelesScenarioTest {
 			Controler controler = RunLosAngelesScenario.prepareControler(scenario);
 			controler.run();
 		
+		} catch ( Exception ee ) {
+			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
+			Assert.fail();
+		}
+
+	}
+	
+	@Test
+	public final void test2() {
+		try {			
+			String[] args = new String[] { "./scenarios/los-angeles-v1.0/input/los-angeles-v1.0-0.1pct.config.xml" };
+			
+			Config config = RunLosAngelesScenario.prepareConfig(args);
+			config.controler().setLastIteration(0);
+			config.global().setNumberOfThreads(0);
+			config.controler().setOutputDirectory( utils.getOutputDirectory() );
+			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+			config.plans().setInputFile("../../../test/input/test-agent_10000099.xml");
+			config.transit().setUseTransit(false);
+			
+			Scenario scenario = RunLosAngelesScenario.prepareScenario(config);
+			Controler controler = RunLosAngelesScenario.prepareControler(scenario);
+			controler.run();
+			
+			Assert.assertEquals("Wrong score in iteration 0.", 177.13015046108396, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+
 		} catch ( Exception ee ) {
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
 			Assert.fail();
