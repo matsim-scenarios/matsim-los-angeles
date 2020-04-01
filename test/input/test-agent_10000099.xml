@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
+
+<population>
+
+<!-- ====================================================================== -->
+
+	<person id="10000099">
+                <attributes>
+                        <attribute name="ESR" class="java.lang.String">0</attribute>
+                        <attribute name="age" class="java.lang.String">3</attribute>
+                        <attribute name="eduatt" class="java.lang.String">1</attribute>
+                        <attribute name="gender" class="java.lang.String">male</attribute>
+                        <attribute name="hhinc" class="java.lang.String">22700</attribute>
+                        <attribute name="hhnumautos" class="java.lang.String">1</attribute>
+                        <attribute name="hhsize" class="java.lang.String">3</attribute>
+                        <attribute name="householdId" class="java.lang.String">3247023</attribute>
+                        <attribute name="htype" class="java.lang.String">Multiple</attribute>
+                        <attribute name="marginalUtilityOfMoney" class="java.lang.Double">4.673641850220264</attribute>
+                        <attribute name="race" class="java.lang.String">NHAS</attribute>
+                        <attribute name="schg" class="java.lang.String">0</attribute>
+                        <attribute name="subpopulation" class="java.lang.String">person</attribute>
+                        <attribute name="ten" class="java.lang.String">3</attribute>
+                        <attribute name="wkind20" class="java.lang.String">0</attribute>
+                        <attribute name="wkocc24" class="java.lang.String">0</attribute>
+                        <attribute name="worker" class="java.lang.String">unemployed</attribute>
+                </attributes>
+                <plan selected="yes">
+                        <activity type="home_55200" link="520911" x="198105.59487741665" y="-476782.90579914337" end_time="04:24:05" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">16200.0</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="walk" dep_time="04:24:05" trav_time="00:01:37">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                                <route type="generic" start_link="520911" end_link="520911" trav_time="00:01:37" distance="102.820330597918"></route>
+                        </leg>
+                        <activity type="ride interaction" link="520911" x="198081.58007895542" y="-476852.3116879859" max_dur="00:00:00" >
+                        </activity>
+                        <leg mode="ride" dep_time="04:25:42" trav_time="00:08:57">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                                <route type="links" start_link="520911" end_link="558071" trav_time="00:08:57" distance="10290.984643759066" vehicleRefId="null">520911 207572 771675 691695 771669 771690 771713 771659 771692 771704 771710 158941 158963 158915 158916 158954 917217 917259 917157 1014081 917212 917238 917213 917254 917239 917223 479686 897921 917247 917187 67586 235606 235597 897867 235511 235512 919575 757162 757116 227788 227777 227778 227779 227780 183034 449223 1150208 1015185 479048 479049 919569 189094 512931 513073 481909 481910 481848 915313 295843 295845 295847 295849 558071</route>
+                        </leg>
+                        <activity type="ride interaction" link="558071" x="199583.2705795773" y="-470732.0481657153" max_dur="00:00:00" >
+                        </activity>
+                        <leg mode="walk" dep_time="04:34:39" trav_time="00:01:21">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                                <route type="generic" start_link="558071" end_link="558071" trav_time="00:01:21" distance="85.6664664382357"></route>
+                        </leg>
+                        <activity type="school_30600" link="558071" x="199603.65329761946" y="-470789.7439340063" end_time="12:52:23" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">47150.771713256836</attribute>
+                                        <attribute name="initialStartTime" class="java.lang.Double">16719.787158966064</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32981100</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="walk" dep_time="12:52:23" trav_time="00:01:21">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                                <route type="generic" start_link="558071" end_link="558071" trav_time="00:01:21" distance="85.6664664382357"></route>
+                        </leg>
+                        <activity type="ride interaction" link="558071" x="199583.2705795773" y="-470732.0481657153" max_dur="00:00:00" >
+                        </activity>
+                        <leg mode="ride" dep_time="12:53:44" trav_time="00:09:54">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                                <route type="links" start_link="558071" end_link="520911" trav_time="00:09:54" distance="9650.292731066706" vehicleRefId="null">558071 398011 240235 701342 517939 517707 517708 517856 517747 517948 517982 204342 938912 228002 204207 646516 646517 646518 919574 228020 228018 631902 646509 645900 645901 645902 227787 227776 757117 446454 446455 446456 235599 1114131 761573 1114138 761579 761543 761590 917227 917220 917156 917168 917258 917219 1014107 917147 158961 158959 158952 377817 377819 578640 520911</route>
+                        </leg>
+                        <activity type="ride interaction" link="520911" x="198081.58007895542" y="-476852.3116879859" max_dur="00:00:00" >
+                        </activity>
+                        <leg mode="walk" dep_time="13:03:38" trav_time="00:01:37">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                                <route type="generic" start_link="520911" end_link="520911" trav_time="00:01:37" distance="102.820330597918"></route>
+                        </leg>
+                        <activity type="home_55200" link="520911" x="198105.59487741665" y="-476782.90579914337" >
+                                <attributes>
+                                        <attribute name="initialStartTime" class="java.lang.Double">47684.06999588013</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                </plan>
+
+	</person>
+
+<!-- ====================================================================== -->
+
+</population>
