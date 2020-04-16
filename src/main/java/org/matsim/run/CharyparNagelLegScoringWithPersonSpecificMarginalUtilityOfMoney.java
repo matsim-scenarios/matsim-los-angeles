@@ -184,12 +184,15 @@ public class CharyparNagelLegScoringWithPersonSpecificMarginalUtilityOfMoney imp
 
 	@Override
 	public void handleLeg(Leg leg) {
-		Gbl.assertIf( !Time.isUndefinedTime( leg.getDepartureTime() ) ) ;
-		Gbl.assertIf( !Time.isUndefinedTime( leg.getTravelTime() ) );
+		Gbl.assertIf( leg.getDepartureTime().isDefined() ) ;
+		Gbl.assertIf( leg.getTravelTime().isDefined() );
 
-		double legScore = calcLegScore(leg.getDepartureTime(), leg.getDepartureTime() + leg.getTravelTime(), leg);
+		double legScore = calcLegScore(
+				leg.getDepartureTime().seconds(), leg.getDepartureTime().seconds() + leg.getTravelTime()
+						.seconds(), leg);
 		if ( Double.isNaN( legScore )) {
-			log.error( "dpTime=" + leg.getDepartureTime() + "; ttime=" + leg.getTravelTime() + "; leg=" + leg ) ;
+			log.error( "dpTime=" + leg.getDepartureTime().seconds()
+					+ "; ttime=" + leg.getTravelTime().seconds() + "; leg=" + leg ) ;
 			throw new RuntimeException("score is NaN") ;
 		}
 		this.score += legScore;
