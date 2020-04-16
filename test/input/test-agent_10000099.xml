@@ -56,8 +56,8 @@
                         </leg>
                         <activity type="school_30600" link="558071" x="199603.65329761946" y="-470789.7439340063" end_time="12:52:23" >
                                 <attributes>
-                                        <attribute name="initialEndTime" class="java.lang.Double">47150.771713256836</attribute>
-                                        <attribute name="initialStartTime" class="java.lang.Double">16719.787158966064</attribute>
+                                        <attribute name="initialEndTime" class="java.lang.Double">64800</attribute>
+                                        <attribute name="initialStartTime" class="java.lang.Double">28800</attribute>
                                         <attribute name="zoneId" class="java.lang.String">32981100</attribute>
                                 </attributes>
                         </activity>

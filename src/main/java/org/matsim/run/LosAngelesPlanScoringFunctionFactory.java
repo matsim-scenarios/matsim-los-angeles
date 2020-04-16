@@ -19,12 +19,19 @@
 
 package org.matsim.run;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.core.config.Config;
 import org.matsim.core.scoring.ScoringFunction;
 import org.matsim.core.scoring.ScoringFunctionFactory;
@@ -68,7 +75,47 @@ public class LosAngelesPlanScoringFunctionFactory implements ScoringFunctionFact
 		final ScoringParameters parameters = params.getScoringParameters( person );
 
 		SumScoringFunction sumScoringFunction = new SumScoringFunction();
-		sumScoringFunction.addScoringFunction(new CharyparNagelActivityScoring( parameters, new PersonSpecificActivityTypeOpeningIntervalCalculator(parameters) ));
+				
+		Map<String, Double> type2minOpenTime = new HashMap<>();
+		Map<String, Double> type2maxClosingTime = new HashMap<>();
+		Set<String> baseTypes = new HashSet<>();
+		
+		// get the earliest opening time and latest closing time for each person and each (base) activity type
+		for (PlanElement pE : person.getSelectedPlan().getPlanElements()) {
+			if (pE instanceof Activity) {
+				Activity act = (Activity) pE;
+				String baseType = act.getType().split("_")[0];
+				baseTypes.add(baseType);
+				
+				if (act.getAttributes().getAttribute("initialStartTime") != null) {
+					double startTime = (double) act.getAttributes().getAttribute("initialStartTime");
+					if (type2minOpenTime.get(baseType) == null) {
+						type2minOpenTime.put(baseType, startTime);
+					} else {
+						if (type2minOpenTime.get(baseType) > startTime) {
+							type2minOpenTime.put(baseType, startTime);
+						}
+					}
+				}
+				if (act.getAttributes().getAttribute("initialEndTime") != null) {
+					double endTime = (double) act.getAttributes().getAttribute("initialEndTime");
+					if (type2maxClosingTime.get(baseType) == null) {
+						type2maxClosingTime.put(baseType, endTime);
+					} else {
+						if (type2maxClosingTime.get(baseType) < endTime) {
+							type2maxClosingTime.put(baseType, endTime);
+						}
+					}
+				}
+			}
+		}
+		
+		Map<String, double[]> baseType2openingInterval = new HashMap<>();
+		for (String actType : baseTypes ) {
+			baseType2openingInterval.put(actType, new double[]{type2minOpenTime.getOrDefault(actType, -1.), type2maxClosingTime.getOrDefault(actType, -1.)});
+		}
+		sumScoringFunction.addScoringFunction(new CharyparNagelActivityScoring( parameters, new PersonSpecificActivityTypeOpeningIntervalCalculator(baseType2openingInterval)));
+		
 		sumScoringFunction.addScoringFunction(new CharyparNagelAgentStuckScoring( parameters ));
 
 		double personSpecificAnnualIncome = averageAnnualIncomePerPerson;
