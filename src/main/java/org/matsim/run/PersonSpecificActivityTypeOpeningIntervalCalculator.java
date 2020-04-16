@@ -1,11 +1,9 @@
-
 /* *********************************************************************** *
  * project: org.matsim.*
- * ActivityTypeOpeningIntervalCalculator.java
  *                                                                         *
  * *********************************************************************** *
  *                                                                         *
- * copyright       : (C) 2019 by the members listed in the COPYING,        *
+ * copyright       : (C) 2017 by the members listed in the COPYING,        *
  *                   LICENSE and WARRANTY file.                            *
  * email           : info at matsim dot org                                *
  *                                                                         *
@@ -19,45 +17,42 @@
  *                                                                         *
  * *********************************************************************** */
 
- package org.matsim.run;
+package org.matsim.run;
+
+import java.util.Map;
 
 import org.matsim.api.core.v01.population.Activity;
-import org.matsim.core.scoring.functions.ActivityUtilityParameters;
 import org.matsim.core.scoring.functions.OpeningIntervalCalculator;
-import org.matsim.core.scoring.functions.ScoringParameters;
+
+/**
+* @author ikaddoura
+*/
 
 public class PersonSpecificActivityTypeOpeningIntervalCalculator implements OpeningIntervalCalculator {
-	private final ScoringParameters params;
-	private final double tolerance = 900.;
 
-	public PersonSpecificActivityTypeOpeningIntervalCalculator(ScoringParameters params) {
-		this.params = params;
+	private final Map<String, double[]> baseType2openingInterval;
+
+	public PersonSpecificActivityTypeOpeningIntervalCalculator(Map<String, double[]> baseType2openingInterval) {
+		this.baseType2openingInterval = baseType2openingInterval;
 	}
 
 	@Override
 	public double[] getOpeningInterval(final Activity act) {
-
-		ActivityUtilityParameters actParams = this.params.utilParams.get(act.getType());
-		if (actParams == null) {
-			throw new IllegalArgumentException("acttype \"" + act.getType() + "\" is not known in utility parameters " +
-					"(module name=\"planCalcScore\" in the config file).");
-		}
-		
-		double openingTime = actParams.getOpeningTime();
-		double closingTime = actParams.getClosingTime();
-		
-		if (act.getAttributes().getAttribute("initialStartTime") != null && act.getAttributes().getAttribute("initialEndTime") != null) {
-			// Consider the initial start and end time given in the activity attributes as opening and closing times.
-			// This will fix the agents' activity start and end times close to the initial times but still allow for some flexibility
+		String baseActivityType = act.getType().split("_")[0];	
+		if (baseActivityType.equals("home")) {
 			
-			openingTime = (double) act.getAttributes().getAttribute("initialStartTime") - tolerance;
-			closingTime = (double) act.getAttributes().getAttribute("initialEndTime") + tolerance;
-		}
-
-		// openInterval has two values
-		// openInterval[0] will be the opening time
-		// openInterval[1] will be the closing time
-
-		return new double[]{openingTime, closingTime};
+			// home activities should not have an opening or closing time
+			return new double[]{-1., -1.};
+		
+		} else {
+			
+			// for all other activity (base) types use each person's initial
+			// activity start and end times to approximate the opening interval.
+			// In case an agent has different activities of the same type,
+			// take the minimum opening time and the maximum closing time
+			return baseType2openingInterval.get(baseActivityType);
+		}		
 	}
+
 }
+
