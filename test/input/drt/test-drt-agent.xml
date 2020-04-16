@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
+
+<population>
+
+<!-- ====================================================================== -->
+
+	<person id="test-agent_drt-user">
+                <attributes>
+                        <attribute name="ESR" class="java.lang.String">0</attribute>
+                        <attribute name="age" class="java.lang.String">3</attribute>
+                        <attribute name="eduatt" class="java.lang.String">1</attribute>
+                        <attribute name="gender" class="java.lang.String">male</attribute>
+                        <attribute name="hhinc" class="java.lang.String">22700</attribute>
+                        <attribute name="hhnumautos" class="java.lang.String">1</attribute>
+                        <attribute name="hhsize" class="java.lang.String">3</attribute>
+                        <attribute name="householdId" class="java.lang.String">3247023</attribute>
+                        <attribute name="htype" class="java.lang.String">Multiple</attribute>
+                        <attribute name="marginalUtilityOfMoney" class="java.lang.Double">4.673641850220264</attribute>
+                        <attribute name="race" class="java.lang.String">NHAS</attribute>
+                        <attribute name="schg" class="java.lang.String">0</attribute>
+                        <attribute name="subpopulation" class="java.lang.String">person</attribute>
+                        <attribute name="ten" class="java.lang.String">3</attribute>
+                        <attribute name="wkind20" class="java.lang.String">0</attribute>
+                        <attribute name="wkocc24" class="java.lang.String">0</attribute>
+                        <attribute name="worker" class="java.lang.String">unemployed</attribute>
+                </attributes>
+                <plan selected="yes">
+                        <activity type="home_55200" link="520911" x="198105.59487741665" y="-476782.90579914337" end_time="04:24:05" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">16200.0</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>            
+                        <leg mode="drt">
+                        </leg>
+                        <activity type="school_30600" link="558071" x="199603.65329761946" y="-470789.7439340063" end_time="12:52:23" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">47150.771713256836</attribute>
+                                        <attribute name="initialStartTime" class="java.lang.Double">16719.787158966064</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32981100</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="drt">
+                        </leg>
+                        <activity type="home_55200" link="520911" x="198105.59487741665" y="-476782.90579914337" >
+                                <attributes>
+                                        <attribute name="initialStartTime" class="java.lang.Double">47684.06999588013</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                </plan>
+
+	</person>
+
+<!-- ====================================================================== -->
+
+</population>
