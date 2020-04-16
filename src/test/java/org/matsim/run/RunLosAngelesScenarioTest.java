@@ -37,6 +37,7 @@ public class RunLosAngelesScenarioTest {
 	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
+	// run two iterations with several test-agents
 	@Test
 	public final void test() {
 		try {			
@@ -54,12 +55,14 @@ public class RunLosAngelesScenarioTest {
 			controler.run();
 		
 		} catch ( Exception ee ) {
+			ee.printStackTrace();
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
 			Assert.fail();
 		}
 
 	}
 	
+	// tests the score of a specific agent (ride user)
 	@Test
 	public final void test2() {
 		try {			
@@ -80,6 +83,7 @@ public class RunLosAngelesScenarioTest {
 			Assert.assertEquals("Wrong score in iteration 0.", 177.13015046108396, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {
+			ee.printStackTrace();
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
 			Assert.fail();
 		}

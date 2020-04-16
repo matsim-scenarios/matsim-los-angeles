@@ -118,7 +118,7 @@
 	</module>
 	<module name="planCalcScore" >
 		<param name="writeExperiencedPlans" value="true" />
-		<param name="fractionOfIterationsToStartScoreMSA" value="1.0" />
+		<param name="fractionOfIterationsToStartScoreMSA" value="0.8" />
 		<parameterset type="scoringParameters" >	
 			<param name="performing" value="9.84" />
 			<param name="waitingPt" value="-9.84" />
