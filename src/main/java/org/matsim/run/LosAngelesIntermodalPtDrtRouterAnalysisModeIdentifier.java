@@ -131,7 +131,7 @@ public final class LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier impleme
 			
 			if (isAccessEgressPt) {
 				return "pt_with_access_egress_pt";
-			if (isDrt) {
+			} else if (isDrt) {
 				return "pt_with_drt";
 			} else {
 				return TransportMode.pt;
