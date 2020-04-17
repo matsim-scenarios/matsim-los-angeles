@@ -63,6 +63,12 @@
 			<version>${matsim.version}</version>
 			<scope>compile</scope>
 		</dependency>
+		
+		<dependency>
+	    	<groupId>com.github.matsim-vsp</groupId>
+	    	<artifactId>drt-speed-up</artifactId>
+	    	<version>83d661919a</version>
+		</dependency>
 
 		<dependency>
 			<!-- Include the JUnit testing library.  Not transitive. -->

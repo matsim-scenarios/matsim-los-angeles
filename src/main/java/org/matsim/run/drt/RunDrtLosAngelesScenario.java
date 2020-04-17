@@ -1,9 +1,9 @@
 /* *********************************************************************** *
- * project: org.matsim.*												   *
+ * project: org.matsim.*
  *                                                                         *
  * *********************************************************************** *
  *                                                                         *
- * copyright       : (C) 2008 by the members listed in the COPYING,        *
+ * copyright       : (C) 2017 by the members listed in the COPYING,        *
  *                   LICENSE and WARRANTY file.                            *
  * email           : info at matsim dot org                                *
  *                                                                         *
@@ -16,208 +16,130 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
+
 package org.matsim.run.drt;
 
-import static org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType.FastAStarLandmarks;
-
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.network.Link;
+import org.matsim.contrib.av.robotaxi.fares.drt.DrtFareModule;
+import org.matsim.contrib.av.robotaxi.fares.drt.DrtFaresConfigGroup;
+import org.matsim.contrib.drt.routing.DrtRoute;
+import org.matsim.contrib.drt.routing.DrtRouteFactory;
+import org.matsim.contrib.drt.run.DrtConfigGroup;
+import org.matsim.contrib.drt.run.DrtConfigs;
+import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
+import org.matsim.contrib.drt.run.MultiModeDrtModule;
+import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpModule;
+import org.matsim.contrib.dvrp.run.DvrpQSimComponents;
+import org.matsim.core.config.CommandLine;
 import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigGroup;
-import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
-import org.matsim.core.config.groups.QSimConfigGroup.TrafficDynamics;
-import org.matsim.core.config.groups.VspExperimentalConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
-import org.matsim.core.controler.OutputDirectoryLogging;
-import org.matsim.core.gbl.Gbl;
+import org.matsim.core.network.algorithms.MultimodalNetworkCleaner;
+import org.matsim.core.population.routes.RouteFactories;
 import org.matsim.core.router.AnalysisMainModeIdentifier;
 import org.matsim.core.router.MainModeIdentifier;
-import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.parkingCost.ParkingCostConfigGroup;
-import org.matsim.parkingCost.ParkingCostModule;
+import org.matsim.drtSpeedUp.DrtSpeedUpConfigGroup;
+import org.matsim.drtSpeedUp.DrtSpeedUpModule;
 import org.matsim.run.LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier;
 import org.matsim.run.LosAngelesIntermodalPtDrtRouterModeIdentifier;
-import org.matsim.run.LosAngelesPlanScoringFunctionFactory;
-import org.matsim.run.LosAngelesRaptorIntermodalAccessEgress;
-
-import ch.sbb.matsim.config.SwissRailRaptorConfigGroup;
-import ch.sbb.matsim.routing.pt.raptor.RaptorIntermodalAccessEgress;
-import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
+import org.matsim.run.RunLosAngelesScenario;
 
 /**
- * @author nagel, ikaddoura
- *
+ * This class starts a simulation run with DRT.
+ * 
+ *  - The input DRT vehicles file specifies the number of vehicles and the vehicle capacity (a vehicle capacity of 1 means there is no ride-sharing).
+ * 	- The DRT service area is set based on an input shape file.
+ * 	- Initial plans are not modified.
+ * 
+ * @author ikaddoura
  */
-public class RunDrtLosAngelesScenario {
-	private static final Logger log = Logger.getLogger(RunDrtLosAngelesScenario.class );
 
-	public static void main(String[] args) {
+public final class RunDrtLosAngelesScenario {
+
+	private static final Logger log = Logger.getLogger(RunDrtLosAngelesScenario.class);
+
+	public static void main(String[] args) throws CommandLine.ConfigurationException {
 		
 		for (String arg : args) {
 			log.info( arg );
 		}
 		
 		if ( args.length==0 ) {
-			args = new String[] {"./scenarios/los-angeles-v1.0/input/los-angeles-v1.0-0.1pct.config.xml"}  ;
+			args = new String[] {"./scenarios/los-angeles-v1.0/input/drt/los-angeles-drt-v1.0-0.1pct.config.xml"}  ;
 		}
-				
+		
 		Config config = prepareConfig( args ) ;
 		Scenario scenario = prepareScenario( config ) ;
 		Controler controler = prepareControler( scenario ) ;
 		controler.run() ;
 	}
 	
-	public static Controler prepareControler( Scenario scenario ) {		
-		Gbl.assertNotNull(scenario);
+	public static Controler prepareControler( Scenario scenario ) {
+
+		Controler controler = RunLosAngelesScenario.prepareControler( scenario ) ;
 		
-		final Controler controler = new Controler( scenario );
+		// Add drt and dvrp modules
+		controler.addOverridingModule(new MultiModeDrtModule());
+		controler.addOverridingModule(new DvrpModule());
+		controler.configureQSimComponents(DvrpQSimComponents.activateAllModes(MultiModeDrtConfigGroup.get(controler.getConfig())));
 		
-		if (controler.getConfig().transit().isUsingTransitInMobsim()) {
-			// use the sbb pt raptor router
-			controler.addOverridingModule( new AbstractModule() {
-				@Override
-				public void install() {
-					install( new SwissRailRaptorModule() );
-				}
-			} );
-		} else {
-			log.warn("Public transit will be teleported and not simulated in the mobsim! "
-					+ "This will have a significant effect on pt-related parameters (travel times, modal split, and so on). "
-					+ "Should only be used for testing or car-focused studies with a fixed modal split.  ");
-		}
-		
-		// use the (congested) car travel time for the teleported ride modes
-		controler.addOverridingModule( new AbstractModule() {
-			@Override
-			public void install() {
-				addTravelTimeBinding( TransportMode.ride ).to( networkTravelTime() );
-				addTravelDisutilityFactoryBinding( TransportMode.ride ).to( carTravelDisutilityFactoryKey() );
+		// Add drt-specific fare module
+		controler.addOverridingModule(new DrtFareModule());
 				
-				addTravelTimeBinding( "ride_taxi" ).to( networkTravelTime() );
-				addTravelDisutilityFactoryBinding( "ride_taxi" ).to( carTravelDisutilityFactoryKey() );
+		// Add the drt-speed-up module
+		controler.addOverridingModule(new DrtSpeedUpModule());
 				
-				addTravelTimeBinding( "ride_school_bus" ).to( networkTravelTime() );
-				addTravelDisutilityFactoryBinding( "ride_school_bus" ).to( carTravelDisutilityFactoryKey() );
-			}
-		} );
-		
-		// use scoring parameters for intermodal PT routing
-		controler.addOverridingModule( new AbstractModule() {
+		controler.addOverridingModule(new AbstractModule() {
+			
 			@Override
 			public void install() {
-				bind(RaptorIntermodalAccessEgress.class).to(LosAngelesRaptorIntermodalAccessEgress.class);
-			}
-		} );
-		
-		// use our own Analysis(Main-)ModeIdentifier
-		controler.addOverridingModule( new AbstractModule() {
-			@Override
-			public void install() {
-				// mainly relevant for DRT applications:
+				// use a main mode identifier which knows how to handle intermodal trips generated by the used sbb pt raptor router
+				// the SwissRailRaptor already binds its IntermodalAwareRouterModeIdentifier, however drt obviuosly replaces it
+				// with its own implementation
+				// So we need our own main mode indentifier which replaces both :-(
 				bind(MainModeIdentifier.class).to(LosAngelesIntermodalPtDrtRouterModeIdentifier.class);
-				// in order to look into the different types of intermodal pt trips:
 				bind(AnalysisMainModeIdentifier.class).to(LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier.class);
 			}
-		} );
-		
-		// use income dependent marginal utility of money
-		LosAngelesPlanScoringFunctionFactory initialPlanScoringFunctionFactory = new LosAngelesPlanScoringFunctionFactory(controler.getScenario());
-		controler.addOverridingModule(new AbstractModule() {
-			@Override
-			public void install() {
-				this.bindScoringFunctionFactory().toInstance(initialPlanScoringFunctionFactory);
-			}
 		});
-		
-		// use parking cost module
-		controler.addOverridingModule(new ParkingCostModule());
-
+						
 		return controler;
 	}
 	
 	public static Scenario prepareScenario( Config config ) {
-		Gbl.assertNotNull( config );
-		final Scenario scenario = ScenarioUtils.loadScenario( config );
+
+		Scenario scenario = RunLosAngelesScenario.prepareScenario( config );
+
+		// required by drt module
+		RouteFactories routeFactories = scenario.getPopulation().getFactory().getRouteFactories();
+		routeFactories.setRouteFactory(DrtRoute.class, new DrtRouteFactory());
+
+		for (DrtConfigGroup drtCfg : MultiModeDrtConfigGroup.get(config).getModalElements()) {
+			
+			String drtServiceAreaShapeFile = drtCfg.getDrtServiceAreaShapeFile();
+			if (drtServiceAreaShapeFile != null && !drtServiceAreaShapeFile.equals("") && !drtServiceAreaShapeFile.equals("null")) {				
+				// Currently all transit stops (within the drt service area) can be used as intermodal trasfer points (drt -> pt or pt -> drt).
+				// TODO: To speed up computation times, we can also exclude certain transit stops (e.g. less relevant bus stops)
+			}
+		}
+		
 		return scenario;
 	}
-	
-	public static Config prepareConfig(String [] args, ConfigGroup... customModules) {
-		OutputDirectoryLogging.catchLogEntries();
-		
-		String[] typedArgs = Arrays.copyOfRange( args, 1, args.length );
-		
-		ConfigGroup[] customModulesToAdd = new ConfigGroup[]{ new SwissRailRaptorConfigGroup(), new ParkingCostConfigGroup() };
-		ConfigGroup[] customModulesAll = new ConfigGroup[customModules.length + customModulesToAdd.length];
-		
-		int counter = 0;
-		for (ConfigGroup customModule : customModules) {
-			customModulesAll[counter] = customModule;
-			counter++;
-		}
-		
-		for (ConfigGroup customModule : customModulesToAdd) {
-			customModulesAll[counter] = customModule;
-			counter++;
-		}
-		
-		final Config config = ConfigUtils.loadConfig( args[ 0 ], customModulesAll );
-		
-		config.controler().setRoutingAlgorithmType( FastAStarLandmarks );
-		
-		config.subtourModeChoice().setProbaForRandomSingleTripMode( 0.5 );
-		
-		config.plansCalcRoute().setRoutingRandomness( 3. );
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride); // since we are using the (congested) car travel time
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt); // since we are using simulated public transit
-		config.plansCalcRoute().removeModeRoutingParams("undefined"); // since we don't have such a mode
-	
-		config.qsim().setInsertingWaitingVehiclesBeforeDrivingVehicles( true );
-				
-		// vsp defaults
-		config.vspExperimental().setVspDefaultsCheckingLevel( VspExperimentalConfigGroup.VspDefaultsCheckingLevel.abort );
-		config.plansCalcRoute().setInsertingAccessEgressWalk( true );
-		config.qsim().setUsingTravelTimeCheckInTeleportation( true );
-		config.qsim().setTrafficDynamics( TrafficDynamics.kinematicWaves );
-				
-		// activities:
-		for ( long ii = 600 ; ii <= 97200; ii+=600 ) {
-			config.planCalcScore().addActivityParams( new ActivityParams( "home_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "work_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "university_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "school_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "escort_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "schoolescort_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "schoolpureescort_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "schoolridesharing_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "non-schoolescort_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "shop_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "maintenance_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "HHmaintenance_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "personalmaintenance_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "eatout_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "eatoutbreakfast_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "eatoutlunch_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "eatoutdinner_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "visiting_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "discretionary_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "specialevent_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "atwork_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "atworkbusiness_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "atworklunch_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "atworkother_" + ii ).setTypicalDuration( ii ) );
-			config.planCalcScore().addActivityParams( new ActivityParams( "business_" + ii ).setTypicalDuration( ii ) );	
-		}
-		config.planCalcScore().addActivityParams( new ActivityParams( "freightStart" ).setTypicalDuration( 12.*3600. ) );
-		config.planCalcScore().addActivityParams( new ActivityParams( "freightEnd" ).setTypicalDuration( 12.*3600. ) );
 
-		ConfigUtils.applyCommandline( config, typedArgs ) ;
+	public static Config prepareConfig(String [] args) {
+		Config config = RunLosAngelesScenario.prepareConfig(args, new MultiModeDrtConfigGroup(), new DvrpConfigGroup(), new DrtFaresConfigGroup(), new DrtSpeedUpConfigGroup()  ) ;
+
+		DrtConfigs.adjustMultiModeDrtConfig(MultiModeDrtConfigGroup.get(config), config.planCalcScore(), config.plansCalcRoute());
+		DrtSpeedUpModule.adjustConfig(config);
 
 		return config ;
 	}
-	
+
 }
+

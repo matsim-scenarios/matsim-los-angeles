@@ -39,23 +39,50 @@ public class RunDrtLosAngelesScenarioTest {
 	
 	// tests the score of a specific agent (drt user)
 	@Test
-	public final void test2() {
+	public final void test1() {
 		try {			
 			String[] args = new String[] { "./scenarios/los-angeles-v1.0/input/drt/los-angeles-drt-v1.0-0.1pct.config.xml" };
 			
 			Config config = RunDrtLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
-			config.global().setNumberOfThreads(0);
+			config.global().setNumberOfThreads(1);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-			config.plans().setInputFile("../../../test/input/drt/test-drt-agent.xml");
+			config.plans().setInputFile("../../../../test/input/drt/test-drt-agent.xml");
 			config.transit().setUseTransit(false);
 			
 			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config);
 			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
 			controler.run();
 			
-//			Assert.assertEquals("Wrong score in iteration 0.", 177.13015046108396, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+			Assert.assertEquals("Wrong score in iteration 0.", 146.44725057267536, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+
+		} catch ( Exception ee ) {
+			ee.printStackTrace();
+			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
+			Assert.fail();
+		}
+
+	}
+	
+	@Test
+	public final void test2() {
+		try {			
+			String[] args = new String[] { "./scenarios/los-angeles-v1.0/input/drt/los-angeles-drt-v1.0-0.1pct.config.xml" };
+			
+			Config config = RunDrtLosAngelesScenario.prepareConfig(args);
+			config.controler().setLastIteration(0);
+			config.global().setNumberOfThreads(1);
+			config.controler().setOutputDirectory( utils.getOutputDirectory() );
+			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+			config.plans().setInputFile("../../../../test/input/drt/test-pt-agent.xml");
+			config.transit().setUseTransit(true);
+			
+			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config);
+			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
+			controler.run();
+			
+//			Assert.assertEquals("Wrong score in iteration 0.", 146.44725057267536, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {
 			ee.printStackTrace();

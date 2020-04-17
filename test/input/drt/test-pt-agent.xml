@@ -5,7 +5,7 @@
 
 <!-- ====================================================================== -->
 
-	<person id="test-agent_drt-user_monomodal">
+	<person id="test-agent_pt-user">
                 <attributes>
                         <attribute name="ESR" class="java.lang.String">0</attribute>
                         <attribute name="age" class="java.lang.String">3</attribute>
@@ -31,7 +31,7 @@
                                         <attribute name="initialEndTime" class="java.lang.Double">16200.0</attribute>
                                 </attributes>
                         </activity>            
-                        <leg mode="drt">
+                        <leg mode="pt">
                         </leg>
                         <activity type="school_30600" link="813154" x="144484.02887241883" y="-445105.7471087491" end_time="12:52:23" >
                                 <attributes>
@@ -39,7 +39,7 @@
                                         <attribute name="initialStartTime" class="java.lang.Double">28800</attribute>
                                 </attributes>
                         </activity>
-                        <leg mode="drt">
+                        <leg mode="pt">
                         </leg>
                         <activity type="home_55200" link="270869" x="139949.94860068822" y="-440235.23919569375" >
                                 <attributes>

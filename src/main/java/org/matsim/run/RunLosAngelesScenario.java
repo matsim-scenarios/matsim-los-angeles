@@ -25,6 +25,7 @@ import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
@@ -139,6 +140,12 @@ public class RunLosAngelesScenario {
 	public static Scenario prepareScenario( Config config ) {
 		Gbl.assertNotNull( config );
 		final Scenario scenario = ScenarioUtils.loadScenario( config );
+		
+		// make sure we start with selected plans only
+		for( Person person : scenario.getPopulation().getPersons().values() ){
+			person.getPlans().removeIf( (plan) -> plan!=person.getSelectedPlan() ) ;
+		}
+		
 		return scenario;
 	}
 	
