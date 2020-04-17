@@ -113,6 +113,7 @@ public final class LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier impleme
 		// differentiate pt monomodal/intermodal
 		if (mainMode.equals(TransportMode.pt)) {
 			boolean isAccessEgressPt = false;
+			boolean isDrt = false;
 			for (String modeFound: modesFound) {
 				if (modeFound.equals(TransportMode.pt)) {
 					continue;
@@ -120,6 +121,8 @@ public final class LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier impleme
 					continue;
 				} else if (modeFound.equals("access_egress_pt")) {
 					isAccessEgressPt = true;
+				} else if (modeFound.equals("drt")) {
+					isDrt = true;
 				} else {
 					log.error("unknown intermodal pt trip: " + planElements.toString());
 					throw new RuntimeException("unknown intermodal pt trip");
@@ -128,6 +131,8 @@ public final class LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier impleme
 			
 			if (isAccessEgressPt) {
 				return "pt_with_access_egress_pt";
+			if (isDrt) {
+				return "pt_with_drt";
 			} else {
 				return TransportMode.pt;
 			}

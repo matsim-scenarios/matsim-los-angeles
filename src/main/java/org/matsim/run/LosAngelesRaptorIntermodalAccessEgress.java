@@ -84,7 +84,6 @@ public class LosAngelesRaptorIntermodalAccessEgress implements RaptorIntermodalA
                                                 
                         if (Time.getUndefinedTime() != travelTime) {
                             fare += drtFareConfigGroup.getTimeFare_h() * travelTime / 3600.;
-
                         }
                         
                         fare += drtFareConfigGroup.getBasefare(); 
