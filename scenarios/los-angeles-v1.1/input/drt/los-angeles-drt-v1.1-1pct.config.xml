@@ -288,7 +288,7 @@
 	<module name="drtSpeedUp" >
 		<param name="fractionOfIterationSwitchOn" value="0.0" />
 		<param name="fractionOfIterationsSwitchOff" value="0.99" />
-		<param name="intervalDetailedIteration" value="5" />
+		<param name="intervalDetailedIteration" value="10" />
 		<param name="numberOfThreadsForMobsimDuringSpeedUp" value="8" />
 		<param name="mode" value="drt" />
 	</module>
