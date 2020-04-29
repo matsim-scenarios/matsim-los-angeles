@@ -60,7 +60,7 @@ public class RunLosAngelesScenario {
 		}
 		
 		if ( args.length==0 ) {
-			args = new String[] {"./scenarios/los-angeles-v1.0/input/los-angeles-v1.0-0.1pct.config.xml"}  ;
+			args = new String[] {"./scenarios/los-angeles-v1.1/input/los-angeles-v1.1-0.1pct.config.xml"}  ;
 		}
 				
 		Config config = prepareConfig( args ) ;

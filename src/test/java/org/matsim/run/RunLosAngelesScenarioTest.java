@@ -41,7 +41,7 @@ public class RunLosAngelesScenarioTest {
 	@Test
 	public final void test() {
 		try {			
-			String[] args = new String[] { "./scenarios/los-angeles-v1.0/input/los-angeles-v1.0-0.1pct.config.xml" };
+			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-v1.1-0.1pct.config.xml" };
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
@@ -66,7 +66,7 @@ public class RunLosAngelesScenarioTest {
 	@Test
 	public final void test2() {
 		try {			
-			String[] args = new String[] { "./scenarios/los-angeles-v1.0/input/los-angeles-v1.0-0.1pct.config.xml" };
+			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-v1.1-0.1pct.config.xml" };
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
