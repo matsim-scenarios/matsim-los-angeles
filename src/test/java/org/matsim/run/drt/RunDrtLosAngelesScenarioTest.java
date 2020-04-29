@@ -55,7 +55,7 @@ public class RunDrtLosAngelesScenarioTest {
 			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
 			controler.run();
 			
-			Assert.assertEquals("Wrong score in iteration 0.", 146.44725057267536, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+			Assert.assertEquals("Wrong score in iteration 0.", 138.81031723934203, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {
 			ee.printStackTrace();
@@ -82,7 +82,7 @@ public class RunDrtLosAngelesScenarioTest {
 			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
 			controler.run();
 			
-			Assert.assertEquals("Wrong score in iteration 0.", 82.26476760813718, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+			Assert.assertEquals("Wrong score in iteration 0.", 73.8609503716153, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {
 			ee.printStackTrace();
