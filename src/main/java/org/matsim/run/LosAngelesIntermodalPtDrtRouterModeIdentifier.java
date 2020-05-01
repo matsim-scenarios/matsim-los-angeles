@@ -45,7 +45,7 @@ public final class LosAngelesIntermodalPtDrtRouterModeIdentifier implements Anal
 
 	@Inject
 	public LosAngelesIntermodalPtDrtRouterModeIdentifier() {
-		drtModes = Arrays.asList(TransportMode.drt, "drt2", "drt_teleportation");
+		drtModes = Arrays.asList(TransportMode.drt, "drt1", "drt2", "drt_teleportation", "drt1_teleportation", "drt2_teleportation");
 		
 		modeHierarchy.add( TransportMode.walk ) ;
 		modeHierarchy.add( "access_egress_pt" );

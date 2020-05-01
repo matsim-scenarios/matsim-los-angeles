@@ -56,6 +56,7 @@ public class RandomTaxiVehicleCreator {
 
 	private final String vehiclesFilePrefix;
 	private final CoordinateTransformation ct;
+	private final String vehiclePrefix;
 
 	private final Scenario scenario ;
 	private final Random random = MatsimRandom.getRandom();
@@ -67,18 +68,20 @@ public class RandomTaxiVehicleCreator {
 		String networkFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-network_2019-12-10.xml.gz";
 		String drtServiceAreaShapeFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC_Boundary_SCAG/WSC_Boundary_SCAG.shp";
 	    CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation("EPSG:3310", "EPSG:3310"); 
-		
-		String vehiclesFilePrefix = "LA-WSC-";
-	    int numberOfVehicles = 100;
+
+	    String vehiclePrefix = "drt2";
+		String vehiclesFilePrefix = "LA-WSC-" + vehiclePrefix + "-";
+	    int numberOfVehicles = 1000;
 	    int seats = 4;
 	    
-		RandomTaxiVehicleCreator tvc = new RandomTaxiVehicleCreator(networkFile, drtServiceAreaShapeFile, vehiclesFilePrefix, ct);
+		RandomTaxiVehicleCreator tvc = new RandomTaxiVehicleCreator(networkFile, drtServiceAreaShapeFile, vehiclesFilePrefix, vehiclePrefix, ct);
 		
 		tvc.run(numberOfVehicles, seats);
 }
 
-	public RandomTaxiVehicleCreator(String networkfile, String drtServiceAreaShapeFile, String vehiclesFilePrefix, CoordinateTransformation ct) {
+	public RandomTaxiVehicleCreator(String networkfile, String drtServiceAreaShapeFile, String vehiclesFilePrefix, String vehiclePrefix, CoordinateTransformation ct) {
 		this.vehiclesFilePrefix = vehiclesFilePrefix;
+		this.vehiclePrefix = vehiclePrefix;
 		this.ct = ct;
 		
 		Config config = ConfigUtils.createConfig();
@@ -118,7 +121,7 @@ public class RandomTaxiVehicleCreator {
 			
 			if (i%5000 == 0) log.info("#"+i);
 
-			vehicles.add(ImmutableDvrpVehicleSpecification.newBuilder().id(Id.create("rt" + i, DvrpVehicle.class))
+			vehicles.add(ImmutableDvrpVehicleSpecification.newBuilder().id(Id.create(this.vehiclePrefix + i, DvrpVehicle.class))
 					.startLinkId(link.getId())
 					.capacity(seats)
 					.serviceBeginTime(Math.round(1))
