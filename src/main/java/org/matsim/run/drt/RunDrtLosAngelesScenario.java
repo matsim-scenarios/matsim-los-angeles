@@ -118,7 +118,7 @@ public final class RunDrtLosAngelesScenario {
 			
 			String drtServiceAreaShapeFile = drtCfg.getDrtServiceAreaShapeFile();
 			if (drtServiceAreaShapeFile != null && !drtServiceAreaShapeFile.equals("") && !drtServiceAreaShapeFile.equals("null")) {				
-				// Currently all transit stops (within the drt service area) can be used as intermodal trasfer points (drt -> pt or pt -> drt).
+				// Currently all transit stops (within the drt service area) can be used as an intermodal transfer point (drt -> pt or pt -> drt).
 				// TODO: To speed up computation times, we can also exclude certain transit stops (e.g. less relevant bus stops)
 			}
 		}
