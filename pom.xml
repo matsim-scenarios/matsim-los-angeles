@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.matsim-scenarios</groupId>
 	<artifactId>matsim-los-angeles</artifactId>
-	<version>v1.1-SNAPSHOT</version>
+	<version>v1.2-SNAPSHOT</version>
 
 	<name>MATSim open Los Angeles project</name>
 	<description>MATSim open Los Angeles project</description>
