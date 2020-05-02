@@ -33,8 +33,13 @@ import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.matsim.core.utils.gis.ShapeFileReader;
@@ -47,12 +52,11 @@ import org.opengis.feature.simple.SimpleFeature;
 
 public final class ShapeFileUtils {
 
-	private Map<Integer, Geometry> serviceAreaGeometries;
-	private Map<Double, Map<Integer, Geometry>> serviceAreaGeometriesWithBuffer = new HashMap<>();
+	private Map<Integer, Geometry> areaGeometries;
 
-	public ShapeFileUtils(String drtServiceAreaShapeFile) {	
-		if (drtServiceAreaShapeFile != null && drtServiceAreaShapeFile != "" && drtServiceAreaShapeFile != "null" ) {
-			this.serviceAreaGeometries = loadShapeFile(drtServiceAreaShapeFile);
+	public ShapeFileUtils(String areaShapeFile) {	
+		if (areaShapeFile != null && areaShapeFile != "" && areaShapeFile != "null" ) {
+			this.areaGeometries = loadShapeFile(areaShapeFile);
 		}
 	}
 
@@ -78,35 +82,60 @@ public final class ShapeFileUtils {
 		return geometries;
 	}
 
-	public boolean isCoordInDrtServiceArea(Coord coord) {
-		return isCoordInArea(coord, serviceAreaGeometries);
+	public boolean isCoordInArea(Coord coord) {
+		return isCoordInArea(coord, areaGeometries, 0.);
 	}
 	
-	public boolean isCoordInDrtServiceAreaWithBuffer(Coord coord, double buffer) {
-		if (!serviceAreaGeometriesWithBuffer.containsKey(buffer)) {
-			serviceAreaGeometriesWithBuffer.put(buffer, prepareAndSaveGeometriesWithBuffer(serviceAreaGeometries, buffer));
-		}
-		return isCoordInArea(coord, serviceAreaGeometriesWithBuffer.get(buffer));
-	}
-	
-	private Map<Integer, Geometry> prepareAndSaveGeometriesWithBuffer(Map<Integer, Geometry> geometries, double buffer) {
-		Map<Integer, Geometry> geometriesWithBuffer = new HashMap<>();
-		for (Map.Entry<Integer, Geometry> entry: geometries.entrySet()) {
-			geometriesWithBuffer.put(entry.getKey(), entry.getValue().buffer(buffer));
-		}
-		return geometriesWithBuffer;
+	public boolean isCoordInArea(Coord coord, double buffer) {
+		return isCoordInArea(coord, areaGeometries, buffer);
 	}
 
-	private boolean isCoordInArea(Coord coord, Map<Integer, Geometry> areaGeometries) {
+	private boolean isCoordInArea(Coord coord, Map<Integer, Geometry> areaGeometries, double buffer) {
 		boolean coordInArea = false;
 		for (Geometry geometry : areaGeometries.values()) {
 			Point p = MGC.coord2Point(coord);
 
-			if (p.within(geometry)) {
-				coordInArea = true;
+			if (buffer == 0.) {
+				if (p.within(geometry)) {
+					coordInArea = true;
+					break;
+				}
+			} else {
+				if (p.isWithinDistance(geometry, buffer)) {
+					coordInArea = true;
+					break;
+				}
 			}
 		}
 		return coordInArea;
+	}
+	
+	public boolean isLineInArea(Coord coord1, Coord coord2, double buffer) {
+		return isLineInArea(coord1, coord2, areaGeometries, buffer);
+	}
+	
+	private boolean isLineInArea(Coord coord1, Coord coord2, Map<Integer, Geometry> areaGeometries, double buffer) {
+		boolean lineInArea = false;
+		for (Geometry geometry : areaGeometries.values()) {
+			Coordinate p1 = MGC.coord2Coordinate(coord1);
+			Coordinate p2 = MGC.coord2Coordinate(coord2);
+			Coordinate[] coordinates = {p1, p2};
+			CoordinateSequence points = new CoordinateArraySequence(coordinates);
+			LineString line = new LineString(points, new GeometryFactory());
+			
+			if (buffer == 0.) {
+				if (line.within(geometry)) {
+					lineInArea = true;
+					break;
+				}
+			} else {
+				if (line.isWithinDistance(geometry, buffer)) {
+					lineInArea = true;
+					break;
+				}
+			}		
+		}
+		return lineInArea;
 	}
 	
 	static Collection<SimpleFeature> getAllFeatures(final URL url) {
@@ -128,8 +157,8 @@ public final class ShapeFileUtils {
 		}
 	}
 	
-	public Point getRandomPointInServiceArea(Random random) {
-		return getRandomPointInFeature(random, serviceAreaGeometries.get(random.nextInt(serviceAreaGeometries.size())));
+	public Point getRandomPointInArea(Random random) {
+		return getRandomPointInFeature(random, areaGeometries.get(random.nextInt(areaGeometries.size())));
 	}
 	
 	private static Point getRandomPointInFeature(Random rnd, Geometry g)

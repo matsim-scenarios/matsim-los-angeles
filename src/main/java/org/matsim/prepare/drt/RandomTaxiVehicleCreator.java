@@ -105,9 +105,9 @@ public class RandomTaxiVehicleCreator {
 			Link link = null;
 			
 			while (link == null) {
-				Point p = shpUtils.getRandomPointInServiceArea(random);
+				Point p = shpUtils.getRandomPointInArea(random);
 				link = NetworkUtils.getNearestLinkExactly(drtNetwork, ct.transform( MGC.point2Coord(p)));
-				if (shpUtils.isCoordInDrtServiceArea(link.getFromNode().getCoord()) && shpUtils.isCoordInDrtServiceArea(link.getToNode().getCoord())) {
+				if (shpUtils.isCoordInArea(link.getFromNode().getCoord()) && shpUtils.isCoordInArea(link.getToNode().getCoord())) {
 					if (link.getAllowedModes().contains(TransportMode.car)) {
 						// ok
 					} else {

@@ -124,8 +124,18 @@ public final class LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier impleme
 				} else if (modeFound.equals("drt")) {
 					isDrt = true;
 				} else {
-					log.error("unknown intermodal pt trip: " + planElements.toString());
-					throw new RuntimeException("unknown intermodal pt trip");
+					
+					for (String drtMode : drtModes) {
+						if (modeFound.equals(drtMode)) {
+							isDrt = true;
+							break;
+						}
+					}
+					
+					if (!isDrt) {
+						log.error("unknown intermodal pt trip: " + planElements.toString());
+						throw new RuntimeException("unknown intermodal pt trip");		
+					}
 				}
 			}
 			

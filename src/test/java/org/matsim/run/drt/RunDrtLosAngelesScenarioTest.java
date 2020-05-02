@@ -24,7 +24,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.analysis.ScoreStatsControlerListener.ScoreItem;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.testcases.MatsimTestUtils;
@@ -50,12 +52,13 @@ public class RunDrtLosAngelesScenarioTest {
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 			config.plans().setInputFile("../../../../test/input/drt/test-drt-agent.xml");
 			config.transit().setUseTransit(false);
+			ConfigUtils.addOrGetModule(config, MultiModeDrtConfigGroup.class);
 			
 			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config);
 			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
 			controler.run();
 			
-			Assert.assertEquals("Wrong score in iteration 0.", 138.81031723934203, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+			Assert.assertEquals("Wrong score in iteration 0.", 149.3797713901901, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {
 			ee.printStackTrace();
@@ -82,7 +85,7 @@ public class RunDrtLosAngelesScenarioTest {
 			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
 			controler.run();
 			
-			Assert.assertEquals("Wrong score in iteration 0.", 73.8609503716153, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+			Assert.assertEquals("Wrong score in iteration 0.", 74.39183890489247, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {
 			ee.printStackTrace();
