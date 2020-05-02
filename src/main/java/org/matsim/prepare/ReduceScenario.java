@@ -45,16 +45,33 @@ public class ReduceScenario {
 	
 	public static void main(String[] args) {
 		
-		String planningAreaShpFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC-LA-planning-area/WSC-LA-planning-area.shp";
-		double linkBuffer = 1000.;
-		double personBuffer = 5000.;
+		String planningAreaShpFile;
+		String[] argsWithoutCustomAttributes;
+
+		final double linkBuffer = 1000.;
+		final double personBuffer = 1000.;
 		
 		for (String arg : args) {
 			log.info( arg );
 		}
 		
 		if ( args.length==0 ) {
-			args = new String[] {"./scenarios/los-angeles-v1.1/input/los-angeles-v1.1-1pct.config.xml"}  ;
+			argsWithoutCustomAttributes = new String[] {"./scenarios/los-angeles-v1.1/input/los-angeles-v1.1-10pct.config.xml"}  ;
+			planningAreaShpFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC-LA-planning-area/WSC-LA-planning-area.shp";
+			
+		} else {
+			planningAreaShpFile = args[1];
+			log.info("planningAreaShpFile: " + planningAreaShpFile);
+			
+			argsWithoutCustomAttributes = new String[args.length - 1];
+			argsWithoutCustomAttributes[0] = args[0];
+			log.info("config file: " + args[0]);
+			log.info("other arguments: ");
+			for (int n = 2; n < args.length ; n++) {
+				argsWithoutCustomAttributes[n-1] = args[n];
+				log.info(args[n]);
+			}
+			log.info("---------------");
 		}
 				
 		Config config = RunLosAngelesScenario.prepareConfig( args ) ;
