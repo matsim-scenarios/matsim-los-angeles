@@ -41,7 +41,7 @@ public class RunLosAngelesScenarioTest {
 	@Test
 	public final void test() {
 		try {			
-			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-v1.1-0.1pct.config.xml" };
+			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-WSC-reduced-v1.1-1pct.config.xml" };
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
@@ -59,14 +59,13 @@ public class RunLosAngelesScenarioTest {
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
 			Assert.fail();
 		}
-
 	}
 	
 	// tests the score of a specific agent (ride user)
 	@Test
 	public final void test2() {
 		try {			
-			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-v1.1-0.1pct.config.xml" };
+			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-WSC-reduced-v1.1-1pct.config.xml" };
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
@@ -80,7 +79,7 @@ public class RunLosAngelesScenarioTest {
 			Controler controler = RunLosAngelesScenario.prepareControler(scenario);
 			controler.run();
 			
-			Assert.assertEquals("Wrong score in iteration 0.", 152.1570837944173, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+			Assert.assertEquals("Wrong score in iteration 0.", 137.00979198644234, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {
 			ee.printStackTrace();

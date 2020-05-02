@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
+<config>
+	<module name="TimeAllocationMutator" >
+		<param name="mutationRange" value="7200.0" />
+		<param name="mutationAffectsDuration" value="true" />
+	</module>
+	<module name="controler" >
+		<param name="lastIteration" value="300" />
+		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
+		<param name="runId" value="los-angeles-WSC-reduced-v1.1-1pct_run0" />
+		<param name="outputDirectory" value="./scenarios/los-angeles-WSC-reduced-v1.1/output/los-angeles-WSC-reduced-v1.1-1pct_run0/" />
+		<param name="writeEventsInterval" value="50" />
+		<param name="writePlansInterval" value="50" />
+	</module>
+	<module name="global" >
+		<param name="coordinateSystem" value="EPSG:3310" />
+		<param name="insistingOnDeprecatedConfigVersion" value="false" />
+		<param name="numberOfThreads" value="8" />
+	</module>
+	<module name="network" >
+		<param name="inputNetworkFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-WSC-reduced-v1.1-network_2020-05-02.xml.gz" />
+	</module>
+	<module name="plans" >
+		<param name="inputPlansFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-WSC-reduced-v1.1-population-1pct_2020-05-02.xml.gz" /> <!-- Should be set depending on the sample size. -->
+		<param name="removingUnnecessaryPlanAttributes" value="true" />
+	</module>
+	<module name="vehicles" >
+		<param name="vehiclesFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-mode-vehicle-types_2019-12-05.xml" />
+	</module>
+	<module name="transit" >
+		<param name="transitScheduleFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-transitSchedule_2019-12-18.xml.gz" />
+		<param name="useTransit" value="true" />
+		<param name="vehiclesFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-transitVehicles_2019-11-19.xml.gz" />
+	</module>
+	<module name="planscalcroute" >
+		<param name="networkModes" value="car,freight,ride,ride_taxi,ride_school_bus" />
+		<param name="clearDefaultTeleportedModeParams" value="true" />
+		<parameterset type="teleportedModeParameters" >
+			<param name="beelineDistanceFactor" value="1.4" />
+			<param name="mode" value="bike" />
+			<param name="teleportedModeSpeed" value="3.1388889" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="beelineDistanceFactor" value="1.4" />
+			<param name="mode" value="walk" />
+			<param name="teleportedModeSpeed" value="1.0555556" />
+		</parameterset>
+		<parameterset type="teleportedModeParameters" >
+			<param name="beelineDistanceFactor" value="1.4" />
+			<param name="mode" value="access_egress_pt" />
+			<param name="teleportedModeSpeed" value="4.16667" />
+		</parameterset>
+	</module>
+	<module name="qsim" >
+		<param name="endTime" value="36:00:00" />
+		<param name="flowCapacityFactor" value="0.02" /> <!-- Should be set depending on the sample size. -->
+		<param name="mainMode" value="car,freight" />
+		<param name="numberOfThreads" value="8" />
+		<param name="startTime" value="00:00:00" />
+		<param name="storageCapacityFactor" value="0.02" /> <!-- Should be set depending on the sample size. -->
+		<param name="stuckTime" value="30.0" />
+		<param name="trafficDynamics" value="kinematicWaves" />
+		<param name="vehiclesSource" value="modeVehicleTypesFromVehiclesData" />
+		<param name="insertingWaitingVehiclesBeforeDrivingVehicles" value="true" />
+	</module>
+	<module name="strategy" >
+		<param name="fractionOfIterationsToDisableInnovation" value="0.8" />
+		<parameterset type="strategysettings" >
+			<param name="strategyName" value="ChangeExpBeta" />
+			<param name="subpopulation" value="person" />
+			<param name="weight" value="0.85" />
+		</parameterset>
+		<parameterset type="strategysettings" >
+			<param name="strategyName" value="ReRoute" />
+			<param name="subpopulation" value="person" />
+			<param name="weight" value="0.05" />
+		</parameterset>
+		<parameterset type="strategysettings" >
+			<param name="strategyName" value="SubtourModeChoice" />
+			<param name="subpopulation" value="person" />
+			<param name="weight" value="0.05" />
+		</parameterset>
+		<parameterset type="strategysettings" >
+			<param name="strategyName" value="TimeAllocationMutator" />
+			<param name="subpopulation" value="person" />
+			<param name="weight" value="0.05" />
+		</parameterset>
+		<parameterset type="strategysettings" >
+			<param name="strategyName" value="ChangeExpBeta" />
+			<param name="subpopulation" value="freight" />
+			<param name="weight" value="0.95" />
+		</parameterset>
+		<parameterset type="strategysettings" >
+			<param name="strategyName" value="ReRoute" />
+			<param name="subpopulation" value="freight" />
+			<param name="weight" value="0.05" />
+		</parameterset>
+	</module>
+	<module name="subtourModeChoice" >
+		<param name="chainBasedModes" value="car,bike" />
+		<param name="modes" value="car,pt,bike,walk,ride,ride_taxi" />
+	</module>
+	<module name="transitRouter" >
+		<param name="extensionRadius" value="500.0" />
+	</module>
+	<module name="travelTimeCalculator" >
+		<param name="analyzedModes" value="car,freight" />
+		<param name="separateModes" value="true" />
+	</module>
+	<module name="vspExperimental" >
+		<param name="vspDefaultsCheckingLevel" value="abort" />
+	</module>
+	<module name="planCalcScore" >
+		<param name="writeExperiencedPlans" value="true" />
+		<param name="fractionOfIterationsToStartScoreMSA" value="0.8" />
+		<parameterset type="scoringParameters" >	
+			<param name="performing" value="9.84" />
+			<param name="waitingPt" value="-9.84" />
+			<param name="utilityOfLineSwitch" value="-2.46" />
+			<parameterset type="modeParams" >
+				<param name="constant" value="0.0" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="mode" value="car" />
+				<param name="monetaryDistanceRate" value="-0.000104" />
+				<param name="dailyMonetaryConstant" value="-15.47" />
+				<param name="dailyUtilityConstant" value="10.0" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="constant" value="-12.0" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="mode" value="ride" />
+				<param name="monetaryDistanceRate" value="-0.000104" />
+				<param name="dailyMonetaryConstant" value="-0.0" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="constant" value="-2.46" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="-9.84" />
+				<param name="mode" value="pt" />
+				<param name="dailyMonetaryConstant" value="-7.0" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="constant" value="-9.84" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="-39.36" />
+				<param name="marginalUtilityOfDistance_util_m" value="0.0" />
+				<param name="mode" value="bike" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="constant" value="-9.84" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="monetaryDistanceRate" value="-0.000104" />
+				<param name="mode" value="access_egress_pt" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="marginalUtilityOfTraveling_util_hr" value="-19.68" />
+				<param name="marginalUtilityOfDistance_util_m" value="0.0" />
+				<param name="mode" value="walk" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="constant" value="-2.85" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="mode" value="ride_taxi" />
+				<param name="monetaryDistanceRate" value="-0.0025" />
+				<param name="dailyMonetaryConstant" value="-0.0" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="constant" value="-0.0" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="mode" value="ride_school_bus" />
+				<param name="monetaryDistanceRate" value="-0.0" />
+				<param name="dailyMonetaryConstant" value="-0.0" />
+			</parameterset>
+			<parameterset type="modeParams" >
+				<param name="marginalUtilityOfTraveling_util_hr" value="-8.17" />
+				<param name="mode" value="freight" />
+				<param name="monetaryDistanceRate" value="-0.00051" />
+			</parameterset>
+			<parameterset type="modeParams" >
+			<!-- This parameter set should never actually be used. It is only here to let ModeStatsControlerListener include "pt_with_access_egress_pt" until ModeStats is fixed for that. -->
+				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="mode" value="pt_with_access_egress_pt" />
+			</parameterset>
+		</parameterset>
+	</module>
+	<module name="swissRailRaptor" >
+		<param name="intermodalAccessEgressModeSelection" value="CalcLeastCostModePerStop" />
+		<param name="useIntermodalAccessEgress" value="true" />
+		<parameterset type="intermodalAccessEgress" >
+			<param name="initialSearchRadius" value="1500.0" />
+			<param name="linkIdAttribute" value="null" />
+			<param name="maxRadius" value="100000.0" />
+			<param name="mode" value="walk" />
+			<param name="searchExtensionRadius" value="1000.0" />
+			<param name="stopFilterAttribute" value="null" />
+			<param name="stopFilterValue" value="null" />
+		</parameterset>
+		<parameterset type="intermodalAccessEgress" >
+			<param name="initialSearchRadius" value="1500.0" />
+			<param name="linkIdAttribute" value="null" />
+			<param name="maxRadius" value="100000.0" />
+			<param name="mode" value="access_egress_pt" />
+			<param name="searchExtensionRadius" value="1000.0" />
+			<param name="stopFilterAttribute" value="null" />
+			<param name="stopFilterValue" value="null" />
+		</parameterset>
+	</module>
+</config>
