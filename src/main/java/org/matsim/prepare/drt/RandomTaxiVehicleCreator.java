@@ -69,10 +69,10 @@ public class RandomTaxiVehicleCreator {
 		String drtServiceAreaShapeFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC_Boundary_SCAG/WSC_Boundary_SCAG.shp";
 	    CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation("EPSG:3310", "EPSG:3310"); 
 
-	    String vehiclePrefix = "drt2";
-		String vehiclesFilePrefix = "LA-WSC-" + vehiclePrefix + "-";
+	    String vehiclePrefix = "drt1-";
+		String vehiclesFilePrefix = "LA-WSC-" + vehiclePrefix;
 	    int numberOfVehicles = 1000;
-	    int seats = 4;
+	    int seats = 1;
 	    
 		RandomTaxiVehicleCreator tvc = new RandomTaxiVehicleCreator(networkFile, drtServiceAreaShapeFile, vehiclesFilePrefix, vehiclePrefix, ct);
 		
