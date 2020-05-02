@@ -39,7 +39,7 @@ public class RunLosAngelesScenarioTest {
 
 	// run two iterations with several test-agents
 	@Test
-	public final void test() {
+	public final void test1() {
 		try {			
 			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-WSC-reduced-v1.1-1pct.config.xml" };
 			
