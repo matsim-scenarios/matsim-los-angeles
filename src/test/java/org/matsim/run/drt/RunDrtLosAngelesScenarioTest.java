@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.analysis.ScoreStatsControlerListener.ScoreItem;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.contrib.drt.run.DrtConfigGroup;
 import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -52,7 +53,9 @@ public class RunDrtLosAngelesScenarioTest {
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 			config.plans().setInputFile("../../../../test/input/drt/test-drt-agent.xml");
 			config.transit().setUseTransit(false);
-			ConfigUtils.addOrGetModule(config, MultiModeDrtConfigGroup.class);
+			for (DrtConfigGroup drtCfg : ConfigUtils.addOrGetModule(config, MultiModeDrtConfigGroup.class).getModalElements()) {
+				drtCfg.setNumberOfThreads(1);
+			}
 			
 			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config);
 			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
@@ -80,6 +83,9 @@ public class RunDrtLosAngelesScenarioTest {
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 			config.plans().setInputFile("../../../../test/input/drt/test-pt-agent.xml");
 			config.transit().setUseTransit(true);
+			for (DrtConfigGroup drtCfg : ConfigUtils.addOrGetModule(config, MultiModeDrtConfigGroup.class).getModalElements()) {
+				drtCfg.setNumberOfThreads(1);
+			}
 			
 			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config);
 			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
