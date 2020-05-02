@@ -74,7 +74,7 @@ public class ReduceScenario {
 			log.info("---------------");
 		}
 				
-		Config config = RunLosAngelesScenario.prepareConfig( args ) ;
+		Config config = RunLosAngelesScenario.prepareConfig( argsWithoutCustomAttributes ) ;
 		config.controler().setLastIteration(0);
 		Scenario scenario = RunLosAngelesScenario.prepareScenario( config ) ;
 		
