@@ -48,13 +48,13 @@ public class RunDrtLosAngelesScenarioTest {
 			
 			Config config = RunDrtLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
-			config.global().setNumberOfThreads(1);
+			config.global().setNumberOfThreads(1); // only one thread available on travis
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 			config.plans().setInputFile("../../../../test/input/drt/test-drt-agent.xml");
-			config.transit().setUseTransit(false);
+			config.transit().setUseTransit(false); // disable simulated pt
 			for (DrtConfigGroup drtCfg : ConfigUtils.addOrGetModule(config, MultiModeDrtConfigGroup.class).getModalElements()) {
-				drtCfg.setNumberOfThreads(1);
+				drtCfg.setNumberOfThreads(1); // only one thread available on travis
 			}
 			
 			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config);
@@ -78,13 +78,13 @@ public class RunDrtLosAngelesScenarioTest {
 			
 			Config config = RunDrtLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
-			config.global().setNumberOfThreads(1);
+			config.controler().setWriteEventsInterval(0); // don't write events files
+			config.global().setNumberOfThreads(1); // only one thread available on travis
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 			config.plans().setInputFile("../../../../test/input/drt/test-pt-agent.xml");
-			config.transit().setUseTransit(true);
 			for (DrtConfigGroup drtCfg : ConfigUtils.addOrGetModule(config, MultiModeDrtConfigGroup.class).getModalElements()) {
-				drtCfg.setNumberOfThreads(1);
+				drtCfg.setNumberOfThreads(1); // only one thread available on travis
 			}
 			
 			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config);

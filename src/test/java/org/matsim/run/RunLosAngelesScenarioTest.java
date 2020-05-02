@@ -37,15 +37,18 @@ public class RunLosAngelesScenarioTest {
 	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
-	// run two iterations with several test-agents
+	// runs test with several test-agents
+	// three iterations
+	// simulated pt enabled
 	@Test
 	public final void test1() {
 		try {			
 			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-WSC-reduced-v1.1-1pct.config.xml" };
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
-			config.controler().setLastIteration(0);
-			config.global().setNumberOfThreads(1);
+			config.controler().setLastIteration(2);
+			config.controler().setWriteEventsInterval(0); // don't write events files
+			config.global().setNumberOfThreads(1); // only one thread available on travis
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 			config.plans().setInputFile("../../../test/input/test-agents.xml.gz");
@@ -61,7 +64,9 @@ public class RunLosAngelesScenarioTest {
 		}
 	}
 	
-	// tests the score of a specific agent (ride user)
+	// tests the score of a specific agent (ride user), see xlsx file for a manual computation of the score
+	// single iteration
+	// simulated pt disabled
 	@Test
 	public final void test2() {
 		try {			
