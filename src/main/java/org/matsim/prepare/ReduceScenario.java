@@ -109,8 +109,6 @@ public class ReduceScenario {
 		log.info("number of nodes after cleaning:" + scenario.getNetwork().getNodes().size());
 		log.info("number of links after cleaning:" + scenario.getNetwork().getLinks().size());
 		
-		Controler controler = RunLosAngelesScenario.prepareControler(scenario);
-		
 		// now delete irrelevant persons
 		Set<Id<Person>> personsToDelete = new HashSet<>();
 		
@@ -140,6 +138,8 @@ public class ReduceScenario {
 		for (Id<Person> personId : personsToDelete) {
 			scenario.getPopulation().removePerson(personId);
 		}
+		
+		Controler controler = RunLosAngelesScenario.prepareControler(scenario);
 		controler.run();
 		
 		log.info("deleted persons: " + personsToDelete.size());
