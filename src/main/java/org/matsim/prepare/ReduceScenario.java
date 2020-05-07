@@ -57,7 +57,7 @@ public class ReduceScenario {
 		
 		if ( args.length==0 ) {
 			argsWithoutCustomAttributes = new String[] {"./scenarios/los-angeles-v1.1/input/los-angeles-v1.1-10pct.config.xml"}  ;
-			planningAreaShpFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC-LA-planning-area/WSC-LA-planning-area.shp";
+			planningAreaShpFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC_Boundary_SCAG/WSC_Boundary_SCAG.shp";
 			
 		} else {
 			planningAreaShpFile = args[1];
@@ -86,7 +86,7 @@ public class ReduceScenario {
 					|| shpUtils.isCoordInArea(link.getFromNode().getCoord(), linkBuffer) 
 					|| shpUtils.isCoordInArea(link.getToNode().getCoord(), linkBuffer)
 					|| link.getAllowedModes().contains(TransportMode.pt)
-					|| link.getFreespeed() >= 5. ) {
+					|| link.getFreespeed() >= 6. ) {
 				// keep the link
 			} else {
 				linksToDelete.add(link.getId());
@@ -101,11 +101,12 @@ public class ReduceScenario {
 		// clean the network
 		log.info("number of nodes before cleaning:" + scenario.getNetwork().getNodes().size());
 		log.info("number of links before cleaning:" + scenario.getNetwork().getLinks().size());
-		log.info("attempt to clean the network");
+		
 		new MultimodalNetworkCleaner(scenario.getNetwork()).removeNodesWithoutLinks();
 		Set<String> modes = new HashSet<>();
 		modes.add(TransportMode.car);
 		new MultimodalNetworkCleaner(scenario.getNetwork()).run(modes);
+		
 		log.info("number of nodes after cleaning:" + scenario.getNetwork().getNodes().size());
 		log.info("number of links after cleaning:" + scenario.getNetwork().getLinks().size());
 		
