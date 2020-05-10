@@ -12,7 +12,7 @@ env:
     - TEST=RunEquiScenarioTest
     - TEST=RunLosAngelesScenarioTest#test1
     - TEST=RunLosAngelesScenarioTest#test2
-    - TEST=RunLosAngelesScenarioTest#test3
+    - TEST=ReduceScenarioTest#test1
     - TEST=RunDrtLosAngelesScenarioTest#test1
     # - TEST=RunDrtLosAngelesScenarioTest#test2
     
