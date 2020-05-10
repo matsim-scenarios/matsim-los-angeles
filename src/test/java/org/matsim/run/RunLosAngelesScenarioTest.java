@@ -23,13 +23,10 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.analysis.ScoreStatsControlerListener.ScoreItem;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
-import org.matsim.prepare.ReduceScenario;
-import org.matsim.prepare.drt.ShapeFileUtils;
 import org.matsim.testcases.MatsimTestUtils;
 
 /**
