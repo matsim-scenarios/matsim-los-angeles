@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
+
+<population>
+
+<!-- ====================================================================== -->
+	<!-- this agent is an agent inside WSC -->
+	<person id="10000000">
+                <attributes>
+                        <attribute name="ESR" class="java.lang.String">0</attribute>
+                        <attribute name="age" class="java.lang.String">3</attribute>
+                        <attribute name="eduatt" class="java.lang.String">1</attribute>
+                        <attribute name="gender" class="java.lang.String">male</attribute>
+                        <attribute name="hhinc" class="java.lang.String">22700</attribute>
+                        <attribute name="hhnumautos" class="java.lang.String">1</attribute>
+                        <attribute name="hhsize" class="java.lang.String">3</attribute>
+                        <attribute name="householdId" class="java.lang.String">3247023</attribute>
+                        <attribute name="htype" class="java.lang.String">Multiple</attribute>
+                        <attribute name="marginalUtilityOfMoney" class="java.lang.Double">4.673641850220264</attribute>
+                        <attribute name="race" class="java.lang.String">NHAS</attribute>
+                        <attribute name="schg" class="java.lang.String">0</attribute>
+                        <attribute name="subpopulation" class="java.lang.String">person</attribute>
+                        <attribute name="ten" class="java.lang.String">3</attribute>
+                        <attribute name="wkind20" class="java.lang.String">0</attribute>
+                        <attribute name="wkocc24" class="java.lang.String">0</attribute>
+                        <attribute name="worker" class="java.lang.String">unemployed</attribute>
+                </attributes>
+                <plan selected="yes">
+                        <activity type="home_55200" x="141176.57780437227" y="-441045.2734664101" end_time="04:24:05" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">16200.0</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="04:25:42" trav_time="00:08:57">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="school_30600" x="145390.71254313912" y="-441045.2734664101" end_time="12:52:23" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">64800</attribute>
+                                        <attribute name="initialStartTime" class="java.lang.Double">28800</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32981100</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="12:53:44" trav_time="00:09:54">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="home_55200" x="141176.57780437227" y="-441045.2734664101" >
+                                <attributes>
+                                        <attribute name="initialStartTime" class="java.lang.Double">47684.06999588013</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                </plan>
+
+	</person>
+
+<!-- ====================================================================== -->
+
+	<!-- this agent is an agent traveling out from WSC -->
+	<person id="10000001">
+                <attributes>
+                        <attribute name="ESR" class="java.lang.String">0</attribute>
+                        <attribute name="age" class="java.lang.String">3</attribute>
+                        <attribute name="eduatt" class="java.lang.String">1</attribute>
+                        <attribute name="gender" class="java.lang.String">male</attribute>
+                        <attribute name="hhinc" class="java.lang.String">22700</attribute>
+                        <attribute name="hhnumautos" class="java.lang.String">1</attribute>
+                        <attribute name="hhsize" class="java.lang.String">3</attribute>
+                        <attribute name="householdId" class="java.lang.String">3247023</attribute>
+                        <attribute name="htype" class="java.lang.String">Multiple</attribute>
+                        <attribute name="marginalUtilityOfMoney" class="java.lang.Double">4.673641850220264</attribute>
+                        <attribute name="race" class="java.lang.String">NHAS</attribute>
+                        <attribute name="schg" class="java.lang.String">0</attribute>
+                        <attribute name="subpopulation" class="java.lang.String">person</attribute>
+                        <attribute name="ten" class="java.lang.String">3</attribute>
+                        <attribute name="wkind20" class="java.lang.String">0</attribute>
+                        <attribute name="wkocc24" class="java.lang.String">0</attribute>
+                        <attribute name="worker" class="java.lang.String">unemployed</attribute>
+                </attributes>
+                <plan selected="yes">
+                        <activity type="home_55200" x="148690.34644907093" y="-448017.15039108275" end_time="04:24:05" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">16200.0</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="04:25:42" trav_time="00:08:57">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="work_30600" x="151852.235132589" y="-461587.35456994595" end_time="12:52:23" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">64800</attribute>
+                                        <attribute name="initialStartTime" class="java.lang.Double">28800</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32981100</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="12:53:44" trav_time="00:09:54">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="home_55200" x="148690.34644907093" y="-448017.15039108275" >
+                                <attributes>
+                                        <attribute name="initialStartTime" class="java.lang.Double">47684.06999588013</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                </plan>
+
+	</person>
+
+<!-- ====================================================================== -->
+
+	<!-- this agent is an agent traveling into WSC -->
+	<person id="10000002">
+                <attributes>
+                        <attribute name="ESR" class="java.lang.String">0</attribute>
+                        <attribute name="age" class="java.lang.String">3</attribute>
+                        <attribute name="eduatt" class="java.lang.String">1</attribute>
+                        <attribute name="gender" class="java.lang.String">male</attribute>
+                        <attribute name="hhinc" class="java.lang.String">22700</attribute>
+                        <attribute name="hhnumautos" class="java.lang.String">1</attribute>
+                        <attribute name="hhsize" class="java.lang.String">3</attribute>
+                        <attribute name="householdId" class="java.lang.String">3247023</attribute>
+                        <attribute name="htype" class="java.lang.String">Multiple</attribute>
+                        <attribute name="marginalUtilityOfMoney" class="java.lang.Double">4.673641850220264</attribute>
+                        <attribute name="race" class="java.lang.String">NHAS</attribute>
+                        <attribute name="schg" class="java.lang.String">0</attribute>
+                        <attribute name="subpopulation" class="java.lang.String">person</attribute>
+                        <attribute name="ten" class="java.lang.String">3</attribute>
+                        <attribute name="wkind20" class="java.lang.String">0</attribute>
+                        <attribute name="wkocc24" class="java.lang.String">0</attribute>
+                        <attribute name="worker" class="java.lang.String">unemployed</attribute>
+                </attributes>
+                <plan selected="yes">
+                        <activity type="home_55200" x="189560.17811056646" y="-436743.29157976015" end_time="04:24:05" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">16200.0</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="04:25:42" trav_time="00:08:57">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="work_30600" x="149342.701961954" y="-440301.972181472" end_time="12:52:23" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">64800</attribute>
+                                        <attribute name="initialStartTime" class="java.lang.Double">28800</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32981100</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="12:53:44" trav_time="00:09:54">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="home_55200" x="189560.17811056646" y="-436743.29157976015" >
+                                <attributes>
+                                        <attribute name="initialStartTime" class="java.lang.Double">47684.06999588013</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                </plan>
+
+	</person>
+
+<!-- ====================================================================== -->
+
+	<!-- this agent is an agent traveling through WSC -->
+	<person id="10000003">
+                <attributes>
+                        <attribute name="ESR" class="java.lang.String">0</attribute>
+                        <attribute name="age" class="java.lang.String">3</attribute>
+                        <attribute name="eduatt" class="java.lang.String">1</attribute>
+                        <attribute name="gender" class="java.lang.String">male</attribute>
+                        <attribute name="hhinc" class="java.lang.String">22700</attribute>
+                        <attribute name="hhnumautos" class="java.lang.String">1</attribute>
+                        <attribute name="hhsize" class="java.lang.String">3</attribute>
+                        <attribute name="householdId" class="java.lang.String">3247023</attribute>
+                        <attribute name="htype" class="java.lang.String">Multiple</attribute>
+                        <attribute name="marginalUtilityOfMoney" class="java.lang.Double">4.673641850220264</attribute>
+                        <attribute name="race" class="java.lang.String">NHAS</attribute>
+                        <attribute name="schg" class="java.lang.String">0</attribute>
+                        <attribute name="subpopulation" class="java.lang.String">person</attribute>
+                        <attribute name="ten" class="java.lang.String">3</attribute>
+                        <attribute name="wkind20" class="java.lang.String">0</attribute>
+                        <attribute name="wkocc24" class="java.lang.String">0</attribute>
+                        <attribute name="worker" class="java.lang.String">unemployed</attribute>
+                </attributes>
+                <plan selected="yes">
+                        <activity type="home_55200" x="140466.15335920922" y="-421914.26737987436" end_time="04:24:05" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">16200.0</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="04:25:42" trav_time="00:08:57">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="work_30600" x="157127.80164864866" y="-466837.97235250473" end_time="12:52:23" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">64800</attribute>
+                                        <attribute name="initialStartTime" class="java.lang.Double">28800</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32981100</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="12:53:44" trav_time="00:09:54">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="home_55200" x="140466.15335920922" y="-421914.26737987436" >
+                                <attributes>
+                                        <attribute name="initialStartTime" class="java.lang.Double">47684.06999588013</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                </plan>
+
+	</person>
+
+<!-- ====================================================================== -->
+
+	<!-- this agent is an unrelated agent to WSC -->
+	<person id="10000004">
+                <attributes>
+                        <attribute name="ESR" class="java.lang.String">0</attribute>
+                        <attribute name="age" class="java.lang.String">3</attribute>
+                        <attribute name="eduatt" class="java.lang.String">1</attribute>
+                        <attribute name="gender" class="java.lang.String">male</attribute>
+                        <attribute name="hhinc" class="java.lang.String">22700</attribute>
+                        <attribute name="hhnumautos" class="java.lang.String">1</attribute>
+                        <attribute name="hhsize" class="java.lang.String">3</attribute>
+                        <attribute name="householdId" class="java.lang.String">3247023</attribute>
+                        <attribute name="htype" class="java.lang.String">Multiple</attribute>
+                        <attribute name="marginalUtilityOfMoney" class="java.lang.Double">4.673641850220264</attribute>
+                        <attribute name="race" class="java.lang.String">NHAS</attribute>
+                        <attribute name="schg" class="java.lang.String">0</attribute>
+                        <attribute name="subpopulation" class="java.lang.String">person</attribute>
+                        <attribute name="ten" class="java.lang.String">3</attribute>
+                        <attribute name="wkind20" class="java.lang.String">0</attribute>
+                        <attribute name="wkocc24" class="java.lang.String">0</attribute>
+                        <attribute name="worker" class="java.lang.String">unemployed</attribute>
+                </attributes>
+                <plan selected="yes">
+                        <activity type="home_55200" x="190068.62552339942" y="-460455.46042476455" end_time="04:24:05" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">16200.0</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="04:25:42" trav_time="00:08:57">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="work_30600" x="188548.0270073081" y="-439188.66112703783" end_time="12:52:23" >
+                                <attributes>
+                                        <attribute name="initialEndTime" class="java.lang.Double">64800</attribute>
+                                        <attribute name="initialStartTime" class="java.lang.Double">28800</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32981100</attribute>
+                                </attributes>
+                        </activity>
+                        <leg mode="ride" dep_time="12:53:44" trav_time="00:09:54">
+                                <attributes>
+                                        <attribute name="routingMode" class="java.lang.String">ride</attribute>
+                                </attributes>
+                        </leg>
+                        <activity type="home_55200" x="190068.62552339942" y="-460455.46042476455" >
+                                <attributes>
+                                        <attribute name="initialStartTime" class="java.lang.Double">47684.06999588013</attribute>
+                                        <attribute name="zoneId" class="java.lang.String">32958300</attribute>
+                                </attributes>
+                        </activity>
+                </plan>
+
+	</person>
+
+<!-- ====================================================================== -->
+
+</population>
