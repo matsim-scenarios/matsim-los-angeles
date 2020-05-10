@@ -47,7 +47,7 @@ public class RunLosAngelesScenarioTest {
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(2);
-			config.controler().setWriteEventsInterval(0); // don't write events files
+			config.controler().setWriteEventsInterval(2);
 			config.global().setNumberOfThreads(1); // only one thread available on travis
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
