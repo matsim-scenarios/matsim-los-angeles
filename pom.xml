@@ -69,6 +69,12 @@
 	    	<artifactId>drt-speed-up</artifactId>
 	    	<version>v0.0.3</version>
 		</dependency>
+		
+		<dependency>
+	    	<groupId>com.github.matsim-vsp</groupId>
+	    	<artifactId>matsim-analysis</artifactId>
+	    	<version>d30db0c1f1</version>
+		</dependency>
 
 		<dependency>
 			<!-- Include the JUnit testing library.  Not transitive. -->
