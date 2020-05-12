@@ -3,7 +3,7 @@
  *                                                                         *
  * *********************************************************************** *
  *                                                                         *
- * copyright       : (C) 2017 by the members listed in the COPYING,        *
+ * copyright       : (C) 2020 by the members listed in the COPYING,        *
  *                   LICENSE and WARRANTY file.                            *
  * email           : info at matsim dot org                                *
  *                                                                         *
@@ -73,6 +73,9 @@ public final class RunDrtLosAngelesScenario {
 		Scenario scenario = prepareScenario( config ) ;
 		Controler controler = prepareControler( scenario ) ;
 		controler.run() ;
+		
+		// run analysis
+		RunLosAngelesScenario.runAnalysis(config);
 	}
 	
 	public static Controler prepareControler( Scenario scenario ) {

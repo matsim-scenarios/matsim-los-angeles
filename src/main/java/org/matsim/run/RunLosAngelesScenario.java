@@ -20,9 +20,11 @@ package org.matsim.run;
 
 import static org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType.FastAStarLandmarks;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
+import org.matsim.analysis.IKAnalysisRunLA;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.Person;
@@ -67,6 +69,9 @@ public class RunLosAngelesScenario {
 		Scenario scenario = prepareScenario( config ) ;
 		Controler controler = prepareControler( scenario ) ;
 		controler.run() ;
+				
+		// run analysis
+		runAnalysis(config);
 	}
 	
 	public static Controler prepareControler( Scenario scenario ) {		
@@ -223,4 +228,50 @@ public class RunLosAngelesScenario {
 		return config ;
 	}
 	
+	public static void runAnalysis(Config config) {
+		
+		log.info("Running analysis...");
+		
+		String scaleFactor = null;
+		if (config.plans().getInputFile().contains("0.1pct")) {
+			scaleFactor = "1000";
+		} else if (config.plans().getInputFile().contains("1pct")) {
+			scaleFactor = "100";
+		} else if (config.plans().getInputFile().contains("5pct")) {
+			scaleFactor = "20";
+		} else if (config.plans().getInputFile().contains("10pct")) {
+			scaleFactor = "10";
+		} else if (config.plans().getInputFile().contains("25pct")) {
+			scaleFactor = "4";
+		} else if (config.plans().getInputFile().contains("100pct")) {
+			scaleFactor = "1";
+		} else {
+			log.warn("Unknown sample size. Using default value of 1.");
+			scaleFactor = "1";
+		}
+		
+		String[] args = new String[] {
+				config.controler().getOutputDirectory(),
+				config.controler().getRunId(),
+				"null", // TODO: reference run, hard to automate
+				"null", // TODO: reference run, hard to automate
+				config.global().getCoordinateSystem(),
+				"https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/hexagon-grid-7500/hexagon-grid-7500.shp",
+				"EPSG:3310",
+				"ID",
+				"https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC_Boundary_SCAG/WSC_Boundary_SCAG.shp", // shapeFileFilterBerlinZone
+				"EPSG:3310",
+				scaleFactor,
+				"null", // visualizationScriptInputDirectory
+		};
+		
+		try {
+			IKAnalysisRunLA.main(args);
+		} catch (IOException e) {
+			log.error(e.getStackTrace());
+			throw new RuntimeException(e.getMessage());
+		}
+		
+		log.info("Running analysis... Done.");
+	}	
 }

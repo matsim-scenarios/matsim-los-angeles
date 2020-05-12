@@ -3,7 +3,7 @@
  *                                                                         *
  * *********************************************************************** *
  *                                                                         *
- * copyright       : (C) 2008 by the members listed in the COPYING,        *
+ * copyright       : (C) 2020 by the members listed in the COPYING,        *
  *                   LICENSE and WARRANTY file.                            *
  * email           : info at matsim dot org                                *
  *                                                                         *
@@ -30,7 +30,7 @@ import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.testcases.MatsimTestUtils;
 
 /**
- * @author nagel
+ * @author ikaddoura
  *
  */
 public class RunLosAngelesScenarioTest {
@@ -48,6 +48,7 @@ public class RunLosAngelesScenarioTest {
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(2);
 			config.controler().setWriteEventsInterval(2);
+			config.controler().setWritePlansInterval(2);
 			config.global().setNumberOfThreads(1); // only one thread available on travis
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
@@ -56,6 +57,9 @@ public class RunLosAngelesScenarioTest {
 			Scenario scenario = RunLosAngelesScenario.prepareScenario(config);
 			Controler controler = RunLosAngelesScenario.prepareControler(scenario);
 			controler.run();
+			
+			// run analysis
+			RunLosAngelesScenario.runAnalysis(config);
 		
 		} catch ( Exception ee ) {
 			ee.printStackTrace();
@@ -83,7 +87,7 @@ public class RunLosAngelesScenarioTest {
 			Scenario scenario = RunLosAngelesScenario.prepareScenario(config);
 			Controler controler = RunLosAngelesScenario.prepareControler(scenario);
 			controler.run();
-			
+						
 			Assert.assertEquals("Wrong score in iteration 0.", 137.00979198644234, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {

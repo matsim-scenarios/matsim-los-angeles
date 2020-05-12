@@ -3,7 +3,7 @@
  *                                                                         *
  * *********************************************************************** *
  *                                                                         *
- * copyright       : (C) 2014 by the members listed in the COPYING,        *
+ * copyright       : (C) 2020 by the members listed in the COPYING,        *
  *                   LICENSE and WARRANTY file.                            *
  * email           : info at matsim dot org                                *
  *                                                                         *
@@ -32,6 +32,10 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.run.LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier;
 
+/**
+ * @author ikaddoura
+ *
+ */
 public class IKAnalysisRunLA {
 	private static final Logger log = Logger.getLogger(IKAnalysisRunLA.class);
 			
