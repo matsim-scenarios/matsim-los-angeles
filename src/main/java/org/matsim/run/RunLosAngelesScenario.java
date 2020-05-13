@@ -25,6 +25,7 @@ import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.matsim.analysis.IKAnalysisRunLA;
+import org.matsim.analysis.moneyEventAnalysis.RunMoneyEventAnalysis;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.Person;
@@ -250,7 +251,7 @@ public class RunLosAngelesScenario {
 			scaleFactor = "1";
 		}
 		
-		String[] args = new String[] {
+		String[] args1 = new String[] {
 				config.controler().getOutputDirectory(),
 				config.controler().getRunId(),
 				"null", // TODO: reference run, hard to automate
@@ -263,14 +264,22 @@ public class RunLosAngelesScenario {
 				"EPSG:3310",
 				scaleFactor,
 				"null", // visualizationScriptInputDirectory
-		};
+				};
 		
 		try {
-			IKAnalysisRunLA.main(args);
+			IKAnalysisRunLA.main(args1);
 		} catch (IOException e) {
 			log.error(e.getStackTrace());
 			throw new RuntimeException(e.getMessage());
 		}
+		
+		// also run the money events analysis
+		String[] args2 = new String[] { config.controler().getOutputDirectory(),
+				config.controler().getRunId(),
+				config.controler().getOutputDirectory()
+				};
+		
+		RunMoneyEventAnalysis.main(args2);
 		
 		log.info("Running analysis... Done.");
 	}	
