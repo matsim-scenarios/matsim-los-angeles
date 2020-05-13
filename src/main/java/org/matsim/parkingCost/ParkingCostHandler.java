@@ -156,7 +156,7 @@ final class ParkingCostHandler implements TransitDriverStartsEventHandler, Activ
 				
 				if (costs > 0.) {
 					double amount = -1. * costs;
-					events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), amount));
+					events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), amount, "parking", "city-of-LA"));
 				}			
 			}
 		}
