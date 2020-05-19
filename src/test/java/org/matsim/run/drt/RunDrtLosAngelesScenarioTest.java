@@ -30,6 +30,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
+import org.matsim.run.RunLosAngelesScenario;
 import org.matsim.testcases.MatsimTestUtils;
 
 /**
@@ -41,6 +42,7 @@ public class RunDrtLosAngelesScenarioTest {
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 	
 	// tests the score of a specific agent (drt user)
+	// simulated pt disabled
 	@Test
 	public final void test1() {
 		try {			
@@ -61,6 +63,8 @@ public class RunDrtLosAngelesScenarioTest {
 			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
 			controler.run();
 			
+			RunLosAngelesScenario.runAnalysis(config);
+
 			Assert.assertEquals("Wrong score in iteration 0.", 149.3797713901901, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {
@@ -71,6 +75,8 @@ public class RunDrtLosAngelesScenarioTest {
 
 	}
 	
+	// tests the score of a specific agent (drt user)
+	// simulated pt enabled
 	@Test
 	public final void test2() {
 		try {			
@@ -90,6 +96,8 @@ public class RunDrtLosAngelesScenarioTest {
 			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config);
 			Controler controler = RunDrtLosAngelesScenario.prepareControler(scenario);
 			controler.run();
+			
+			RunLosAngelesScenario.runAnalysis(config);
 			
 			Assert.assertEquals("Wrong score in iteration 0.", 74.39183890489247, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
