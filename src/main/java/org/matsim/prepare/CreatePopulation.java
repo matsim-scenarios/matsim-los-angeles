@@ -69,7 +69,7 @@ public class CreatePopulation {
 	private final double timeBinSizeForDurationBasedActivityTypes = 600.;
 	private final double useDurationInsteadOfEndTimeThreshold = 7200.;
 
-	private final double sample = 0.05;
+	private final double sample = 1.;
 	private final String outputFilePrefix = "los-angeles-v1.0-population-" + sample + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 	
 	private int freightTripCounter = 0;
@@ -142,11 +142,13 @@ public class CreatePopulation {
 		
 		log.info("Reading TAZ ID mapping file...");
 		final Map<String, String> internalSeqTAZtoTAZ12b = new HashMap<>();
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(internalSeqTAZtoTAZ12bMappingFile)), csvFormat)) {	
+		CSVParser csvParserMappingFile = CSVParser.parse(Files.newBufferedReader(Paths.get(internalSeqTAZtoTAZ12bMappingFile)), csvFormat);
+		for (CSVRecord csvRecord : csvParserMappingFile) {	
 			String idInternalSeqTAZ = csvRecord.get(9);
 			String idTAZ12b = csvRecord.get(0);
 			internalSeqTAZtoTAZ12b.put(idInternalSeqTAZ, idTAZ12b);
 		}
+		csvParserMappingFile.close();
 		log.info("Reading TAZ ID mapping file... Done.");
 		
 		log.info("Creating scenario...");
@@ -168,7 +170,8 @@ public class CreatePopulation {
 		int personsInDataSet = 0;
 		Set<String> householdIdsOfIncludedPersons = new HashSet<>();
 		Map<String, Set<Id<Person>>> householdId2PersonIds = new HashMap<>();
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(personFile)), csvFormat)) {	
+		CSVParser csvParserPersonfile = CSVParser.parse(Files.newBufferedReader(Paths.get(personFile)), csvFormat);
+		for (CSVRecord csvRecord : csvParserPersonfile) {	
 			personsInDataSet++;
 			
 			if (rnd.nextDouble() <= sample) {
@@ -199,10 +202,12 @@ public class CreatePopulation {
 				excludedPersons++;
 			}
 		}
+		csvParserPersonfile.close();
 		
 		log.info("Adding person attributes from expand_pp file...");
 		// add more person attributes from expand_pp file
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(expandPPFile)), csvFormat)) {
+		CSVParser csvParserExpandPPfile = CSVParser.parse(Files.newBufferedReader(Paths.get(expandPPFile)), csvFormat);
+		for (CSVRecord csvRecord : csvParserExpandPPfile) {
 			Id<Person> personId = Id.createPersonId(csvRecord.get(0));
 			Person person = scenario.getPopulation().getPersons().get(personId);
 			if (person != null) {
@@ -225,10 +230,12 @@ public class CreatePopulation {
 				person.getAttributes().putAttribute("eduatt", eduattCodeString);
 			}
 		}
+		csvParserExpandPPfile.close();
 		
 		// add more person attributes from expand_hh file
 		log.info("Adding more person attributes from expand_hh file...");
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(expandHHFile)), csvFormat)) {
+		CSVParser csvParserExpandHHfile = CSVParser.parse(Files.newBufferedReader(Paths.get(expandHHFile)), csvFormat);
+		for (CSVRecord csvRecord : csvParserExpandHHfile) {
 			String householdId = csvRecord.get(0);
 			if (householdIdsOfIncludedPersons.contains(householdId)) {
 				for (Id<Person> personId: householdId2PersonIds.get(householdId)) {
@@ -247,10 +254,12 @@ public class CreatePopulation {
 				}
 			}
 		}
+		csvParserExpandHHfile.close();
 		
 		// add more person attributes (auto ownership) from household file
 		log.info("Adding more person attributes from household file...");
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(householdFile)), csvFormat)) {
+		CSVParser csvParserHouseholdFile = CSVParser.parse(Files.newBufferedReader(Paths.get(householdFile)), csvFormat);
+		for (CSVRecord csvRecord : csvParserHouseholdFile) {
 			String householdId = csvRecord.get(0);
 			if (householdIdsOfIncludedPersons.contains(householdId)) {
 				for (Id<Person> personId: householdId2PersonIds.get(householdId)) {
@@ -262,6 +271,7 @@ public class CreatePopulation {
 				}
 			}
 		}
+		csvParserHouseholdFile.close();
 		
 		log.info("Creating persons... Done.");
 		
@@ -290,8 +300,8 @@ public class CreatePopulation {
 		
 		boolean firstTrip;
 		BufferedReader br = Files.newBufferedReader(Paths.get(tripFile));
-		CSVParser csvParser = new CSVParser(br,csvFormat);
-		for (CSVRecord csvRecord : csvParser) {	
+		CSVParser csvParserTripFile = CSVParser.parse(br,csvFormat);
+		for (CSVRecord csvRecord : csvParserTripFile) {	
 			tripsInDataSet++;
 			if (tripsInDataSet%1000000 == 0) {
 				log.info("trip record #" + tripsInDataSet );
@@ -310,7 +320,7 @@ public class CreatePopulation {
 					personTripsCounter++;
 					personTripNumber = Integer.valueOf(csvRecord.get(6));
 					if (personTripsCounter != personTripNumber) {
-						csvParser.close();
+						csvParserTripFile.close();
 						throw new RuntimeException("Current trip counter for person " + personId + " is not equal to persTripNum. Aborting..." + csvRecord);
 					}
 					plan = person.getPlans().get(0);
@@ -330,12 +340,12 @@ public class CreatePopulation {
 					String tripOriginInternalSeqTAZid = csvRecord.get(20);
 					String tripOriginIdTAZ12b = internalSeqTAZtoTAZ12b.get(tripOriginInternalSeqTAZid);
 					if (tripOriginIdTAZ12b == null) {
-						csvParser.close();
+						csvParserTripFile.close();
 						throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripOriginInternalSeqTAZid + " Aborting... " + csvRecord);
 					}
 					Geometry geometry;	
 					if (internalTierTAZTwo2geometries.get(tripOriginIdTAZ12b) == null) {
-						csvParser.close();
+						csvParserTripFile.close();
 						throw new RuntimeException("Geometry with ID " + tripOriginIdTAZ12b + " is not in the Tier TAZ2 zone file.");
 					} else {
 						geometry = internalTierTAZTwo2geometries.get(tripOriginIdTAZ12b);
@@ -403,7 +413,7 @@ public class CreatePopulation {
 				if (!firstTrip) {
 					int currentTripOrigin = Integer.valueOf(csvRecord.get(20));
 					if (currentTripOrigin != previousTripDestination) {
-						csvParser.close();
+						csvParserTripFile.close();
 						throw new RuntimeException("Previous trip destination is not the same as the current trip origin.");
 					}
 				}
@@ -414,12 +424,12 @@ public class CreatePopulation {
 				double travelTime = tripEndTime - tripStartTime;
 				
 				if (travelTime < 0.) {
-					csvParser.close();
+					csvParserTripFile.close();
 					throw new RuntimeException("Travel time is < 0. Aborting..." + csvRecord);
 				}
 				
 				if (tripStartTime < 0. || tripEndTime < 0.) {
-					csvParser.close();
+					csvParserTripFile.close();
 					throw new RuntimeException("Trip start or and time is < 0. Aborting..." + csvRecord);
 				}
 				
@@ -434,7 +444,7 @@ public class CreatePopulation {
 				String tripDestinationInternalSeqTAZid = csvRecord.get(21);
 				String tripDestinationIdTAZ12b = internalSeqTAZtoTAZ12b.get(tripDestinationInternalSeqTAZid);
 				if (tripDestinationIdTAZ12b == null) {
-					csvParser.close();
+					csvParserTripFile.close();
 					throw new RuntimeException("Can't identify TAZ (Tier2) based on internal sequence TAZ: " + tripDestinationInternalSeqTAZid + " Aborting... " + csvRecord);
 				}
 				Coord coord = null;
@@ -446,7 +456,7 @@ public class CreatePopulation {
 						// get random home coordinate
 						Geometry geometry;	
 						if (internalTierTAZTwo2geometries.get(tripDestinationIdTAZ12b) == null) {
-							csvParser.close();
+							csvParserTripFile.close();
 							throw new RuntimeException("Geometry with ID " + tripDestinationIdTAZ12b + " is not in the Tier TAZ2 zone file.");
 						} else {
 							geometry = internalTierTAZTwo2geometries.get(tripDestinationIdTAZ12b);
@@ -463,7 +473,7 @@ public class CreatePopulation {
 					// compute new random coordinate for all non-home activities
 					Geometry geometry;	
 					if (internalTierTAZTwo2geometries.get(tripDestinationIdTAZ12b) == null) {
-						csvParser.close();
+						csvParserTripFile.close();
 						throw new RuntimeException("Geometry with ID " + tripDestinationIdTAZ12b + " is not in the Tier TAZ2 zone file.");
 					} else {
 						geometry = internalTierTAZTwo2geometries.get(tripDestinationIdTAZ12b);
@@ -479,7 +489,7 @@ public class CreatePopulation {
 				previousTripStartTime = tripStartTime;
 			}
 		}
-		csvParser.close();
+		csvParserTripFile.close();
 		
 		log.info("Included trips: " + includedTripsCounter);
 		log.info("Excluded trips: " + excludedTripsCounter);
@@ -494,13 +504,15 @@ public class CreatePopulation {
 		// Get the person's home location via the household ID.
 		log.info("Reading household data...");
 		Map<String, String> hhId2tierTazId = new HashMap<>();
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(householdFile)), csvFormat)) {	
+		CSVParser csvParserHouseholdFileForMapping = CSVParser.parse(Files.newBufferedReader(Paths.get(householdFile)), csvFormat);
+		for (CSVRecord csvRecord : csvParserHouseholdFileForMapping) {	
 			String householdId = csvRecord.get(0);
 			if (householdIdsOfIncludedPersons.contains(householdId)) {
 				String hhTAZid = csvRecord.get(2);
 				hhId2tierTazId.put(householdId, hhTAZid);
 			}
 		}
+		csvParserHouseholdFileForMapping.close();
 		log.info("Reading household data... Done.");
 		
 		int stayHomePlansCounter = 0;
@@ -557,8 +569,8 @@ public class CreatePopulation {
 	}
 
 	private void addFreightAgents(String freightTripFile, double fromTime, double toTime) throws IOException {
-				
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(freightTripFile)), csvFormat)) {	
+		CSVParser csvParserFreightFile = CSVParser.parse(Files.newBufferedReader(Paths.get(freightTripFile)), csvFormat);
+		for (CSVRecord csvRecord : csvParserFreightFile) {	
 			String fromZoneId = csvRecord.get(0);
 			String toZoneId = csvRecord.get(1);
 			int lhdt = (int) Math.round(Double.valueOf(csvRecord.get(5)));
@@ -569,6 +581,7 @@ public class CreatePopulation {
 			generateTrips("MHDT", mhdt, fromZoneId, toZoneId, fromTime, toTime);
 			generateTrips("HHDT", hhdt, fromZoneId, toZoneId, fromTime, toTime);
 		}
+		csvParserFreightFile.close();
 	}
 
 	private void generateTrips(
