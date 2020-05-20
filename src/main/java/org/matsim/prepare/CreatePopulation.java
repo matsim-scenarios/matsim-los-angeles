@@ -388,7 +388,7 @@ public class CreatePopulation {
 						}
 						// use the duration instead of the end time
 						previousActivity.setMaximumDuration(activityDuration);
-						previousActivity.setEndTime(Double.NEGATIVE_INFINITY);
+						previousActivity.setEndTimeUndefined();
 					} else {
 						// use the end time
 						previousActivity.setEndTime(previousActivityEndTime + (int)((this.rnd.nextDouble() * 2.0 - 1.0) * 900.));
