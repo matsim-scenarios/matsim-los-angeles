@@ -24,8 +24,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -49,7 +51,13 @@ public class HCAnalysisRunLA {
 	private static final Logger log = Logger.getLogger(HCAnalysisRunLA.class);
 	private final static CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader().withDelimiter(';');
 	private final static CSVFormat txtFormat = CSVFormat.DEFAULT.withDelimiter('\t');
-			
+	private final static double dailyPTFare = 2.0;
+	
+	private static Map<String, Double> scores = new HashMap<>();
+	private static Map<String, List<String>> outputPersons = new HashMap<>();
+	private static Map<String, Integer> households = new HashMap<>();
+	private static Set<String> personsByPT = new HashSet<>();
+	
 	public static void main(String[] args) throws IOException {
 			
 		String runDirectory = null;
@@ -118,16 +126,30 @@ public class HCAnalysisRunLA {
 		}
 		
 		final String outputPersonsFile = runDirectory + runId + ".output_persons.csv";
-		final String outputExperiencedPlanScore = runDirectory + runId + ".300.experienced_plans_scores.txt";
+		final String outputExperiencedPlanScoreFile = runDirectory + runId + ".300.experienced_plans_scores.txt";
+		final String outputLegsFile = runDirectory + runId + ".output_legs.csv";
 		
-		final Map<String, Double> scores = new HashMap<>();
-		final Map<String, List<String>> outputPersons = new HashMap<>();
-		final Map<String, Integer> households = new HashMap<>();
 		
-		ShapeFileUtils shpUtils = new ShapeFileUtils(shapeFileWSC);
+		getNetBenefit(outputPersonsFile, outputExperiencedPlanScoreFile, shapeFileWSC);
 		
+		getPTRevenue(outputLegsFile);
+	}
+	
+	private static void getPTRevenue(String outputLegsFile) throws IOException {
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(outputLegsFile)), csvFormat)) {
+			String person = csvRecord.get(0);
+			
+			String mode = csvRecord.get(6);
+			if (mode.equals("pt") && !personsByPT.contains(person))
+				personsByPT.add(person);
+		}
+		
+		log.info("Total PT Revenue: $" + dailyPTFare * personsByPT.size());	
+	}
+	
+	private static void getNetBenefit(String outputPersonsFile, String outputExperiencedPlanScoreFile, String shapeFile) throws NumberFormatException, IOException {
+		ShapeFileUtils shpUtils = new ShapeFileUtils(shapeFile);
 		double total_scores = 0;
-		
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(outputPersonsFile)), csvFormat)) {	
 			String person = csvRecord.get(0);
 			// we do not process freight trips
@@ -155,7 +177,7 @@ public class HCAnalysisRunLA {
 			households.put(hh_id, Integer.valueOf(hh_size));
 		}
 		
-		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(outputExperiencedPlanScore)), txtFormat)) {	
+		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(outputExperiencedPlanScoreFile)), txtFormat)) {	
 			String person = csvRecord.get(0);
 			if (!outputPersons.containsKey(person))
 				continue;
@@ -168,10 +190,6 @@ public class HCAnalysisRunLA {
 		log.info("Total score: " + total_scores);
 		log.info("Ave score per hh: " + total_scores / households.size());
 		log.info("Done!");
-	}
-	
-	private static void getNetBenefit() {
-		
 	}
 }
 		
