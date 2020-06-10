@@ -262,6 +262,8 @@ public class RunLosAngelesScenario {
 				"ID",
 				"https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC_Boundary_SCAG/WSC_Boundary_SCAG.shp", // shapeFileFilterBerlinZone
 				"EPSG:3310",
+				"https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC-LA-planning-area_without-WSC/WSC-LA-planning-area_without-WSC.shp", // shapeFileFilterBerlinZone
+				"EPSG:3310",
 				scaleFactor,
 				"null", // visualizationScriptInputDirectory
 				};

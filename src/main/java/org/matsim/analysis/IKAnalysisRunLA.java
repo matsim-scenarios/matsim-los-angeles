@@ -52,6 +52,8 @@ public class IKAnalysisRunLA {
 		String shapeFileWSC = null;
 		String zoneId = null;
 		String crsShapeFileWSC = null;
+		String shapeFileOutsideWSC = null;
+		String crsShapeFileOutsideWSC = null;
 		int scalingFactor;
 
 		final String[] helpLegModes = {TransportMode.walk,"access_egress_pt"};
@@ -75,9 +77,12 @@ public class IKAnalysisRunLA {
 			shapeFileWSC = args[8];
 			crsShapeFileWSC = args[9];
 			
-			scalingFactor = Integer.valueOf(args[10]);
+			shapeFileOutsideWSC = args[10];
+			crsShapeFileOutsideWSC = args[11];
+			
+			scalingFactor = Integer.valueOf(args[12]);
 
-			if(!args[11].equals("null")) visualizationScriptInputDirectory = args[11];
+			if(!args[11].equals("null")) visualizationScriptInputDirectory = args[13];
 
 									
 		} else {
@@ -98,6 +103,9 @@ public class IKAnalysisRunLA {
 			shapeFileWSC = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC_Boundary_SCAG/WSC_Boundary_SCAG.shp";			
 			crsShapeFileWSC = "EPSG:3310";
 			
+			shapeFileOutsideWSC = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC-LA-planning-area_without-WSC/WSC-LA-planning-area_without-WSC.shp";			
+			crsShapeFileOutsideWSC = "EPSG:3310";
+			
 			// 100 for 1% population sample; 10 for a 10% population sample, ...
 			scalingFactor = 100;
 			
@@ -115,11 +123,17 @@ public class IKAnalysisRunLA {
 		filter1a.preProcess(scenario1);
 		agentFilters.add(filter1a);
 		
-		AgentAnalysisFilter filter1b = new AgentAnalysisFilter("residents");
+		AgentAnalysisFilter filter1b = new AgentAnalysisFilter("residents-in-WSC");
 		filter1b.setZoneFile(shapeFileWSC);
 		filter1b.setRelevantActivityType(homeActivityPrefix);
 		filter1b.preProcess(scenario1);
 		agentFilters.add(filter1b);
+		
+		AgentAnalysisFilter filter1c = new AgentAnalysisFilter("residents-planning-area-outside-WSC");
+		filter1c.setZoneFile(shapeFileOutsideWSC);
+		filter1c.setRelevantActivityType(homeActivityPrefix);
+		filter1c.preProcess(scenario1);
+		agentFilters.add(filter1c);
 		
 		List<TripFilter> tripFilters = new ArrayList<>();
 		
@@ -127,12 +141,19 @@ public class IKAnalysisRunLA {
 		tripFilter1a.preProcess(scenario1);
 		tripFilters.add(tripFilter1a);
 		
-		TripAnalysisFilter tripFilter1b = new TripAnalysisFilter("certain-trips");
+		TripAnalysisFilter tripFilter1b = new TripAnalysisFilter("trips-in-WSC");
 		tripFilter1b.setZoneInformation(shapeFileWSC, crsShapeFileWSC);
 		tripFilter1b.preProcess(scenario1);
 		tripFilter1b.setBuffer(2000.);
 		tripFilter1b.setTripConsiderType(TripConsiderType.OriginOrDestination);
 		tripFilters.add(tripFilter1b);
+		
+		TripAnalysisFilter tripFilter1c = new TripAnalysisFilter("trips-in-planning-area-outside-WSC");
+		tripFilter1c.setZoneInformation(shapeFileWSC, crsShapeFileOutsideWSC);
+		tripFilter1c.preProcess(scenario1);
+		tripFilter1c.setBuffer(2000.);
+		tripFilter1c.setTripConsiderType(TripConsiderType.OriginOrDestination);
+		tripFilters.add(tripFilter1c);
 		
 		List<String> modes = new ArrayList<>();
 		for (String mode : modesString.split(",")) {
