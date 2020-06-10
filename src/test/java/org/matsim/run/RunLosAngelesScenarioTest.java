@@ -43,7 +43,7 @@ public class RunLosAngelesScenarioTest {
 	@Test
 	public final void test1() {
 		try {			
-			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-WSC-reduced-v1.1-1pct.config.xml" };
+			String[] args = new String[] { "./test/input/los-angeles-wsc-reduced-v1.1-1pct.config.xml" };
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(2);
@@ -52,7 +52,7 @@ public class RunLosAngelesScenarioTest {
 			config.global().setNumberOfThreads(1); // only one thread available on travis
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-			config.plans().setInputFile("../../../test/input/test-agents.xml.gz");
+			config.plans().setInputFile("test-agents.xml.gz");
 			
 			Scenario scenario = RunLosAngelesScenario.prepareScenario(config);
 			Controler controler = RunLosAngelesScenario.prepareControler(scenario);
@@ -74,14 +74,14 @@ public class RunLosAngelesScenarioTest {
 	@Test
 	public final void test2() {
 		try {			
-			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/los-angeles-WSC-reduced-v1.1-1pct.config.xml" };
+			String[] args = new String[] { "./test/input/los-angeles-wsc-reduced-v1.1-1pct.config.xml" };
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
 			config.global().setNumberOfThreads(1);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-			config.plans().setInputFile("../../../test/input/test-agent_10000099.xml");
+			config.plans().setInputFile("test-agent_10000099.xml");
 			config.transit().setUseTransit(false);
 			
 			Scenario scenario = RunLosAngelesScenario.prepareScenario(config);
