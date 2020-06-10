@@ -46,7 +46,7 @@ public class RunDrtLosAngelesScenarioTest {
 	@Test
 	public final void test1() {
 		try {			
-			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/drt/los-angeles-wsc-reduced-drt-v1.1-1pct.config.xml" };
+			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/drt/los-angeles-wsc-reduced-drt-scenario1-v1.1-10pct.config.xml" };
 			
 			Config config = RunDrtLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);

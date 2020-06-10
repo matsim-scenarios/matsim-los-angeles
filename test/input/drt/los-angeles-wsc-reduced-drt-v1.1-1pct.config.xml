@@ -120,18 +120,6 @@
 			<param name="waitingPt" value="-19.68" />
 			<param name="utilityOfLineSwitch" value="-2.46" />
 			<parameterset type="modeParams" >
-				<param name="constant" value="-0.0" />
-				<param name="marginalUtilityOfTraveling_util_hr" value="-9.84" />
-				<param name="mode" value="drt1" />
-				<param name="dailyMonetaryConstant" value="-0.0" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="constant" value="-0.0" />
-				<param name="marginalUtilityOfTraveling_util_hr" value="-9.84" />
-				<param name="mode" value="drt2" />
-				<param name="dailyMonetaryConstant" value="-0.0" />
-			</parameterset>
-			<parameterset type="modeParams" >
 				<param name="constant" value="0.0" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 				<param name="mode" value="car" />

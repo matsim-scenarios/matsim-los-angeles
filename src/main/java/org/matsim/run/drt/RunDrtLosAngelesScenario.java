@@ -66,7 +66,7 @@ public final class RunDrtLosAngelesScenario {
 		}
 		
 		if ( args.length==0 ) {
-			args = new String[] {"./scenarios/los-angeles-v1.0/input/drt/los-angeles-drt-v1.0-0.1pct.config.xml"}  ;
+			args = new String[] {"./scenarios/los-angeles-v1.1/input/drt/wsc-reduced-drt-scenario1-v1.1-10pct.config.xml"}  ;
 		}
 		
 		Config config = prepareConfig( args ) ;
