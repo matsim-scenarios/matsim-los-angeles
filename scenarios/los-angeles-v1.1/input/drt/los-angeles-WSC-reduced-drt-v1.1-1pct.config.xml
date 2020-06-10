@@ -117,7 +117,7 @@
 		<param name="fractionOfIterationsToStartScoreMSA" value="0.8" />
 		<parameterset type="scoringParameters" >	
 			<param name="performing" value="9.84" />
-			<param name="waitingPt" value="-9.84" />
+			<param name="waitingPt" value="-19.68" />
 			<param name="utilityOfLineSwitch" value="-2.46" />
 			<parameterset type="modeParams" >
 				<param name="constant" value="0.0" />
@@ -128,20 +128,20 @@
 				<param name="dailyUtilityConstant" value="10.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="constant" value="-12.0" />
+				<param name="constant" value="-28.0" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 				<param name="mode" value="ride" />
 				<param name="monetaryDistanceRate" value="-0.000104" />
 				<param name="dailyMonetaryConstant" value="-0.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="constant" value="-2.46" />
-				<param name="marginalUtilityOfTraveling_util_hr" value="-9.84" />
+				<param name="constant" value="-9.84" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="-19.68" />
 				<param name="mode" value="pt" />
 				<param name="dailyMonetaryConstant" value="-7.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="constant" value="-9.84" />
+				<param name="constant" value="-19.68" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="-39.36" />
 				<param name="marginalUtilityOfDistance_util_m" value="0.0" />
 				<param name="mode" value="bike" />
@@ -158,22 +158,10 @@
 				<param name="mode" value="walk" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="constant" value="-2.85" />
-				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
+				<param name="constant" value="-9.84" />
+				<param name="marginalUtilityOfTraveling_util_hr" value="-19.68" />
 				<param name="mode" value="ride_taxi" />
 				<param name="monetaryDistanceRate" value="-0.0025" />
-				<param name="dailyMonetaryConstant" value="-0.0" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="constant" value="-0.0" />
-				<param name="marginalUtilityOfTraveling_util_hr" value="-9.84" />
-				<param name="mode" value="drt1" />
-				<param name="dailyMonetaryConstant" value="-0.0" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="constant" value="-0.0" />
-				<param name="marginalUtilityOfTraveling_util_hr" value="-9.84" />
-				<param name="mode" value="drt2" />
 				<param name="dailyMonetaryConstant" value="-0.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
