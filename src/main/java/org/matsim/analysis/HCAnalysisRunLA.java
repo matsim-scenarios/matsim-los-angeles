@@ -60,20 +60,20 @@ public class HCAnalysisRunLA {
 	private static Map<String, Double> households_inc = new HashMap<>();
 	private static Set<String> personsByPT = new HashSet<>();
 	
+	private static String runDirectory = null;
+	private static String runId = null;
+	private static String runDirectoryToCompareWith = null;
+	private static String runIdToCompareWith = null;
+	private static String visualizationScriptInputDirectory = null;
+	private static String scenarioCRS = null;	
+	private static String shapeFileZones = null;
+	private static String crsShapFileZones = null;
+	private static String shapeFileWSC = null;
+	private static String zoneId = null;
+	private static String crsShapeFileWSC = null;
+	private static int scalingFactor;
+	
 	public static void main(String[] args) throws IOException {
-			
-		String runDirectory = null;
-		String runId = null;
-		String runDirectoryToCompareWith = null;
-		String runIdToCompareWith = null;
-		String visualizationScriptInputDirectory = null;
-		String scenarioCRS = null;	
-		String shapeFileZones = null;
-		String crsShapFileZones = null;
-		String shapeFileWSC = null;
-		String zoneId = null;
-		String crsShapeFileWSC = null;
-		int scalingFactor;
 
 		final String[] helpLegModes = {TransportMode.walk,"access_egress_pt"};
 		final String homeActivityPrefix = "home";
@@ -120,7 +120,7 @@ public class HCAnalysisRunLA {
 			crsShapeFileWSC = "EPSG:3310";
 			
 			// 100 for 1% population sample; 10 for a 10% population sample, ...
-			scalingFactor = 100;
+			scalingFactor = 10;
 			
 			// for some QGIS visualizations (optional)
 			visualizationScriptInputDirectory = null;
@@ -254,11 +254,11 @@ public class HCAnalysisRunLA {
 			log.warn("The size of households_inc does not equal to the sum of households among all quintiles!!!");
 		}
 		
-		log.info("Total net benefit (1st quintile): " + scores_P_1.parallelStream().mapToDouble(Double::doubleValue).sum());
-		log.info("Total net benefit (2nd quintile): " + scores_P_2.parallelStream().mapToDouble(Double::doubleValue).sum());
-		log.info("Total net benefit (3rd quintile): " + scores_P_3.parallelStream().mapToDouble(Double::doubleValue).sum());
-		log.info("Total net benefit (4th quintile): " + scores_P_4.parallelStream().mapToDouble(Double::doubleValue).sum());
-		log.info("Total net benefit (5th quintile): " + scores_P_5.parallelStream().mapToDouble(Double::doubleValue).sum());
+		log.info("Total net benefit (1st quintile): " + scores_P_1.parallelStream().mapToDouble(Double::doubleValue).sum() * scalingFactor);
+		log.info("Total net benefit (2nd quintile): " + scores_P_2.parallelStream().mapToDouble(Double::doubleValue).sum() * scalingFactor);
+		log.info("Total net benefit (3rd quintile): " + scores_P_3.parallelStream().mapToDouble(Double::doubleValue).sum() * scalingFactor);
+		log.info("Total net benefit (4th quintile): " + scores_P_4.parallelStream().mapToDouble(Double::doubleValue).sum() * scalingFactor);
+		log.info("Total net benefit (5th quintile): " + scores_P_5.parallelStream().mapToDouble(Double::doubleValue).sum() * scalingFactor);
 		log.info("Net benefit (1st quintile) per HH: " + scores_P_1.parallelStream().mapToDouble(Double::doubleValue).sum() / hh_P_1.size());
 		log.info("Net benefit (2nd quintile) per HH: " + scores_P_2.parallelStream().mapToDouble(Double::doubleValue).sum() / hh_P_2.size());
 		log.info("Net benefit (3rd quintile) per HH: " + scores_P_3.parallelStream().mapToDouble(Double::doubleValue).sum() / hh_P_3.size());
