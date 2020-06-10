@@ -51,28 +51,32 @@ public class MoneyEventAnalysis implements PersonMoneyEventHandler {
 	@Override
 	public void handleEvent(PersonMoneyEvent event) {
 		
-		if (event.getAmount() > 0.) throw new RuntimeException("The amount is expected to be negative. A positive amount means the agent 'earns' money. " + event.toString());
-		
-		if (event.getTransactionPartner() == null || event.getTransactionPartner().equals("")) {
-			// in all previous runs there is no specific information in the parking cost money events.
-			// So we have to assume that all money events without information about the transaction partner and purpose are parking costs.
-			// (In all future runs there will be additional information in the parking cost money events.)
-			if (warnCnt < 1) log.warn("Assuming money events without purpose and transaction partner to be parking costs.");
-			warnCnt++;
-			
-			totalParkingAmounts += event.getAmount();
-			
-		} else if (event.getTransactionPartner().equals("drt1")) {
-			totalFareAmountsDrt1 += event.getAmount();
-		
-		} else if (event.getTransactionPartner().equals("drt2")) {
-			totalFareAmountsDrt2 += event.getAmount();
-		
-		} else if (event.getPurpose().equals("parking")) {
-			totalParkingAmounts += event.getAmount();
-		
+		if (event.getPersonId().toString().startsWith("drt")) {
+			log.warn("Skipping person money events by drt 'drivers': " + event.toString());
 		} else {
-			throw new RuntimeException("Unknown money event: " + event.toString());
+			if (event.getAmount() > 0.) throw new RuntimeException("The amount is expected to be negative. A positive amount means the agent 'earns' money. " + event.toString());
+			
+			if (event.getTransactionPartner() == null || event.getTransactionPartner().equals("")) {
+				// in all previous runs there is no specific information in the parking cost money events.
+				// So we have to assume that all money events without information about the transaction partner and purpose are parking costs.
+				// (In all future runs there will be additional information in the parking cost money events.)
+				if (warnCnt < 1) log.warn("Assuming money events without purpose and transaction partner to be parking costs.");
+				warnCnt++;
+				
+				totalParkingAmounts += event.getAmount();
+				
+			} else if (event.getTransactionPartner().equals("drt1")) {
+				totalFareAmountsDrt1 += event.getAmount();
+			
+			} else if (event.getTransactionPartner().equals("drt2")) {
+				totalFareAmountsDrt2 += event.getAmount();
+			
+			} else if (event.getPurpose().equals("parking")) {
+				totalParkingAmounts += event.getAmount();
+			
+			} else {
+				throw new RuntimeException("Unknown money event: " + event.toString());
+			}
 		}
 	}
 	

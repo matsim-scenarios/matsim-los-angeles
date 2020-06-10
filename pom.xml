@@ -73,7 +73,7 @@
 		<dependency>
 	    	<groupId>com.github.matsim-vsp</groupId>
 	    	<artifactId>matsim-analysis</artifactId>
-	    	<version>v2.8</version>
+	    	<version>5d376aedc5</version>
 		</dependency>
 
 		<dependency>
