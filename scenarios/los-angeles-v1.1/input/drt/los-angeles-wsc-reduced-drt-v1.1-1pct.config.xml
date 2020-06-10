@@ -8,8 +8,8 @@
 	<module name="controler" >
 		<param name="lastIteration" value="300" />
 		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
-		<param name="runId" value="los-angeles-WSC-reduced-drt-v1.1-1pct_run0" />
-		<param name="outputDirectory" value="./scenarios/los-angeles-WSC-reduced-v1.1/output/los-angeles-WSC-reduced-drt-v1.1-1pct_run0/" />
+		<param name="runId" value="los-angeles-wsc-reduced-drt-v1.1-1pct_run0" />
+		<param name="outputDirectory" value="./scenarios/los-angeles-wsc-reduced-v1.1/output/los-angeles-wsc-reduced-drt-v1.1-1pct_run0/" />
 		<param name="writeEventsInterval" value="50" />
 		<param name="writePlansInterval" value="50" />
 	</module>
