@@ -34,7 +34,7 @@ import org.matsim.run.RunLosAngelesScenario;
 import org.matsim.testcases.MatsimTestUtils;
 
 /**
- * @author nagel
+ * @author ikaddoura
  *
  */
 public class RunDrtLosAngelesScenarioTest {
