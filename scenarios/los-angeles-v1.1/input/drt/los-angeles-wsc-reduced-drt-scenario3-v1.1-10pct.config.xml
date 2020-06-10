@@ -9,7 +9,7 @@
 		<param name="lastIteration" value="300" />
 		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
 		<param name="runId" value="los-angeles-wsc-reduced-drt-scenario3-v1.1-10pct_run0" />
-		<param name="outputDirectory" value="./scenarios/os-angeles-wsc-reduced-v1.1/output/os-angeles-wsc-reduced-drt-scenario3-v1.1-10pct_run0/" />
+		<param name="outputDirectory" value="./scenarios/los-angeles-wsc-reduced-v1.1/output/los-angeles-wsc-reduced-drt-scenario3-v1.1-10pct_run0/" />
 		<param name="writeEventsInterval" value="50" />
 		<param name="writePlansInterval" value="50" />
 	</module>
