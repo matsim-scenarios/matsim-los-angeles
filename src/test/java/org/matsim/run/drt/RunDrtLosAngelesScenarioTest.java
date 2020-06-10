@@ -46,14 +46,14 @@ public class RunDrtLosAngelesScenarioTest {
 	@Test
 	public final void test1() {
 		try {			
-			String[] args = new String[] { "./scenarios/los-angeles-v1.1/input/drt/los-angeles-wsc-reduced-drt-scenario1-v1.1-10pct.config.xml" };
+			String[] args = new String[] { "./test/input/drt/los-angeles-wsc-reduced-drt-v1.1-1pct.config.xml" };
 			
 			Config config = RunDrtLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
 			config.global().setNumberOfThreads(1); // only one thread available on travis
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-			config.plans().setInputFile("../../../../test/input/drt/test-drt-agent.xml");
+			config.plans().setInputFile("test-drt-agent.xml");
 			config.transit().setUseTransit(false); // disable simulated pt
 			for (DrtConfigGroup drtCfg : ConfigUtils.addOrGetModule(config, MultiModeDrtConfigGroup.class).getModalElements()) {
 				drtCfg.setNumberOfThreads(1); // only one thread available on travis
