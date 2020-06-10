@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +56,8 @@ public class HCAnalysisRunLA {
 	
 	private static Map<String, Double> scores = new HashMap<>();
 	private static Map<String, List<String>> outputPersons = new HashMap<>();
-	private static Map<String, Integer> households = new HashMap<>();
+	private static Map<String, Integer> households_size = new HashMap<>();
+	private static Map<String, Double> households_inc = new HashMap<>();
 	private static Set<String> personsByPT = new HashSet<>();
 	
 	public static void main(String[] args) throws IOException {
@@ -129,6 +131,7 @@ public class HCAnalysisRunLA {
 		final String outputExperiencedPlanScoreFile = runDirectory + runId + ".300.experienced_plans_scores.txt";
 		final String outputLegsFile = runDirectory + runId + ".output_legs.csv";
 		
+		log.info("RunID: " + runId + "; Area: " + shapeFileWSC);
 		
 		getNetBenefit(outputPersonsFile, outputExperiencedPlanScoreFile, shapeFileWSC);
 		
@@ -147,6 +150,13 @@ public class HCAnalysisRunLA {
 		log.info("Total PT Revenue: $" + dailyPTFare * personsByPT.size());	
 	}
 	
+	// get the value of percentile
+	public static Double getPercentile(List<Double> incomes_sorted, double percentile)
+    {
+		int index = (int) Math.ceil((percentile / 100) * incomes_sorted.size());     
+		return incomes_sorted.get(index - 1);
+    }
+	
 	private static void getNetBenefit(String outputPersonsFile, String outputExperiencedPlanScoreFile, String shapeFile) throws NumberFormatException, IOException {
 		ShapeFileUtils shpUtils = new ShapeFileUtils(shapeFile);
 		double total_scores = 0;
@@ -164,31 +174,99 @@ public class HCAnalysisRunLA {
 			
 			String hh_id = csvRecord.get(7);
 			String hh_size = csvRecord.get(6);
+			String hh_inc = csvRecord.get(10);
 			List<String> attribs= new ArrayList<String>();
 			attribs.add(first_act_x);
 			attribs.add(first_act_y);
 			attribs.add(hh_id);
+			attribs.add(hh_inc);
 			
-			outputPersons.put(person, attribs);
 			// there are persons (in gq) and freight trips without hh info, put
-			if (hh_size.equals("")) {
-				hh_size = "-1";
+			if (hh_size.equals("") || hh_inc.equals("")) {
+				continue;
 			}
-			households.put(hh_id, Integer.valueOf(hh_size));
+			outputPersons.put(person, attribs);
+			households_size.put(hh_id, Integer.valueOf(hh_size));
+			households_inc.put(hh_id, Double.valueOf(hh_inc));
 		}
 		
+		List<Double> incomes = new ArrayList<Double>(households_inc.values());
+		Collections.sort(incomes);
+		// get percentile values
+		double quintile_1 = getPercentile(incomes, 20);
+		double quintile_2 = getPercentile(incomes, 40);
+		double quintile_3 = getPercentile(incomes, 60);
+		double quintile_4 = getPercentile(incomes, 80);
+		double quintile_5 = getPercentile(incomes, 100);
+		
+		log.info("1st quintile: " + quintile_1);
+		log.info("2nd quintile: " + quintile_2);
+		log.info("3rd quintile: " + quintile_3);
+		log.info("4th quintile: " + quintile_4);
+		log.info("5th quintile: " + quintile_5);
+		
+		List<Double> scores_P_1 = new ArrayList<Double>(); 
+		List<Double> scores_P_2 = new ArrayList<Double>(); 
+		List<Double> scores_P_3 = new ArrayList<Double>(); 
+		List<Double> scores_P_4 = new ArrayList<Double>(); 
+		List<Double> scores_P_5 = new ArrayList<Double>();
+		
+		Set<String> hh_P_1 = new HashSet<String>();
+		Set<String> hh_P_2 = new HashSet<String>();
+		Set<String> hh_P_3 = new HashSet<String>();
+		Set<String> hh_P_4 = new HashSet<String>();
+		Set<String> hh_P_5 = new HashSet<String>();
+		
+		// Start parsing scores 
 		for (CSVRecord csvRecord : new CSVParser(Files.newBufferedReader(Paths.get(outputExperiencedPlanScoreFile)), txtFormat)) {	
 			String person = csvRecord.get(0);
 			if (!outputPersons.containsKey(person))
 				continue;
-			String score = csvRecord.get(csvRecord.size()-1);
+			double score = Double.valueOf(csvRecord.get(csvRecord.size()-1));
+			double income = Double.valueOf(outputPersons.get(person).get(3));
 			
-			scores.put(person, Double.valueOf(score));
-			total_scores += Double.valueOf(score);
+			if (income < quintile_1) {
+				scores_P_1.add(score);
+				hh_P_1.add(outputPersons.get(person).get(2));
+			}
+			else if (quintile_1 <= income && income < quintile_2) {
+				scores_P_2.add(score);
+				hh_P_2.add(outputPersons.get(person).get(2));
+			}
+			else if (quintile_2 <= income && income < quintile_3) {
+				scores_P_3.add(score);
+				hh_P_3.add(outputPersons.get(person).get(2));
+			}
+			else if (quintile_3 <= income && income < quintile_4) {
+				scores_P_4.add(score);
+				hh_P_4.add(outputPersons.get(person).get(2));
+			}
+			else if (quintile_4 <= income && income <= quintile_5) {
+				scores_P_5.add(score);	
+				hh_P_5.add(outputPersons.get(person).get(2));
+			}
+			
+			scores.put(person, score);
+			total_scores += score;
 		}
+		
+		if (households_inc.size() != hh_P_1.size() + hh_P_2.size() + hh_P_3.size() + hh_P_4.size() + hh_P_5.size()) {
+			log.warn("The size of households_inc does not equal to the sum of households among all quintiles!!!");
+		}
+		
+		log.info("Total net benefit (1st quintile): " + scores_P_1.parallelStream().mapToDouble(Double::doubleValue).sum());
+		log.info("Total net benefit (2nd quintile): " + scores_P_2.parallelStream().mapToDouble(Double::doubleValue).sum());
+		log.info("Total net benefit (3rd quintile): " + scores_P_3.parallelStream().mapToDouble(Double::doubleValue).sum());
+		log.info("Total net benefit (4th quintile): " + scores_P_4.parallelStream().mapToDouble(Double::doubleValue).sum());
+		log.info("Total net benefit (5th quintile): " + scores_P_5.parallelStream().mapToDouble(Double::doubleValue).sum());
+		log.info("Net benefit (1st quintile) per HH: " + scores_P_1.parallelStream().mapToDouble(Double::doubleValue).sum() / hh_P_1.size());
+		log.info("Net benefit (2nd quintile) per HH: " + scores_P_2.parallelStream().mapToDouble(Double::doubleValue).sum() / hh_P_2.size());
+		log.info("Net benefit (3rd quintile) per HH: " + scores_P_3.parallelStream().mapToDouble(Double::doubleValue).sum() / hh_P_3.size());
+		log.info("Net benefit (4th quintile) per HH: " + scores_P_4.parallelStream().mapToDouble(Double::doubleValue).sum() / hh_P_4.size());
+		log.info("Net benefit (5th quintile) per HH: " + scores_P_5.parallelStream().mapToDouble(Double::doubleValue).sum() / hh_P_5.size());	
 
 		log.info("Total score: " + total_scores);
-		log.info("Ave score per hh: " + total_scores / households.size());
+		log.info("Ave score per hh: " + total_scores / households_size.size());
 		log.info("Done!");
 	}
 }
