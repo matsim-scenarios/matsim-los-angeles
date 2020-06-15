@@ -82,7 +82,7 @@ public class IKAnalysisRunLA {
 			
 			scalingFactor = Integer.valueOf(args[12]);
 
-			if(!args[11].equals("null")) visualizationScriptInputDirectory = args[13];
+			if(!args[13].equals("null")) visualizationScriptInputDirectory = args[13];
 
 									
 		} else {
