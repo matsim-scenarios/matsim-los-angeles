@@ -45,7 +45,7 @@ public class ReduceScenarioTest {
 	@Test
 	public final void test1() {
 		try {
-			String[] args = new String[] {"./scenarios/los-angeles-v1.1/input/los-angeles-WSC-reduced-v1.1-1pct.config.xml"};
+			String[] args = new String[] {"./scenarios/los-angeles-v1.1/input/los-angeles-wsc-reduced-v1.1-10pct.config.xml"};
 			
 			Config config = RunLosAngelesScenario.prepareConfig(args);
 			config.controler().setLastIteration(0);
