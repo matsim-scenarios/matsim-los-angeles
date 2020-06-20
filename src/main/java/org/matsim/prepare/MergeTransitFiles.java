@@ -180,7 +180,7 @@ public class MergeTransitFiles {
 				for (TransitRouteStop routeStop : route.getStops()) {
 					Id<TransitStopFacility> newFacilityId = Id.create(id + "_" + routeStop.getStopFacility().getId(), TransitStopFacility.class);
 					TransitStopFacility stop = baseSchedule.getFacilities().get(newFacilityId);
-					stopsWithNewIDs.add(baseSchedule.getFactory().createTransitRouteStop(stop , routeStop.getArrivalOffset(), routeStop.getDepartureOffset()));
+					stopsWithNewIDs.add(baseSchedule.getFactory().createTransitRouteStop(stop , routeStop.getArrivalOffset().seconds(), routeStop.getDepartureOffset().seconds()));
 				}
 				
 				TransitRoute route2 = baseSchedule.getFactory().createTransitRoute(route.getId(), route.getRoute(), stopsWithNewIDs, route.getTransportMode());

@@ -32,7 +32,6 @@ import org.matsim.api.core.v01.population.Route;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.scoring.functions.ModeUtilityParameters;
 import org.matsim.core.scoring.functions.ScoringParameters;
-import org.matsim.core.utils.misc.Time;
 import org.matsim.pt.PtConstants;
 
 import java.util.Collections;
@@ -58,7 +57,7 @@ public class CharyparNagelLegScoringWithPersonSpecificMarginalUtilityOfMoney imp
 	private boolean nextEnterVehicleIsFirstOfTrip = true;
 	private boolean nextStartPtLegIsFirstOfTrip = true;
 	private boolean currentLegIsPtLeg = false;
-	private double lastActivityEndTime = Time.getUndefinedTime();
+	private double lastActivityEndTime = 0.;
 	private final Set<String> ptModes;
 	private final Set<String> modesAlreadyConsideredForDailyConstants = new HashSet<>();
 	private final double marginalUtilityOfMoney;

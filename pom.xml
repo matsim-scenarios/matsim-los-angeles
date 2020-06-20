@@ -14,7 +14,7 @@
 	  <!--<matsim.version>11.0</matsim.version>-->
 
 	  <!--weekly "release":-->
-	  <matsim.version>12.0-2020w15-SNAPSHOT</matsim.version>
+	  <matsim.version>13.0-2020w24-SNAPSHOT</matsim.version>
 	</properties>
 
 	<repositories>
@@ -68,6 +68,12 @@
 	    	<groupId>com.github.matsim-vsp</groupId>
 	    	<artifactId>drt-speed-up</artifactId>
 	    	<version>v0.0.3</version>
+		</dependency>
+		
+		<dependency>
+ 			<groupId>com.github.matsim-vsp</groupId>
+ 			<artifactId>opt-drt</artifactId>
+ 			<version>v2.3</version>
 		</dependency>
 		
 		<dependency>
