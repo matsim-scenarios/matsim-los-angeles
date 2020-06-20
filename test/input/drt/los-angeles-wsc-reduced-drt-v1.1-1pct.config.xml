@@ -19,7 +19,7 @@
 		<param name="numberOfThreads" value="8" />
 	</module>
 	<module name="network" >
-		<param name="inputNetworkFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-WSC-reduced-v1.1-network_2020-05-02.xml.gz" />
+		<param name="inputNetworkFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/WSC-reduced-v1.1-network_2020-05-07.xml.gz" />
 	</module>
 	<module name="plans" >
 		<param name="inputPlansFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-WSC-reduced-v1.1-population-1pct_2020-05-02.xml.gz" /> <!-- Should be set depending on the sample size. -->
