@@ -159,7 +159,7 @@ public class RunLosAngelesScenario {
 		RouteFactories routeFactories = scenario.getPopulation().getFactory().getRouteFactories();
 		routeFactories.setRouteFactory(DrtRoute.class, new DrtRouteFactory());
 		
-		ScenarioUtils.loadScenario( config );
+		ScenarioUtils.loadScenario( scenario );
 		
 		// make sure we start with selected plans only
 		for( Person person : scenario.getPopulation().getPersons().values() ){
