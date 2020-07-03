@@ -29,6 +29,8 @@ import org.matsim.analysis.moneyEventAnalysis.RunMoneyEventAnalysis;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.Person;
+import org.matsim.contrib.drt.routing.DrtRoute;
+import org.matsim.contrib.drt.routing.DrtRouteFactory;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
@@ -39,6 +41,7 @@ import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.gbl.Gbl;
+import org.matsim.core.population.routes.RouteFactories;
 import org.matsim.core.router.AnalysisMainModeIdentifier;
 import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.scenario.ScenarioUtils;
@@ -145,7 +148,18 @@ public class RunLosAngelesScenario {
 	
 	public static Scenario prepareScenario( Config config ) {
 		Gbl.assertNotNull( config );
-		final Scenario scenario = ScenarioUtils.loadScenario( config );
+		
+		/*
+		 * We need to set the DrtRouteFactory before loading the scenario. Otherwise DrtRoutes in input plans are loaded
+		 * as GenericRouteImpls and will later cause exceptions in DrtRequestCreator. So we do this here, although this
+		 * class is also used for runs without drt.
+		 */
+		final Scenario scenario = ScenarioUtils.createScenario( config );
+
+		RouteFactories routeFactories = scenario.getPopulation().getFactory().getRouteFactories();
+		routeFactories.setRouteFactory(DrtRoute.class, new DrtRouteFactory());
+		
+		ScenarioUtils.loadScenario( config );
 		
 		// make sure we start with selected plans only
 		for( Person person : scenario.getPopulation().getPersons().values() ){
