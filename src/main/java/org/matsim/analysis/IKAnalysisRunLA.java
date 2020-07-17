@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.matsim.analysis.TripAnalysisFilter.TripConsiderType;
+import org.matsim.analysis.VehicleAnalysisFilter.StringComparison;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.core.config.Config;
@@ -155,6 +156,14 @@ public class IKAnalysisRunLA {
 		tripFilter1c.setTripConsiderType(TripConsiderType.OriginOrDestination);
 		tripFilters.add(tripFilter1c);
 		
+		final List<VehicleFilter> vehicleFilters = new ArrayList<>();
+		
+		VehicleAnalysisFilter vehicleAnalysisFilter0 = null;
+		vehicleFilters.add(vehicleAnalysisFilter0);
+		
+		VehicleAnalysisFilter vehicleAnalysisFilter1 = new VehicleAnalysisFilter("drt-vehicles", "rt", StringComparison.Contains);
+		vehicleFilters.add(vehicleAnalysisFilter1);
+		
 		List<String> modes = new ArrayList<>();
 		for (String mode : modesString.split(",")) {
 			modes.add(mode);
@@ -166,6 +175,7 @@ public class IKAnalysisRunLA {
 		
 		analysis.setAgentFilters(agentFilters);		
 		analysis.setTripFilters(tripFilters);
+		analysis.setVehicleFilters(vehicleFilters);
 		
 		analysis.setScenarioCRS(scenarioCRS);
 		analysis.setScalingFactor(scalingFactor);
