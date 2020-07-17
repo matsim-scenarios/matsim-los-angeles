@@ -149,7 +149,7 @@ public class IKAnalysisRunLA {
 		tripFilters.add(tripFilter1b);
 		
 		TripAnalysisFilter tripFilter1c = new TripAnalysisFilter("trips-in-planning-area-outside-WSC");
-		tripFilter1c.setZoneInformation(shapeFileWSC, crsShapeFileOutsideWSC);
+		tripFilter1c.setZoneInformation(shapeFileOutsideWSC, crsShapeFileOutsideWSC);
 		tripFilter1c.preProcess(scenario1);
 		tripFilter1c.setBuffer(2000.);
 		tripFilter1c.setTripConsiderType(TripConsiderType.OriginOrDestination);
