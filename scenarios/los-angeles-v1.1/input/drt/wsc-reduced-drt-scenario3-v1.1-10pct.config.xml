@@ -135,7 +135,7 @@
 				<param name="constant" value="0.0" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 				<param name="mode" value="car" />
-				<param name="monetaryDistanceRate" value="-0.00104" />
+				<param name="monetaryDistanceRate" value="-0.000208" />
 				<param name="dailyMonetaryConstant" value="-15.47" />
 				<param name="dailyUtilityConstant" value="10.0" />
 			</parameterset>
@@ -143,7 +143,7 @@
 				<param name="constant" value="-28.0" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 				<param name="mode" value="ride" />
-				<param name="monetaryDistanceRate" value="-0.00104" />
+				<param name="monetaryDistanceRate" value="-0.000208" />
 				<param name="dailyMonetaryConstant" value="-0.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
@@ -161,7 +161,7 @@
 			<parameterset type="modeParams" >
 				<param name="constant" value="-9.84" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
-				<param name="monetaryDistanceRate" value="-0.00104" />
+				<param name="monetaryDistanceRate" value="-0.000208" />
 				<param name="mode" value="access_egress_pt" />
 			</parameterset>
 			<parameterset type="modeParams" >
@@ -213,8 +213,8 @@
 			<param name="maxRadius" value="100000.0" />
 			<param name="mode" value="access_egress_pt" />
 			<param name="searchExtensionRadius" value="1000.0" />
-			<param name="stopFilterAttribute" value="null" />
-			<param name="stopFilterValue" value="null" />
+			<param name="stopFilterAttribute" value="stopFilter" />
+			<param name="stopFilterValue" value="RAIL" />
 		</parameterset>
 		<parameterset type="intermodalAccessEgress" >
 			<param name="initialSearchRadius" value="1500.0" />
@@ -222,8 +222,8 @@
 			<param name="maxRadius" value="100000.0" />
 			<param name="mode" value="drt1" />
 			<param name="searchExtensionRadius" value="1000.0" />
-			<param name="stopFilterAttribute" value="null" />
-			<param name="stopFilterValue" value="null" />
+			<param name="stopFilterAttribute" value="stopFilter" />
+			<param name="stopFilterValue" value="RAIL" />
 		</parameterset>
 		<parameterset type="intermodalAccessEgress" >
 			<param name="initialSearchRadius" value="1500.0" />
@@ -231,8 +231,8 @@
 			<param name="maxRadius" value="100000.0" />
 			<param name="mode" value="drt2" />
 			<param name="searchExtensionRadius" value="1000.0" />
-			<param name="stopFilterAttribute" value="null" />
-			<param name="stopFilterValue" value="null" />
+			<param name="stopFilterAttribute" value="stopFilter" />
+			<param name="stopFilterValue" value="RAIL" />
 		</parameterset>
 	</module>
 	<module name="multiModeDrt">

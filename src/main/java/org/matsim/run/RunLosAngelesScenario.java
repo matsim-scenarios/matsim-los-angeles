@@ -47,6 +47,7 @@ import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.parkingCost.ParkingCostConfigGroup;
 import org.matsim.parkingCost.ParkingCostModule;
+import org.matsim.pt.transitSchedule.api.TransitStopFacility;
 
 import ch.sbb.matsim.config.SwissRailRaptorConfigGroup;
 import ch.sbb.matsim.routing.pt.raptor.RaptorIntermodalAccessEgress;
@@ -162,8 +163,17 @@ public class RunLosAngelesScenario {
 		ScenarioUtils.loadScenario( scenario );
 		
 		// make sure we start with selected plans only
-		for( Person person : scenario.getPopulation().getPersons().values() ){
-			person.getPlans().removeIf( (plan) -> plan!=person.getSelectedPlan() ) ;
+		// in case we chain different simulation runs this might be a feature we don't want to have! ihab July '20
+//		for( Person person : scenario.getPopulation().getPersons().values() ){
+//			person.getPlans().removeIf( (plan) -> plan!=person.getSelectedPlan() ) ;
+//		}
+		
+		for (TransitStopFacility stop: scenario.getTransitSchedule().getFacilities().values()) {
+			// To speed up computation times, we exclude certain transit stops (e.g. less relevant bus stops)
+			// from the list of possible intermodal transfer points
+			if (stop.getId().toString().contains("RAIL")) {
+				stop.getAttributes().putAttribute("stopFilter", "RAIL");
+			}
 		}
 		
 		return scenario;

@@ -213,8 +213,8 @@
 			<param name="maxRadius" value="100000.0" />
 			<param name="mode" value="access_egress_pt" />
 			<param name="searchExtensionRadius" value="1000.0" />
-			<param name="stopFilterAttribute" value="null" />
-			<param name="stopFilterValue" value="null" />
+			<param name="stopFilterAttribute" value="stopFilter" />
+			<param name="stopFilterValue" value="RAIL" />
 		</parameterset>
 		<parameterset type="intermodalAccessEgress" >
 			<param name="initialSearchRadius" value="1500.0" />
@@ -222,8 +222,8 @@
 			<param name="maxRadius" value="100000.0" />
 			<param name="mode" value="drt1" />
 			<param name="searchExtensionRadius" value="1000.0" />
-			<param name="stopFilterAttribute" value="null" />
-			<param name="stopFilterValue" value="null" />
+			<param name="stopFilterAttribute" value="stopFilter" />
+			<param name="stopFilterValue" value="RAIL" />
 		</parameterset>
 		<parameterset type="intermodalAccessEgress" >
 			<param name="initialSearchRadius" value="1500.0" />
@@ -231,8 +231,8 @@
 			<param name="maxRadius" value="100000.0" />
 			<param name="mode" value="drt2" />
 			<param name="searchExtensionRadius" value="1000.0" />
-			<param name="stopFilterAttribute" value="null" />
-			<param name="stopFilterValue" value="null" />
+			<param name="stopFilterAttribute" value="stopFilter" />
+			<param name="stopFilterValue" value="RAIL" />
 		</parameterset>
 	</module>
 	<module name="multiModeDrt">

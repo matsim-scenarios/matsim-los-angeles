@@ -200,8 +200,8 @@
 			<param name="maxRadius" value="100000.0" />
 			<param name="mode" value="access_egress_pt" />
 			<param name="searchExtensionRadius" value="1000.0" />
-			<param name="stopFilterAttribute" value="null" />
-			<param name="stopFilterValue" value="null" />
+			<param name="stopFilterAttribute" value="stopFilter" />
+			<param name="stopFilterValue" value="RAIL" />
 		</parameterset>
 	</module>
 </config>

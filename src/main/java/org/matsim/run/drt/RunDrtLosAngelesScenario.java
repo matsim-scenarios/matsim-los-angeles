@@ -25,7 +25,6 @@ import org.matsim.contrib.av.robotaxi.fares.drt.DrtFareModule;
 import org.matsim.contrib.av.robotaxi.fares.drt.DrtFaresConfigGroup;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
-import org.matsim.contrib.drt.run.DrtConfigGroup;
 import org.matsim.contrib.drt.run.DrtConfigs;
 import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
 import org.matsim.contrib.drt.run.MultiModeDrtModule;
@@ -122,15 +121,6 @@ public final class RunDrtLosAngelesScenario {
 		// required by drt module
 		RouteFactories routeFactories = scenario.getPopulation().getFactory().getRouteFactories();
 		routeFactories.setRouteFactory(DrtRoute.class, new DrtRouteFactory());
-
-		for (DrtConfigGroup drtCfg : MultiModeDrtConfigGroup.get(config).getModalElements()) {
-			
-			String drtServiceAreaShapeFile = drtCfg.getDrtServiceAreaShapeFile();
-			if (drtServiceAreaShapeFile != null && !drtServiceAreaShapeFile.equals("") && !drtServiceAreaShapeFile.equals("null")) {				
-				// Currently all transit stops (within the drt service area) can be used as an intermodal transfer point (drt -> pt or pt -> drt).
-				// TODO: To speed up computation times, we can also exclude certain transit stops (e.g. less relevant bus stops)
-			}
-		}
 		
 		return scenario;
 	}
