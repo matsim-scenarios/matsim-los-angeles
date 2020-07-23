@@ -67,13 +67,13 @@
 		<dependency>
 	    	<groupId>com.github.matsim-vsp</groupId>
 	    	<artifactId>drt-speed-up</artifactId>
-	    	<version>v0.0.3</version>
+	    	<version>2faf970d63</version>
 		</dependency>
 		
 		<dependency>
  			<groupId>com.github.matsim-vsp</groupId>
  			<artifactId>opt-drt</artifactId>
- 			<version>v2.3</version>
+ 			<version>b55180f2a9</version>
 		</dependency>
 		
 		<dependency>
