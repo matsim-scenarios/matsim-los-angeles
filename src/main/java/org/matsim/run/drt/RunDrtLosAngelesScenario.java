@@ -40,7 +40,7 @@ import org.matsim.core.population.routes.RouteFactories;
 import org.matsim.core.router.AnalysisMainModeIdentifier;
 import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.drtSpeedUp.DrtSpeedUpConfigGroup;
-import org.matsim.drtSpeedUp.DrtSpeedUpModule;
+import org.matsim.drtSpeedUp.MultiModeDrtSpeedUpModule;
 import org.matsim.optDRT.MultiModeOptDrtConfigGroup;
 import org.matsim.optDRT.OptDrt;
 import org.matsim.run.LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier;
@@ -93,7 +93,7 @@ public final class RunDrtLosAngelesScenario {
 		controler.addOverridingModule(new DrtFareModule());
 				
 		// Add drt-speed-up module
-		controler.addOverridingModule(new DrtSpeedUpModule());
+		controler.addOverridingModule(new MultiModeDrtModule());
 		
 		// Add drt-opt module
 		OptDrt.addAsOverridingModule(controler, ConfigUtils.addOrGetModule(scenario.getConfig(), MultiModeOptDrtConfigGroup.class));
@@ -129,7 +129,7 @@ public final class RunDrtLosAngelesScenario {
 		Config config = RunLosAngelesScenario.prepareConfig(args, new MultiModeDrtConfigGroup(), new DvrpConfigGroup(), new DrtFaresConfigGroup(), new DrtSpeedUpConfigGroup(), new MultiModeOptDrtConfigGroup() ) ;
 
 		DrtConfigs.adjustMultiModeDrtConfig(MultiModeDrtConfigGroup.get(config), config.planCalcScore(), config.plansCalcRoute());
-		DrtSpeedUpModule.addTeleportedDrtMode(config);
+		MultiModeDrtSpeedUpModule.addTeleportedDrtMode(config);
 
 		return config ;
 	}
