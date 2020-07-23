@@ -93,7 +93,7 @@ public final class RunDrtLosAngelesScenario {
 		controler.addOverridingModule(new DrtFareModule());
 				
 		// Add drt-speed-up module
-		controler.addOverridingModule(new MultiModeDrtModule());
+		controler.addOverridingModule(new MultiModeDrtSpeedUpModule());
 		
 		// Add drt-opt module
 		OptDrt.addAsOverridingModule(controler, ConfigUtils.addOrGetModule(scenario.getConfig(), MultiModeOptDrtConfigGroup.class));
