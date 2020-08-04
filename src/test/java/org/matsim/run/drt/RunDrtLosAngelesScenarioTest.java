@@ -18,6 +18,8 @@
  * *********************************************************************** */
 package org.matsim.run.drt;
 
+import java.util.Arrays;
+
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -46,15 +48,25 @@ public class RunDrtLosAngelesScenarioTest {
 	@Test
 	public final void test0() {
 		try {			
-			String[] args = new String[] { "./test/input/drt/los-angeles-wsc-reduced-drt-v1.1-1pct.config.xml" };
+			String[] args = new String[] { "test-agent-from-base-case.xml" , "./test/input/drt/los-angeles-wsc-reduced-drt-v1.1-1pct.config.xml"};
 			
-			Config config = RunDrtLosAngelesScenario.prepareConfig(args);
+			String[] argsWithoutCustomAttributes;
+			String populationFile;
+			if (args.length > 0) {
+				argsWithoutCustomAttributes = Arrays.copyOfRange( args, 1, args.length );
+				populationFile = args[0];
+			} else {
+				argsWithoutCustomAttributes = args;
+				populationFile = null;
+			}
+			
+			Config config = RunDrtLosAngelesScenario.prepareConfig(argsWithoutCustomAttributes);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 			config.plans().setInputFile("test-drt-agent.xml");
 			config.transit().setUseTransit(false); // disable simulated pt
 			config.network().setInputFile(null);
-			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config, "test-agent-from-base-case.xml");
+			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config, populationFile);
 			
 			Assert.assertEquals("Wrong number of plans.", 2, scenario.getPopulation().getPersons().get(Id.createPersonId("test-agent_drt-user_monomodal")).getPlans().size());
 
