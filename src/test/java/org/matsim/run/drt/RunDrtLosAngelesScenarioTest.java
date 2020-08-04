@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.matsim.analysis.ScoreStatsControlerListener.ScoreItem;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
 import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
@@ -40,6 +41,30 @@ import org.matsim.testcases.MatsimTestUtils;
 public class RunDrtLosAngelesScenarioTest {
 	
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
+	
+	// tests the choice set extension
+	@Test
+	public final void test0() {
+		try {			
+			String[] args = new String[] { "./test/input/drt/los-angeles-wsc-reduced-drt-v1.1-1pct.config.xml" };
+			
+			Config config = RunDrtLosAngelesScenario.prepareConfig(args);
+			config.controler().setOutputDirectory( utils.getOutputDirectory() );
+			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+			config.plans().setInputFile("test-drt-agent.xml");
+			config.transit().setUseTransit(false); // disable simulated pt
+			config.network().setInputFile(null);
+			Scenario scenario = RunDrtLosAngelesScenario.prepareScenario(config, "test-agent-from-base-case.xml");
+			
+			Assert.assertEquals("Wrong number of plans.", 2, scenario.getPopulation().getPersons().get(Id.createPersonId("test-agent_drt-user_monomodal")).getPlans().size());
+
+		} catch ( Exception ee ) {
+			ee.printStackTrace();
+			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
+			Assert.fail();
+		}
+
+	}
 	
 	// tests the score of a specific agent (drt user)
 	// simulated pt disabled

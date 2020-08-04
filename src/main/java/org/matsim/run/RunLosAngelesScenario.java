@@ -28,7 +28,6 @@ import org.matsim.analysis.IKAnalysisRunLA;
 import org.matsim.analysis.moneyEventAnalysis.RunMoneyEventAnalysis;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
-import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
 import org.matsim.core.config.Config;

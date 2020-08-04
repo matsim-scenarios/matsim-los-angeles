@@ -19,8 +19,13 @@
 
 package org.matsim.run.drt;
 
+import java.util.Arrays;
+
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Plan;
+import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.av.robotaxi.fares.drt.DrtFareModule;
 import org.matsim.contrib.av.robotaxi.fares.drt.DrtFaresConfigGroup;
 import org.matsim.contrib.drt.routing.DrtRoute;
@@ -33,12 +38,15 @@ import org.matsim.contrib.dvrp.run.DvrpModule;
 import org.matsim.contrib.dvrp.run.DvrpQSimComponents;
 import org.matsim.core.config.CommandLine;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.population.io.PopulationReader;
 import org.matsim.core.population.routes.RouteFactories;
 import org.matsim.core.router.AnalysisMainModeIdentifier;
 import org.matsim.core.router.MainModeIdentifier;
+import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.drtSpeedUp.DrtSpeedUpConfigGroup;
 import org.matsim.drtSpeedUp.MultiModeDrtSpeedUpModule;
 import org.matsim.optDRT.MultiModeOptDrtConfigGroup;
@@ -66,13 +74,22 @@ public final class RunDrtLosAngelesScenario {
 		for (String arg : args) {
 			log.info( arg );
 		}
+		String[] argsWithoutCustomAttributes;
+		String populationFile;
+		if (args.length > 0) {
+			argsWithoutCustomAttributes = Arrays.copyOfRange( args, 1, args.length );
+			populationFile = args[0];
+		} else {
+			argsWithoutCustomAttributes = args;
+			populationFile = null;
+		}
 		
 		if ( args.length==0 ) {
 			args = new String[] {"./scenarios/los-angeles-v1.1/input/drt/wsc-reduced-drt-scenario1-v1.1-10pct.config.xml"}  ;
 		}
 		
-		Config config = prepareConfig( args ) ;
-		Scenario scenario = prepareScenario( config ) ;
+		Config config = prepareConfig( argsWithoutCustomAttributes ) ;
+		Scenario scenario = prepareScenario( config, populationFile ) ;
 		Controler controler = prepareControler( scenario ) ;
 		controler.run() ;
 		
@@ -115,8 +132,30 @@ public final class RunDrtLosAngelesScenario {
 	}
 	
 	public static Scenario prepareScenario( Config config ) {
-
+		return prepareScenario(config, null);
+	}
+	
+	public static Scenario prepareScenario( Config config, String baseCasePopulationFile ) {
+		
 		Scenario scenario = RunLosAngelesScenario.prepareScenario( config );
+		
+		if (baseCasePopulationFile != null) {
+			int maxAgentPlanMemorySize = scenario.getConfig().strategy().getMaxAgentPlanMemorySize();
+			scenario.getConfig().strategy().setMaxAgentPlanMemorySize(maxAgentPlanMemorySize + 1);	
+			
+			Scenario dummyScenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());
+			new PopulationReader(dummyScenario).readFile(ConfigGroup.getInputFileURL(config.getContext(), baseCasePopulationFile).getFile());
+			Population baseCasePopulation = dummyScenario.getPopulation();
+			
+			for (Person person : scenario.getPopulation().getPersons().values()) {
+				if (baseCasePopulation.getPersons().get(person.getId()) == null || baseCasePopulation.getPersons().get(person.getId()).getSelectedPlan() == null) {
+					throw new RuntimeException("Base case plan for this person does not exist. Aborting..." + person.toString());
+				} else {
+					Plan selectedBaseCasePlan = baseCasePopulation.getPersons().get(person.getId()).getSelectedPlan();
+					person.addPlan(selectedBaseCasePlan);
+				}
+			}
+		}
 
 		// required by drt module
 		RouteFactories routeFactories = scenario.getPopulation().getFactory().getRouteFactories();
