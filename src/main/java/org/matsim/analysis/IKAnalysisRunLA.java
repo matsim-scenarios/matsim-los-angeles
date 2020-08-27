@@ -59,7 +59,7 @@ public class IKAnalysisRunLA {
 
 		final String[] helpLegModes = {TransportMode.walk,"access_egress_pt"};
 		final String homeActivityPrefix = "home";
-		final String modesString = "car,pt,bike,ride,ride_taxi,drt1,drt2"; // the modes we are interested in
+		final String modesString = "car,pt,bike,ride,ride_taxi,drt1,drt2,walk"; // the modes we are interested in
 
 		if (args.length > 0) {
 
