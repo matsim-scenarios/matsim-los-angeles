@@ -142,12 +142,19 @@ public class IKAnalysisRunLA {
 		tripFilter1a.preProcess(scenario1);
 		tripFilters.add(tripFilter1a);
 		
-		TripAnalysisFilter tripFilter1b = new TripAnalysisFilter("trips-in-WSC");
+		TripAnalysisFilter tripFilter1b = new TripAnalysisFilter("trips-origin-OR-end-in-WSC");
 		tripFilter1b.setZoneInformation(shapeFileWSC, crsShapeFileWSC);
 		tripFilter1b.preProcess(scenario1);
 		tripFilter1b.setBuffer(2000.);
 		tripFilter1b.setTripConsiderType(TripConsiderType.OriginOrDestination);
 		tripFilters.add(tripFilter1b);
+		
+		TripAnalysisFilter tripFilter1d = new TripAnalysisFilter("trips-origin-AND-end-in-WSC");
+		tripFilter1d.setZoneInformation(shapeFileWSC, crsShapeFileWSC);
+		tripFilter1d.preProcess(scenario1);
+		tripFilter1d.setBuffer(0.);
+		tripFilter1d.setTripConsiderType(TripConsiderType.OriginAndDestination);
+		tripFilters.add(tripFilter1d);
 		
 		TripAnalysisFilter tripFilter1c = new TripAnalysisFilter("trips-in-planning-area-outside-WSC");
 		tripFilter1c.setZoneInformation(shapeFileOutsideWSC, crsShapeFileOutsideWSC);
