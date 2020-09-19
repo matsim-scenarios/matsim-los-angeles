@@ -60,6 +60,10 @@ import org.opengis.feature.simple.SimpleFeature;
 
 public class ExperiencedPlanAnalysis {
 	
+	// TODO: trips of people that have all their trips inside the WSC area
+	// TODO: trips starting and ending in the WSC after commuting into the WSC area by car
+	// TODO: trips starting and ending in the WSC after commuting into the WSC area by pt
+	
 	private static final Logger log = Logger.getLogger(ExperiencedPlanAnalysis.class);
 
 //	private final String plansFile = "../public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_experienced_plans.xml.gz";
