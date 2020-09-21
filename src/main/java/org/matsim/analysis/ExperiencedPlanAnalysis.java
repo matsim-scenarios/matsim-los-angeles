@@ -70,9 +70,14 @@ public class ExperiencedPlanAnalysis {
 //	private final String networkFile = "../public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_network.xml.gz";
 //	private final String outputFile = "/Users/ihab/Desktop/trip-mode-zone-analysis.csv";
 	
-	private final String plansFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_experienced_plans.xml.gz";
-	private final String networkFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_network.xml.gz";
-	private final String outputFile = "/Users/ihab/Desktop/scenario1-trip-mode-zone-analysis.csv";
+	private final String plansFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_experienced_plans.xml.gz";
+	private final String networkFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_network.xml.gz";
+	private final String outputFile = "/Users/ihab/Desktop/bc-trip-mode-zone-analysis.csv";
+
+//	private final String plansFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_experienced_plans.xml.gz";
+//	private final String networkFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_network.xml.gz";
+//	private final String outputFile = "/Users/ihab/Desktop/scenario1-trip-mode-zone-analysis.csv";
+	
 
 	private final String zoneShapeFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC_Boundary_SCAG/WSC_Boundary_SCAG.shp";
 	
