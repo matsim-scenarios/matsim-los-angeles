@@ -66,9 +66,13 @@ public class ExperiencedPlanAnalysis {
 	
 	private static final Logger log = Logger.getLogger(ExperiencedPlanAnalysis.class);
 
-	private final String plansFile = "../public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_experienced_plans.xml.gz";
-	private final String networkFile = "../public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_network.xml.gz";
-	private final String outputFile = "/Users/ihab/Desktop/trip-mode-zone-analysis.csv";
+	private final String plansFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_experienced_plans.xml.gz";
+	private final String networkFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_network.xml.gz";
+//	private final String outputFile = "/Users/ihab/Desktop/trip-mode-zone-analysis.csv";
+	
+//	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_experienced_plans.xml.gz";
+//	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_network.xml.gz";
+	private final String outputFile = "output/scenario1-trip-mode-zone-analysis.csv";
 	
 //	private final String plansFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_experienced_plans.xml.gz";
 //	private final String networkFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_network.xml.gz";
@@ -109,6 +113,8 @@ public class ExperiencedPlanAnalysis {
 		Map<String, Integer> modes2tripsWithStartOrEndInside = new HashMap<>();
 		Map<String, Integer> modes2tripsWithStartAndEndOutside = new HashMap<>();
 		Map<String, Integer> modes2tripsOfPeopleWithAllTripsStartinAndEndingInside = new HashMap<>();
+		
+		Map<String, Integer> modes2tripsWithStartAndEndInsideOfPeopleHasAtLeastOneTripOutside = new HashMap<>();
 
 		int totalPersons = 0;
 
@@ -126,8 +132,12 @@ public class ExperiencedPlanAnalysis {
 			boolean allTripsStartingOrEndingOutside = true;
 			boolean atLeastOneTripStartingOrEndingInside = false;
 			
+			boolean atLeastOneTripOutside = false;
+			
 			int tripsThisPerson = 0;
-			Map<String,Integer> mode2tripsThisPerson = new HashMap<>();
+			Map<String, Integer> mode2tripsThisPerson = new HashMap<>();
+			
+			Map<String, Integer> modes2tripsThisPersonWithStartAndEndInside = new HashMap<>();
 			
 			for (Trip trip : TripStructureUtils.getTrips(person.getSelectedPlan())) {
 				totalTrips++;
@@ -184,6 +194,8 @@ public class ExperiencedPlanAnalysis {
 						tripsWithStartAndEndInside++;
 						modes2tripsWithStartAndEndInside.merge(modes, 1, Integer::sum);
 						
+						modes2tripsThisPersonWithStartAndEndInside.merge(modes, 1, Integer::sum);
+						
 					} else if (isCoordInArea(originCoord, geometries) || isCoordInArea(destinationCoord, geometries)) {
 						// trip starts OR ends inside
 						tripsWithStartOrEndInside++;
@@ -202,6 +214,8 @@ public class ExperiencedPlanAnalysis {
 					
 					if (!isCoordInArea(originCoord, geometries) || !isCoordInArea(destinationCoord, geometries)) {
 						allTripsStartingOrEndingInside = false;
+						
+						atLeastOneTripOutside = true;
 					}
 					
 					if (isCoordInArea(originCoord, geometries) || isCoordInArea(destinationCoord, geometries)) {
@@ -229,6 +243,12 @@ public class ExperiencedPlanAnalysis {
 				if (atLeastOneTripStartingOrEndingInside) {
 					numberOfPersonsAtLeastOneTripStartingOrEndingInside++;
 				}
+				
+				if (atLeastOneTripOutside) {
+					for (String mode : modes2tripsThisPersonWithStartAndEndInside.keySet()) {
+						modes2tripsWithStartAndEndInsideOfPeopleHasAtLeastOneTripOutside.merge(mode, modes2tripsThisPersonWithStartAndEndInside.get(mode), Integer::sum);
+					}
+				}
 			} else {
 				numberOfPersonsWithoutAnyTrips++;
 			}
@@ -245,14 +265,17 @@ public class ExperiencedPlanAnalysis {
 
 		System.out.println("--------------------------------------------------------------------------");
 
-		System.out.println("Mode ; total ; Inside->Inside ; Inside<->Outside ; Outside->Outside ; Inside->Inside (trips by people who have all their trips inside the area)");
+		System.out.println("Mode ; total ; Inside->Inside ; Inside<->Outside ; Outside->Outside ; "
+				+ "Inside->Inside (trips by people who have all their trips inside the area) ; "
+				+ "Inside->Inside (trips by people who have at least one trip outside the area)");
 		for (String modes : modes2totalTrips.keySet()) {
 			System.out.println(modes + ";"
 					+ modes2totalTrips.get(modes) +  ";"
 					+ modes2tripsWithStartAndEndInside.get(modes) + ";"
 					+ modes2tripsWithStartOrEndInside.get(modes) + ";"
 					+ modes2tripsWithStartAndEndOutside.get(modes) + ";"
-					+ modes2tripsOfPeopleWithAllTripsStartinAndEndingInside.get(modes));
+					+ modes2tripsOfPeopleWithAllTripsStartinAndEndingInside.get(modes) + ";"
+					+ modes2tripsWithStartAndEndInsideOfPeopleHasAtLeastOneTripOutside.get(modes));
 		}
 		
 		System.out.println("--------------------------------------------------------------------------");
