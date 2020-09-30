@@ -29,16 +29,13 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.ActivityEndEvent;
 import org.matsim.api.core.v01.events.PersonDepartureEvent;
-import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 import org.matsim.api.core.v01.events.PersonLeavesVehicleEvent;
 import org.matsim.api.core.v01.events.PersonMoneyEvent;
 import org.matsim.api.core.v01.events.TransitDriverStartsEvent;
 import org.matsim.api.core.v01.events.handler.ActivityEndEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler;
-import org.matsim.api.core.v01.events.handler.PersonEntersVehicleEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonLeavesVehicleEventHandler;
 import org.matsim.api.core.v01.events.handler.TransitDriverStartsEventHandler;
-import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ScoringParameterSet;
@@ -50,12 +47,10 @@ import com.google.inject.Inject;
 * @author ikaddoura
 */
 
-final class ParkingTimeHandler implements TransitDriverStartsEventHandler, ActivityEndEventHandler, PersonDepartureEventHandler, PersonLeavesVehicleEventHandler, PersonEntersVehicleEventHandler {
+final class ParkingTimeHandler implements TransitDriverStartsEventHandler, ActivityEndEventHandler, PersonDepartureEventHandler, PersonLeavesVehicleEventHandler {
 	
 	private final Map<Id<Person>, Double> personId2lastLeaveVehicleTime = new HashMap<>();
 	private final Map<Id<Person>, String> personId2previousActivity = new HashMap<>();
-	private final Map<Id<Person>, Id<Link>> personId2relevantModeLinkId = new HashMap<>();
-	private final Map<Id<Person>, String> personId2relevantMode = new HashMap<>();
 	private final Set<Id<Person>> ptDrivers = new HashSet<>();
 	
 	private final String modes = "car,ride";
@@ -80,8 +75,6 @@ final class ParkingTimeHandler implements TransitDriverStartsEventHandler, Activ
     public void reset(int iteration) {
        this.personId2lastLeaveVehicleTime.clear();
        this.personId2previousActivity.clear();
-       this.personId2relevantModeLinkId.clear();
-       this.personId2relevantMode.clear();
        this.ptDrivers.clear();
     }
 	
@@ -95,14 +88,8 @@ final class ParkingTimeHandler implements TransitDriverStartsEventHandler, Activ
 		if (ptDrivers.contains(event.getPersonId())) {
 			// skip pt drivers
 		} else {
-			if (!(StageActivityTypeIdentifier.isStageActivity(event.getActType()))) {
-				
+			if (!(StageActivityTypeIdentifier.isStageActivity(event.getActType()))) {	
 				personId2previousActivity.put(event.getPersonId(), event.getActType());
-				
-				if (personId2relevantModeLinkId.get(event.getPersonId()) != null) {
-					personId2relevantModeLinkId.remove(event.getPersonId());
-					personId2relevantMode.remove(event.getPersonId());
-				}
 			}
 		}	
 	}
@@ -114,54 +101,43 @@ final class ParkingTimeHandler implements TransitDriverStartsEventHandler, Activ
 		} else {
 			// There might be several departures during a single trip.
 			if (modesSet.contains(event.getLegMode())) {
-				personId2relevantModeLinkId.put(event.getPersonId(), event.getLinkId());
-				personId2relevantMode.put(event.getPersonId(), event.getLegMode());
-			}
-		}
-	}
-
-	@Override
-	public void handleEvent(PersonEntersVehicleEvent event) {
-		if (ptDrivers.contains(event.getPersonId())) {
-			// skip pt drivers
-		} else {
-			boolean previousActivityIgnored = false;
-			for (String activityToBeIgnored : ignoreActivitiesSet) {
-				if (personId2previousActivity.get(event.getPersonId()).startsWith(activityToBeIgnored)) {
-					previousActivityIgnored = true;
-				}
-			}
 			
-			if (personId2relevantModeLinkId.get(event.getPersonId()) != null
-					&& !previousActivityIgnored) {
-				
-				Person person = scenario.getPopulation().getPersons().get(event.getPersonId());
-				String subpopulation = (String) person.getAttributes().getAttribute("subpopulation");
-
-				ScoringParameterSet scoringParams = scenario.getConfig().planCalcScore().getScoringParameters(subpopulation);
-				
-				String mode = personId2relevantMode.get(event.getPersonId());
-				final double disutilityPerHour = scoringParams.getPerforming_utils_hr() + (-1. * scoringParams.getModes().get(mode).getMarginalUtilityOfTraveling());	
-				final double additionalTimeLossDisutility = additionalTimeLossSeconds / 3600. * disutilityPerHour;
-				
-				double marginalUtilityOfMoney;
-				if (person.getAttributes().getAttribute("marginalUtilityOfMoney") == null) {
-					throw new RuntimeException("Person does not have a marginal utility of money. Aborting...");
-//					marginalUtilityOfMoney = scoringParams.getMarginalUtilityOfMoney();
-				} else {
-					marginalUtilityOfMoney = (double) person.getAttributes().getAttribute("marginalUtilityOfMoney");
+				boolean previousActivityIgnored = false;
+				for (String activityToBeIgnored : ignoreActivitiesSet) {
+					if (personId2previousActivity.get(event.getPersonId()).startsWith(activityToBeIgnored)) {
+						previousActivityIgnored = true;
+					}
 				}
 				
-				final double costs = additionalTimeLossDisutility / marginalUtilityOfMoney;
+				if (!previousActivityIgnored) {
+					
+					Person person = scenario.getPopulation().getPersons().get(event.getPersonId());
+					String subpopulation = (String) person.getAttributes().getAttribute("subpopulation");
 
-				double amount = -1. * costs;
-				
-				if (amount > 0.) {
-					throw new RuntimeException("This should be a negative monetary amount. Aborting...");
-				}
-				
-				String purpose = "additionalParkingSearchAndWalkingTime_mode-" + mode + "_link-" + personId2relevantModeLinkId.get(event.getPersonId()) + "_act-" + personId2previousActivity.get(event.getPersonId());
-				events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), amount, purpose, "fictiveTransactionPartner"));		
+					ScoringParameterSet scoringParams = scenario.getConfig().planCalcScore().getScoringParameters(subpopulation);
+					
+					final double disutilityPerHour = scoringParams.getPerforming_utils_hr() + (-1. * scoringParams.getModes().get(event.getLegMode()).getMarginalUtilityOfTraveling());	
+					final double additionalTimeLossDisutility = additionalTimeLossSeconds / 3600. * disutilityPerHour;
+					
+					double marginalUtilityOfMoney;
+					if (person.getAttributes().getAttribute("marginalUtilityOfMoney") == null) {
+						throw new RuntimeException("Person does not have a marginal utility of money. Aborting...");
+//						marginalUtilityOfMoney = scoringParams.getMarginalUtilityOfMoney();
+					} else {
+						marginalUtilityOfMoney = (double) person.getAttributes().getAttribute("marginalUtilityOfMoney");
+					}
+					
+					final double costs = additionalTimeLossDisutility / marginalUtilityOfMoney;
+
+					double amount = -1. * costs;
+					
+					if (amount > 0.) {
+						throw new RuntimeException("This should be a negative monetary amount. Aborting...");
+					}
+					
+					String purpose = "additionalParkingSearchAndWalkingTime_mode-" + event.getLegMode() + "_act-" + personId2previousActivity.get(event.getPersonId());
+					events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), amount, purpose, "fictiveTransactionPartner"));		
+				}	
 			}
 		}
 	}
