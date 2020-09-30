@@ -47,6 +47,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.parkingCost.ParkingCostConfigGroup;
 import org.matsim.parkingCost.ParkingCostModule;
 import org.matsim.pt.transitSchedule.api.TransitStopFacility;
+import org.matsim.run.drt.WaitingTimeCompensation;
 
 import ch.sbb.matsim.config.SwissRailRaptorConfigGroup;
 import ch.sbb.matsim.routing.pt.raptor.RaptorIntermodalAccessEgress;
@@ -143,6 +144,14 @@ public class RunLosAngelesScenario {
 		// use parking cost module
 		controler.addOverridingModule(new ParkingCostModule());
 
+		// add additional parking search and walking time
+		controler.addOverridingModule(new AbstractModule() {	
+			@Override
+			public void install() {
+				this.addEventHandlerBinding().toInstance(new ParkingTimeHandler());
+			}
+		});
+		
 		return controler;
 	}
 	

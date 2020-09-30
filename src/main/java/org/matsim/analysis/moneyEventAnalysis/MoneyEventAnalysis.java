@@ -75,7 +75,7 @@ public class MoneyEventAnalysis implements PersonMoneyEventHandler {
 				totalParkingAmounts += event.getAmount();
 			
 			} else {
-				throw new RuntimeException("Unknown money event: " + event.toString());
+				log.warn("Skip unknown money event: " + event.toString());
 			}
 		}
 	}

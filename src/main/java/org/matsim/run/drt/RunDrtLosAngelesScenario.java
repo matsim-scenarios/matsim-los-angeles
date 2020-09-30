@@ -127,6 +127,14 @@ public final class RunDrtLosAngelesScenario {
 				bind(AnalysisMainModeIdentifier.class).to(LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier.class);
 			}
 		});
+		
+		// compensate the disutility resulting from waiting for DRT vehicles as users would stay at their activity until the vehicle arrives
+		controler.addOverridingModule(new AbstractModule() {	
+			@Override
+			public void install() {
+				this.addEventHandlerBinding().toInstance(new WaitingTimeCompensation());
+			}
+		});
 						
 		return controler;
 	}
