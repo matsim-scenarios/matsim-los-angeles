@@ -31,11 +31,9 @@ import org.matsim.api.core.v01.events.ActivityEndEvent;
 import org.matsim.api.core.v01.events.PersonDepartureEvent;
 import org.matsim.api.core.v01.events.PersonLeavesVehicleEvent;
 import org.matsim.api.core.v01.events.PersonMoneyEvent;
-import org.matsim.api.core.v01.events.TransitDriverStartsEvent;
 import org.matsim.api.core.v01.events.handler.ActivityEndEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonLeavesVehicleEventHandler;
-import org.matsim.api.core.v01.events.handler.TransitDriverStartsEventHandler;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ScoringParameterSet;
@@ -47,11 +45,10 @@ import com.google.inject.Inject;
 * @author ikaddoura
 */
 
-final class ParkingTimeHandler implements TransitDriverStartsEventHandler, ActivityEndEventHandler, PersonDepartureEventHandler, PersonLeavesVehicleEventHandler {
+final class ParkingTimeHandler implements ActivityEndEventHandler, PersonDepartureEventHandler, PersonLeavesVehicleEventHandler {
 	
 	private final Map<Id<Person>, Double> personId2lastLeaveVehicleTime = new HashMap<>();
 	private final Map<Id<Person>, String> personId2previousActivity = new HashMap<>();
-	private final Set<Id<Person>> ptDrivers = new HashSet<>();
 	
 	private final String modes = "car,ride";
 	private final String prefixesActivitiesToIgnore = "home,work";
@@ -75,18 +72,12 @@ final class ParkingTimeHandler implements TransitDriverStartsEventHandler, Activ
     public void reset(int iteration) {
        this.personId2lastLeaveVehicleTime.clear();
        this.personId2previousActivity.clear();
-       this.ptDrivers.clear();
     }
 	
 	@Override
-	public void handleEvent(TransitDriverStartsEvent event) {
-		ptDrivers.add(event.getDriverId());
-	}
-	
-	@Override
 	public void handleEvent(ActivityEndEvent event) {		
-		if (ptDrivers.contains(event.getPersonId())) {
-			// skip pt drivers
+		if (scenario.getPopulation().getPersons().get(event.getPersonId()) == null) {
+			// skip pt and taxi drivers
 		} else {
 			if (!(StageActivityTypeIdentifier.isStageActivity(event.getActType()))) {	
 				personId2previousActivity.put(event.getPersonId(), event.getActType());
@@ -96,8 +87,8 @@ final class ParkingTimeHandler implements TransitDriverStartsEventHandler, Activ
 	
 	@Override
 	public void handleEvent(PersonDepartureEvent event) {
-		if (ptDrivers.contains(event.getPersonId())) {
-			// skip pt drivers
+		if (scenario.getPopulation().getPersons().get(event.getPersonId()) == null) {
+			// skip pt and taxi drivers
 		} else {
 			// There might be several departures during a single trip.
 			if (modesSet.contains(event.getLegMode())) {
@@ -144,8 +135,8 @@ final class ParkingTimeHandler implements TransitDriverStartsEventHandler, Activ
 
 	@Override
 	public void handleEvent(PersonLeavesVehicleEvent event) {
-		if (ptDrivers.contains(event.getPersonId())) {
-			// skip pt drivers
+		if (scenario.getPopulation().getPersons().get(event.getPersonId()) == null) {
+			// skip pt and taxi drivers
 		} else {
 			personId2lastLeaveVehicleTime.put(event.getPersonId(), event.getTime());
 		}

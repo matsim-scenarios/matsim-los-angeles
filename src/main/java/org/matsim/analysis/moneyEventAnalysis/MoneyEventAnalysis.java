@@ -54,7 +54,7 @@ public class MoneyEventAnalysis implements PersonMoneyEventHandler {
 		if (event.getPersonId().toString().startsWith("drt")) {
 			log.warn("Skipping person money events by drt 'drivers': " + event.toString());
 		} else {
-			if (event.getAmount() > 0.) throw new RuntimeException("The amount is expected to be negative. A positive amount means the agent 'earns' money. " + event.toString());
+//			if (event.getAmount() > 0.) throw new RuntimeException("The amount is expected to be negative. A positive amount means the agent 'earns' money. " + event.toString());
 			
 			if (event.getTransactionPartner() == null || event.getTransactionPartner().equals("")) {
 				// in all previous runs there is no specific information in the parking cost money events.

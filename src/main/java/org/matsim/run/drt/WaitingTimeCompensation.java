@@ -60,7 +60,7 @@ public class WaitingTimeCompensation implements PersonDepartureEventHandler, Per
 
 	@Override
 	public void handleEvent(PersonDepartureEvent event) {
-		if (event.getLegMode().startsWith(drtModePrefix)) {
+		if (scenario.getPopulation().getPersons().get(event.getPersonId()) != null && event.getLegMode().startsWith(drtModePrefix)) {
 			personId2drtDepartureTime.put(event.getPersonId(), event.getTime());
 			personId2drtMode.put(event.getPersonId(), event.getLegMode());
 		}
