@@ -102,7 +102,8 @@ public class RunDrtLosAngelesScenarioTest {
 			
 			RunLosAngelesScenario.runAnalysis(config);
 
-			Assert.assertEquals("Wrong score in iteration 0.", 149.3797713901901 + (0.257329 * 4.673641850220264), controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+//			Assert.assertEquals("Wrong score in iteration 0.", 149.3797713901901 + (0.16492491823344851 + 0.10527122440432883) * 4.673641850220264, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
+			Assert.assertEquals("Wrong score in iteration 0.", 149.3797713901901 + (0.15205843525069718 + 0.10527122440432883) * 4.673641850220264, controler.getScoreStats().getScoreHistory().get(ScoreItem.executed).get(0), MatsimTestUtils.EPSILON);
 
 		} catch ( Exception ee ) {
 			ee.printStackTrace();
@@ -120,8 +121,8 @@ public class RunDrtLosAngelesScenarioTest {
 			String[] args = new String[] { "./test/input/drt/los-angeles-wsc-reduced-drt-v1.1-1pct.config.xml" };
 			
 			Config config = RunDrtLosAngelesScenario.prepareConfig(args);
-			config.controler().setLastIteration(0);
-			config.controler().setWriteEventsInterval(0); // don't write events files
+			config.controler().setLastIteration(1);
+			config.controler().setWriteEventsInterval(1); // don't write events files
 			config.global().setNumberOfThreads(1); // only one thread available on travis
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
