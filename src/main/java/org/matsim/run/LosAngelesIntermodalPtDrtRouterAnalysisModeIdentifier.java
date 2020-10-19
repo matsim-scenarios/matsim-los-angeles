@@ -59,11 +59,13 @@ public final class LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier impleme
 		modeHierarchy.add( "ride_taxi" ) ;
 		modeHierarchy.add( "ride_school_bus" ) ;
 		modeHierarchy.add( TransportMode.car ) ;
+		modeHierarchy.add( "car_teleported" ) ;
 		for (String drtMode: drtModes) {
 			modeHierarchy.add( drtMode ) ;
 		}
 		modeHierarchy.add( TransportMode.pt ) ;
 		modeHierarchy.add( "freight" );
+		modeHierarchy.add( "freight_teleported" ) ;
 		
 		// NOTE: This hierarchical stuff is not so great: is park-n-ride a car trip or a pt trip?  Could weigh it by distance, or by time spent
 		// in respective mode.  Or have combined modes as separate modes.  In any case, can't do it at the leg level, since it does not
