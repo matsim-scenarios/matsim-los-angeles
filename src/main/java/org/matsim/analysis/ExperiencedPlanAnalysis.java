@@ -41,6 +41,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -65,28 +66,41 @@ public class ExperiencedPlanAnalysis {
 	// TODO: trips starting and ending in the WSC after commuting into the WSC area by pt
 	
 	private static final Logger log = Logger.getLogger(ExperiencedPlanAnalysis.class);
-
-//	private final String plansFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_experienced_plans.xml.gz";
-//	private final String networkFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_network.xml.gz";
-//	private final String outputFile = "/Users/ihab/Desktop/trip-mode-zone-analysis.csv";
-//	private final String outputFile = "output/bc-trip-mode-zone-analysis.csv";
+	// test
+	private final String plansFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_experienced_plans.xml.gz";
+	private final String networkFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_network.xml.gz";
+	private final String outputFile = "output/bc-trip-mode-zone-analysis.csv";
+	private final String outputFile_1 = "output/bc-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
+	private final String outputFile_2 = "output/bc-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
 	
 	// base case
-	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_experienced_plans.xml.gz";
-	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_network.xml.gz";
-	private final String outputFile = "output/bc-trip-mode-zone-analysis.csv";
+//	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_experienced_plans.xml.gz";
+//	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_network.xml.gz";
+//	private final String outputFile = "output/bc-trip-mode-zone-analysis.csv";
+//	private final String outputFile_1 = "output/bc-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
+//	private final String outputFile_2 = "output/bc-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
+	
 	// scenario 1
 //	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_experienced_plans.xml.gz";
 //	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_network.xml.gz";
 //	private final String outputFile = "output/scenario1-trip-mode-zone-analysis.csv";
+//	private final String outputFile_1 = "output/scenario1-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
+//	private final String outputFile_2 = "output/scenario1-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
+	
 	// scenario 2
 //	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario2-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario2-v1.1-10pct_run6ctd2a.output_experienced_plans.xml.gz";
 //	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario2-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario2-v1.1-10pct_run6ctd2a.output_network.xml.gz";
 //	private final String outputFile = "output/scenario2-trip-mode-zone-analysis.csv";
+//	private final String outputFile_1 = "output/scenario2-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
+//	private final String outputFile_2 = "output/scenario2-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
+	
 	// scenario 3
 //	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario3-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario3-v1.1-10pct_run6ctd2a.output_experienced_plans.xml.gz";
 //	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario3-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario3-v1.1-10pct_run6ctd2a.output_network.xml.gz";
 //	private final String outputFile = "output/scenario3-trip-mode-zone-analysis.csv";
+//	private final String outputFile_1 = "output/scenario3-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
+//	private final String outputFile_2 = "output/scenario3-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
+	
 	
 //	private final String plansFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_experienced_plans.xml.gz";
 //	private final String networkFile = "/Users/ihab/Desktop/ils4a/kaddoura/la-wsc-scenarios/scenarios/wsc-reduced-v1.1/output/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_network.xml.gz";
@@ -137,6 +151,9 @@ public class ExperiencedPlanAnalysis {
 		Map<String, Integer> modes2tripsWithStartAndEndInsideOfPeopleHasAtLeastOneTripOutsideAndTravelByCarIntoWSC = new HashMap<>();
 		Map<String, Integer> modes2tripsWithStartAndEndInsideOfPeopleHasAtLeastOneTripOutsideAndTravelByPtIntoWSC = new HashMap<>();
 		
+		Map<Id<Person>, List<Integer>> personId2relevantTripNumbersForTripsWithStartOrEndInside = new HashMap<>();
+		Map<Id<Person>, List<Integer>> personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC = new HashMap<>();
+		
 		int totalPersons = 0;
 
 		int numberOfPersonsAllTripsStartingAndEndingInside = 0;
@@ -167,6 +184,8 @@ public class ExperiencedPlanAnalysis {
 			Map<String, Integer> modes2tripsThisPersonWithStartAndEndInsideAndAtLeastOneTripOutside = new HashMap<>();
 			Map<String, Integer> modes2tripsThisPersonWithStartAndEndInsideAfterEnteringByCar = new HashMap<>();
 			Map<String, Integer> modes2tripsThisPersonWithStartAndEndInsideAfterEnteringByPt = new HashMap<>();
+			
+			List<Integer> tripsNumbersForTripsofPeopleWithStartAndEndInside = new ArrayList<Integer>();
 			
 			for (Trip trip : TripStructureUtils.getTrips(person.getSelectedPlan())) {
 				totalTrips++;
@@ -228,6 +247,8 @@ public class ExperiencedPlanAnalysis {
 						modes2tripsThisPersonWithStartAndEndInsideAndAtLeastOneTripOutside.merge(modes, 1, Integer::sum);
 						thisPersonCurrentlyInsideWSC = true;
 						
+						tripsNumbersForTripsofPeopleWithStartAndEndInside.add(tripsThisPerson);
+						
 						if (thisPersonEnteringWSCByCar) {
 							tripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByCarIntoWSC++;
 							modes2tripsThisPersonWithStartAndEndInsideAfterEnteringByCar.merge(modes, 1, Integer::sum);
@@ -235,12 +256,29 @@ public class ExperiencedPlanAnalysis {
 						if (thisPersonEnteringWSCByPt) {
 							tripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC++;
 							modes2tripsThisPersonWithStartAndEndInsideAfterEnteringByPt.merge(modes, 1, Integer::sum);
+							
+							if (personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.containsKey(person.getId())) {
+								personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.get(person.getId()).add(tripsThisPerson);
+							} else {
+								List<Integer> list = new ArrayList<Integer>();
+								list.add(tripsThisPerson);
+								personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.put(person.getId(), list);
+							}
 						}
 						
 					} else if (isCoordInArea(originCoord, geometries) || isCoordInArea(destinationCoord, geometries)) {
 						// trip starts OR ends inside
 						tripsWithStartOrEndInside++;
 						modes2tripsWithStartOrEndInside.merge(modes, 1, Integer::sum);
+						
+						if ( personId2relevantTripNumbersForTripsWithStartOrEndInside.containsKey(person.getId()) ) {
+							personId2relevantTripNumbersForTripsWithStartOrEndInside.get(person.getId()).add(tripsThisPerson);
+						} else {
+							List<Integer> list = new ArrayList<Integer>();
+							list.add(tripsThisPerson);
+							personId2relevantTripNumbersForTripsWithStartOrEndInside.put(person.getId(), list);
+						}
+						
 						
 						if (!isCoordInArea(originCoord, geometries) && isCoordInArea(destinationCoord, geometries)) {
 							// trip entering WSC
@@ -294,6 +332,12 @@ public class ExperiencedPlanAnalysis {
 					for (String mode : mode2tripsThisPerson.keySet()) {
 						modes2tripsOfPeopleWithAllTripsStartinAndEndingInside.merge(mode, mode2tripsThisPerson.get(mode), Integer::sum);
 					}
+					
+					if (personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.containsKey(person.getId())) {
+						personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.get(person.getId()).addAll(tripsNumbersForTripsofPeopleWithStartAndEndInside);
+					} else {
+						personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.put(person.getId(), tripsNumbersForTripsofPeopleWithStartAndEndInside);
+					}
 				}
 				
 				if (allTripsStartingOrEndingOutside) {
@@ -319,6 +363,7 @@ public class ExperiencedPlanAnalysis {
 						for (String mode : modes2tripsThisPersonWithStartAndEndInsideAfterEnteringByPt.keySet()) {
 							modes2tripsWithStartAndEndInsideOfPeopleHasAtLeastOneTripOutsideAndTravelByPtIntoWSC.merge(mode, modes2tripsThisPersonWithStartAndEndInsideAfterEnteringByPt.get(mode), Integer::sum);
 						}
+						
 					}
 				}
 			} else {
@@ -419,6 +464,40 @@ public class ExperiencedPlanAnalysis {
 		bw.newLine();
 		
 		bw.close();
+		
+		// #######################
+		
+		File file_1 = new File(outputFile_1);
+		BufferedWriter bw_1 = new BufferedWriter(new FileWriter(file_1));
+
+		bw_1.write("person;trip_number");
+		bw_1.newLine();
+		
+		for (Id<Person> person : personId2relevantTripNumbersForTripsWithStartOrEndInside.keySet()) {
+			for (Integer trip_number : personId2relevantTripNumbersForTripsWithStartOrEndInside.get(person)) {
+				bw_1.write(person.toString() + ";" + trip_number);
+				bw_1.newLine();
+			}		
+		}
+		
+		bw_1.close();
+		
+		// #######################
+		
+		File file_2 = new File(outputFile_2);
+		BufferedWriter bw_2 = new BufferedWriter(new FileWriter(file_2));
+
+		bw_2.write("person;trip_number");
+		bw_2.newLine();
+		
+		for (Id<Person> person : personId2relevantTripNumbersForTripsWithStartOrEndInside.keySet()) {
+			for (Integer trip_number : personId2relevantTripNumbersForTripsWithStartOrEndInside.get(person)) {
+				bw_2.write(person.toString() + ";" + trip_number);
+				bw_2.newLine();
+			}		
+		}
+		
+		bw_2.close();
 		
 	}
 
