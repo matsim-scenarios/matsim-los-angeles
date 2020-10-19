@@ -61,7 +61,7 @@ public class ModifyPopulationForEpisim {
 		
 		Scenario scOutput = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 		Population popOutput = scOutput.getPopulation();
-		popOutput.getAttributes().putAttribute("coordinateReferenceSystem", "EPSG:25832");
+		popOutput.getAttributes().putAttribute("coordinateReferenceSystem", "EPSG:3310");
 		
 		for (Person p : scInput.getPopulation().getPersons().values()){
 			Person personNew = popOutput.getFactory().createPerson(p.getId());
