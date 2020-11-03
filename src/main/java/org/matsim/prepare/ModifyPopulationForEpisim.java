@@ -40,8 +40,8 @@ public class ModifyPopulationForEpisim {
 
 	private static final Logger log = Logger.getLogger(ModifyPopulationForEpisim.class );
 	
-	private static String inputPlans = "/Users/ihab/Documents/workspace/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-population-10pct_2020-03-07.xml.gz";
-	private static String outputPlans = "/Users/ihab/Documents/workspace/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-population-10pct_2020-03-07_teleported.xml.gz";
+	private static String inputPlans = "/Users/ihab/Documents/workspace/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-population-0.1pct_2019-12-09.xml.gz";
+	private static String outputPlans = "/Users/ihab/Documents/workspace/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-population-0.1pct_2019-12-09_teleported.xml.gz";
 	
 	public static void main(String[] args) {
 				
