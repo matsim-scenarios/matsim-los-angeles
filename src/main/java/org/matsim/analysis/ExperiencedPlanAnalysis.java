@@ -67,36 +67,36 @@ public class ExperiencedPlanAnalysis {
 	
 	private static final Logger log = Logger.getLogger(ExperiencedPlanAnalysis.class);
 	// test
-	private final String plansFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_experienced_plans.xml.gz";
-	private final String networkFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_network.xml.gz";
-	private final String outputFile = "output/bc-trip-mode-zone-analysis.csv";
-	private final String outputFile_1 = "output/bc-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
-	private final String outputFile_2 = "output/bc-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
-	
-	// base case
-//	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_experienced_plans.xml.gz";
-//	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-v1.1-10pct_run0/wsc-reduced-v1.1-10pct_run0.output_network.xml.gz";
+//	private final String plansFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_experienced_plans.xml.gz";
+//	private final String networkFile = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/output/los-angeles-v1.1-1pct/los-angeles-v1.1-1pct.output_network.xml.gz";
 //	private final String outputFile = "output/bc-trip-mode-zone-analysis.csv";
 //	private final String outputFile_1 = "output/bc-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
 //	private final String outputFile_2 = "output/bc-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
 	
+	// base case
+	private final String plansFile = "/media/networkdisk/TU_Server_BAK/scenarios_parking/wsc-reduced-v1.1-1pct_run10/wsc-reduced-v1.1-1pct_run10.output_experienced_plans.xml.gz";
+	private final String networkFile = "/media/networkdisk/TU_Server_BAK/scenarios_parking/wsc-reduced-v1.1-1pct_run10/wsc-reduced-v1.1-1pct_run10.output_network.xml.gz";
+	private final String outputFile = "output/bc-trip-mode-zone-analysis.csv";
+	private final String outputFile_1 = "output/bc-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
+	private final String outputFile_2 = "output/bc-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
+	
 	// scenario 1
-//	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_experienced_plans.xml.gz";
-//	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario1-v1.1-10pct_run6ctd2a.output_network.xml.gz";
+//	private final String plansFile = "/media/networkdisk/TU_Server_BAK/scenarios_parking/wsc-reduced-drt-scenario1-v1.1-1pct_run3/wsc-reduced-drt-scenario1-v1.1-1pct_run3.output_experienced_plans.xml.gz";
+//	private final String networkFile = "/media/networkdisk/TU_Server_BAK/scenarios_parking/wsc-reduced-drt-scenario1-v1.1-1pct_run3/wsc-reduced-drt-scenario1-v1.1-1pct_run3.output_network.xml.gz";
 //	private final String outputFile = "output/scenario1-trip-mode-zone-analysis.csv";
 //	private final String outputFile_1 = "output/scenario1-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
 //	private final String outputFile_2 = "output/scenario1-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
 	
 	// scenario 2
-//	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario2-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario2-v1.1-10pct_run6ctd2a.output_experienced_plans.xml.gz";
-//	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario2-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario2-v1.1-10pct_run6ctd2a.output_network.xml.gz";
+//	private final String plansFile = "/media/networkdisk/TU_Server_BAK/scenarios_parking/wsc-reduced-drt-scenario2-v1.1-1pct_run3/wsc-reduced-drt-scenario2-v1.1-1pct_run3.output_experienced_plans.xml.gz";
+//	private final String networkFile = "/media/networkdisk/TU_Server_BAK/scenarios_parking/wsc-reduced-drt-scenario2-v1.1-1pct_run3/wsc-reduced-drt-scenario2-v1.1-1pct_run3.output_network.xml.gz";
 //	private final String outputFile = "output/scenario2-trip-mode-zone-analysis.csv";
 //	private final String outputFile_1 = "output/scenario2-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
 //	private final String outputFile_2 = "output/scenario2-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
 	
 	// scenario 3
-//	private final String plansFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario3-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario3-v1.1-10pct_run6ctd2a.output_experienced_plans.xml.gz";
-//	private final String networkFile = "/media/networkdisk/TU_Server_BAK/la-wsc-scenarios/wsc-reduced-drt-scenario3-v1.1-10pct_run6ctd2a/wsc-reduced-drt-scenario3-v1.1-10pct_run6ctd2a.output_network.xml.gz";
+//	private final String plansFile = "/media/networkdisk/TU_Server_BAK/scenarios_parking/wsc-reduced-drt-scenario3-v1.1-1pct_run3/wsc-reduced-drt-scenario3-v1.1-1pct_run3.output_experienced_plans.xml.gz";
+//	private final String networkFile = "/media/networkdisk/TU_Server_BAK/scenarios_parking/wsc-reduced-drt-scenario3-v1.1-1pct_run3/wsc-reduced-drt-scenario3-v1.1-1pct_run3.output_network.xml.gz";
 //	private final String outputFile = "output/scenario3-trip-mode-zone-analysis.csv";
 //	private final String outputFile_1 = "output/scenario3-personId2relevantTripNumbersForTripsWithStartOrEndInside.csv";
 //	private final String outputFile_2 = "output/scenario3-personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.csv";
@@ -490,8 +490,8 @@ public class ExperiencedPlanAnalysis {
 		bw_2.write("person;trip_number");
 		bw_2.newLine();
 		
-		for (Id<Person> person : personId2relevantTripNumbersForTripsWithStartOrEndInside.keySet()) {
-			for (Integer trip_number : personId2relevantTripNumbersForTripsWithStartOrEndInside.get(person)) {
+		for (Id<Person> person : personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.keySet()) {
+			for (Integer trip_number : personId2relevantTripNumbersForTripsOfPeopleWithAllTripsStartinAndEndingInsideAndTripsStartAndEndInsideOfPeopleAtLeastOneTripOutsideAndTravelByPtIntoWSC.get(person)) {
 				bw_2.write(person.toString() + ";" + trip_number);
 				bw_2.newLine();
 			}		
@@ -499,6 +499,7 @@ public class ExperiencedPlanAnalysis {
 		
 		bw_2.close();
 		
+		System.out.println("Processing done!!!!!!!!!!");
 	}
 
 	private Map<Integer, Geometry> loadShapeFile(String shapeFile) {
