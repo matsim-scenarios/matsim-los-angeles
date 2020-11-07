@@ -76,7 +76,7 @@ public final class RunDrtLosAngelesScenario {
 		}
 		String[] argsWithoutCustomAttributes;
 		String populationFile;
-		if (args.length > 0) {
+		if (args.length > 1) {
 			argsWithoutCustomAttributes = Arrays.copyOfRange( args, 1, args.length );
 			populationFile = args[0];
 		} else {
