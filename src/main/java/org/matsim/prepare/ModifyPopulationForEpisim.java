@@ -40,8 +40,8 @@ public class ModifyPopulationForEpisim {
 
 	private static final Logger log = Logger.getLogger(ModifyPopulationForEpisim.class );
 	
-	private static String inputPlans = "/Users/ihab/Documents/workspace/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-population-0.1pct_2019-12-09.xml.gz";
-	private static String outputPlans = "/Users/ihab/Documents/workspace/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-population-0.1pct_2019-12-09_teleported.xml.gz";
+	private static String inputPlans = "/Users/ihab/Documents/workspace/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-population-100pct_2020-05-20.xml.gz";
+	private static String outputPlans = "/Users/ihab/Documents/workspace/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/los-angeles-v1.0-population-100pct_2020-05-20_teleported.xml.gz";
 	
 	public static void main(String[] args) {
 				
@@ -76,23 +76,19 @@ public class ModifyPopulationForEpisim {
 		
 		for (Person person : popOutput.getPersons().values()) {
 			for (Plan plan : person.getPlans()) {		
-				for (Trip trip : TripStructureUtils.getTrips(plan.getPlanElements())) {		
-					Leg drtLeg = trip.getLegsOnly().get(0);
-					if (drtLeg.getMode().equals("car")) {
-						if (trip.getLegsOnly().size() > 1) {
-							throw new RuntimeException("There are more than one leg within a drt trip. Needs to be revised. Aborting...");
-						}
-						drtLeg.setMode("car_teleported");
-						drtLeg.setRoute(null);
+				for (Trip trip : TripStructureUtils.getTrips(plan.getPlanElements())) {	
+					if (trip.getLegsOnly().size() > 1) {
+						throw new RuntimeException("There are more than one leg within a trip. This code needs to be revised. Aborting...");
 					}
-					if (drtLeg.getMode().equals("freight")) {
-						if (trip.getLegsOnly().size() > 1) {
-							throw new RuntimeException("There are more than one leg within a drt trip. Needs to be revised. Aborting...");
-						}
-						drtLeg.setMode("freight_teleported");
-						drtLeg.setRoute(null);
+					Leg leg = trip.getLegsOnly().get(0);
+					if (leg.getMode().equals("car")) {
+						leg.setMode("car_teleported");
+						leg.setRoute(null);
 					}
-							
+					if (leg.getMode().equals("freight")) {
+						leg.setMode("freight_teleported");
+						leg.setRoute(null);
+					}						
 				}
 			}
 		}		
