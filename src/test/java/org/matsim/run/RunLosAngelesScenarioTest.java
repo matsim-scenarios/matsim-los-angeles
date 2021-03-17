@@ -68,6 +68,34 @@ public class RunLosAngelesScenarioTest {
 		}
 	}
 	
+	@Test
+	public final void test1teleportedCar() {
+		try {			
+			String[] args = new String[] { "./test/input/los-angeles-wsc-reduced-v1.1-1pct.config_teleported.xml" };
+			
+			Config config = RunLosAngelesScenarioTeleport.prepareConfig(args);
+			config.controler().setLastIteration(2);
+			config.controler().setWriteEventsInterval(2);
+			config.controler().setWritePlansInterval(2);
+			config.global().setNumberOfThreads(1); // only one thread available on travis
+			config.controler().setOutputDirectory( utils.getOutputDirectory() );
+			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+			config.plans().setInputFile("test-agents-teleported.xml");
+			
+			Scenario scenario = RunLosAngelesScenarioTeleport.prepareScenario(config);
+			Controler controler = RunLosAngelesScenarioTeleport.prepareControler(scenario);
+			controler.run();
+			
+			// run analysis
+			RunLosAngelesScenario.runAnalysis(config);
+		
+		} catch ( Exception ee ) {
+			ee.printStackTrace();
+			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
+			Assert.fail();
+		}
+	}
+	
 	// tests the score of a specific agent (ride user), see xlsx file for a manual computation of the score
 	// single iteration
 	// simulated pt disabled
