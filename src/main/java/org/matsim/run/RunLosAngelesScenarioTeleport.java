@@ -224,7 +224,7 @@ public class RunLosAngelesScenarioTeleport {
 		config.qsim().setTrafficDynamics( TrafficDynamics.kinematicWaves );
 				
 		// activities:
-		for ( long ii = 600 ; ii <= 97200; ii+=600 ) {
+		for ( long ii = 600 ; ii <= 129600; ii+=600 ) {
 			config.planCalcScore().addActivityParams( new ActivityParams( "home_" + ii ).setTypicalDuration( ii ) );
 			config.planCalcScore().addActivityParams( new ActivityParams( "work_" + ii ).setTypicalDuration( ii ) );
 			config.planCalcScore().addActivityParams( new ActivityParams( "university_" + ii ).setTypicalDuration( ii ) );
