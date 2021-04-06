@@ -32,6 +32,8 @@ import org.matsim.core.config.Config;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.network.algorithms.MultimodalNetworkCleaner;
+import org.matsim.core.network.io.NetworkWriter;
+import org.matsim.core.population.io.PopulationWriter;
 import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.router.TripStructureUtils.Trip;
 import org.matsim.prepare.drt.ShapeFileUtils;
@@ -80,7 +82,15 @@ public class ReduceScenario {
 		config.controler().setLastIteration(0);
 		
 		ShapeFileUtils shpUtils = new ShapeFileUtils(planningAreaShpFile);
-		Scenario scenario = prepareScenario( config, shpUtils );		
+		Scenario scenario = prepareScenario( config, shpUtils );	
+		
+		log.info("Writing population...");
+		new PopulationWriter(scenario.getPopulation()).write("./reducedPlans.xml.gz");
+		log.info("Writing population... Done.");
+		
+		log.info("Writing network... ");
+		new NetworkWriter(scenario.getNetwork()).write("./reducedNetwork.xml.gz");
+		log.info("Writing network... Done.");
 		
 		Controler controler = RunLosAngelesScenario.prepareControler(scenario);
 		controler.run();
