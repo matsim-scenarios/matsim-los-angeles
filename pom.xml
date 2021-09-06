@@ -10,11 +10,14 @@
 	<description>MATSim open Los Angeles project</description>
 
 	<properties>
-	  <!-- release> -->
-	  <!--<matsim.version>11.0</matsim.version>-->
+		<!-- release -->
+		 <matsim.version>13.0</matsim.version>
 
-	  <!--weekly "release":-->
-	  <matsim.version>12.0-2020w15-SNAPSHOT</matsim.version>
+		<!-- PR-labelled release -->
+		<!--<matsim.version>14.0-PR1452</matsim.version>-->
+
+		<!-- snapshot == not recommended: rather use PR-labelled release!-->
+<!--		<matsim.version>14.0-SNAPSHOT</matsim.version>-->
 	</properties>
 
 	<repositories>
