@@ -21,8 +21,6 @@ package org.matsim.run.drt;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.contrib.av.robotaxi.fares.drt.DrtFareModule;
-import org.matsim.contrib.av.robotaxi.fares.drt.DrtFaresConfigGroup;
 import org.matsim.contrib.drt.routing.DrtRoute;
 import org.matsim.contrib.drt.routing.DrtRouteFactory;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
@@ -39,8 +37,6 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.population.routes.RouteFactories;
 import org.matsim.core.router.AnalysisMainModeIdentifier;
 import org.matsim.core.router.MainModeIdentifier;
-import org.matsim.drtSpeedUp.DrtSpeedUpConfigGroup;
-import org.matsim.drtSpeedUp.DrtSpeedUpModule;
 import org.matsim.run.LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier;
 import org.matsim.run.LosAngelesIntermodalPtDrtRouterModeIdentifier;
 import org.matsim.run.RunLosAngelesScenario;
@@ -84,12 +80,6 @@ public final class RunDrtLosAngelesScenario {
 		controler.addOverridingModule(new DvrpModule());
 		controler.configureQSimComponents(DvrpQSimComponents.activateAllModes(MultiModeDrtConfigGroup.get(controler.getConfig())));
 		
-		// Add drt-specific fare module
-		controler.addOverridingModule(new DrtFareModule());
-				
-		// Add the drt-speed-up module
-		controler.addOverridingModule(new DrtSpeedUpModule());
-				
 		controler.addOverridingModule(new AbstractModule() {
 			
 			@Override
@@ -127,10 +117,9 @@ public final class RunDrtLosAngelesScenario {
 	}
 
 	public static Config prepareConfig(String [] args) {
-		Config config = RunLosAngelesScenario.prepareConfig(args, new MultiModeDrtConfigGroup(), new DvrpConfigGroup(), new DrtFaresConfigGroup(), new DrtSpeedUpConfigGroup()  ) ;
+		Config config = RunLosAngelesScenario.prepareConfig(args, new MultiModeDrtConfigGroup(), new DvrpConfigGroup()) ;
 
 		DrtConfigs.adjustMultiModeDrtConfig(MultiModeDrtConfigGroup.get(config), config.planCalcScore(), config.plansCalcRoute());
-		DrtSpeedUpModule.addTeleportedDrtMode(config);
 
 		return config ;
 	}

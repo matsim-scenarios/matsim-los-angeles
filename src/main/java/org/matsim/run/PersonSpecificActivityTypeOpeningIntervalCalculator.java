@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.core.scoring.functions.OpeningIntervalCalculator;
+import org.matsim.core.utils.misc.OptionalTime;
 
 /**
 * @author ikaddoura
@@ -30,19 +31,19 @@ import org.matsim.core.scoring.functions.OpeningIntervalCalculator;
 
 public class PersonSpecificActivityTypeOpeningIntervalCalculator implements OpeningIntervalCalculator {
 
-	private final Map<String, double[]> baseType2openingInterval;
+	private final Map<String, OptionalTime[]> baseType2openingInterval;
 
-	public PersonSpecificActivityTypeOpeningIntervalCalculator(Map<String, double[]> baseType2openingInterval) {
+	public PersonSpecificActivityTypeOpeningIntervalCalculator(Map<String, OptionalTime[]> baseType2openingInterval) {
 		this.baseType2openingInterval = baseType2openingInterval;
 	}
 
 	@Override
-	public double[] getOpeningInterval(final Activity act) {
+	public OptionalTime[] getOpeningInterval(final Activity act) {
 		String baseActivityType = act.getType().split("_")[0];	
 		if (baseActivityType.equals("home")) {
 			
 			// home activities should not have an opening or closing time
-			return new double[]{-1., -1.};
+			return new OptionalTime[]{OptionalTime.undefined(), OptionalTime.undefined()};
 		
 		} else {
 			
