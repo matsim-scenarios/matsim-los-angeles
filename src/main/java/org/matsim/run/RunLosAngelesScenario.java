@@ -117,7 +117,7 @@ public class RunLosAngelesScenario {
 			@Override
 			public void install() {
 				// mainly relevant for DRT applications:
-				bind(MainModeIdentifier.class).to(LosAngelesIntermodalPtDrtRouterModeIdentifier.class);
+//				bind(MainModeIdentifier.class).to(LosAngelesIntermodalPtDrtRouterModeIdentifier.class);
 				// in order to look into the different types of intermodal pt trips:
 				bind(AnalysisMainModeIdentifier.class).to(LosAngelesIntermodalPtDrtRouterAnalysisModeIdentifier.class);
 			}

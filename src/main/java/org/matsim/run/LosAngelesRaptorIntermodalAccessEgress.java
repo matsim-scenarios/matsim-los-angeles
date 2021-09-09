@@ -13,6 +13,7 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.contrib.drt.fare.DrtFareParams;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ScoringParameterSet;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.utils.misc.OptionalTime;
@@ -34,9 +35,9 @@ public class LosAngelesRaptorIntermodalAccessEgress implements RaptorIntermodalA
 	Random random = MatsimRandom.getLocalInstance();
 	
 	@Inject
-    LosAngelesRaptorIntermodalAccessEgress(Config config, DrtConfigGroup drtConfigGroup) {
+    LosAngelesRaptorIntermodalAccessEgress(Config config) {
 		this.config = config;
-		this.drtConfigGroup = drtConfigGroup;
+		drtConfigGroup = ConfigUtils.addOrGetModule(config, DrtConfigGroup.class);
 	}
 
 	@Override
@@ -75,7 +76,7 @@ public class LosAngelesRaptorIntermodalAccessEgress implements RaptorIntermodalA
                 
              // account for drt fares
 
-				if(drtConfigGroup.getDrtFareParams().isPresent()) {
+				if(drtConfigGroup != null && drtConfigGroup.getDrtFareParams().isPresent()) {
 					DrtFareParams fares = drtConfigGroup.getDrtFareParams().get();
                         double fare = 0.;
                 		if (distance != null && distance != 0.) {
