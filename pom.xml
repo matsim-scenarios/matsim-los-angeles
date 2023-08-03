@@ -10,13 +10,15 @@
 	<description>MATSim open Los Angeles project</description>
 
 	<properties>
-	  <!-- release> -->
-	  <!--<matsim.version>11.0</matsim.version>-->
+		<!-- release -->
+		 <matsim.version>13.0</matsim.version>
 
-	  <!--weekly "release":-->
-	  <matsim.version>12.0-2020w15-SNAPSHOT</matsim.version>
+		<!-- PR-labelled release -->
+		<!--<matsim.version>14.0-PR1452</matsim.version>-->
+
+		<!-- snapshot == not recommended: rather use PR-labelled release!-->
+<!--		<matsim.version>14.0-SNAPSHOT</matsim.version>-->
 	</properties>
-
 	<repositories>
 	  <!--Note that in general repositories are not transitive, so they need to be repeated at every level where needed.-->
 		<repository>
@@ -33,7 +35,7 @@
 		<repository>
 			<!-- Repository for MATSim releases (MATSim is not on Maven central) -->
 			<id>matsim</id>
-			<url>https://dl.bintray.com/matsim/matsim</url>
+			<url>https://repo.matsim.org/repository/matsim</url>
 		</repository>
  		<repository>
 			<!-- Repository for MATSim snapshots: -->
@@ -64,11 +66,11 @@
 			<scope>compile</scope>
 		</dependency>
 		
-		<dependency>
-	    	<groupId>com.github.matsim-vsp</groupId>
-	    	<artifactId>drt-speed-up</artifactId>
-	    	<version>v0.0.3</version>
-		</dependency>
+<!--		<dependency>-->
+<!--	    	<groupId>com.github.matsim-vsp</groupId>-->
+<!--	    	<artifactId>drt-speed-up</artifactId>-->
+<!--	    	<version>v0.0.3</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<!-- Include the JUnit testing library.  Not transitive. -->
@@ -106,18 +108,34 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>
-   		 	<groupId>commons-io</groupId>
-    		<artifactId>commons-io</artifactId>
-    		<version>2.5</version>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.7</version>
 		</dependency>
-	
+
+		<!--		<dependency>-->
+		<!--			<groupId>com.github.matsim-org</groupId>-->
+		<!--			<artifactId>GTFS2MATSim</artifactId>-->
+		<!--			<version>20cc145c34</version>-->
+		<!--		</dependency>-->
+
 		<dependency>
 			<groupId>com.github.matsim-org</groupId>
-			<artifactId>GTFS2MATSim</artifactId>
-			<version>20cc145c34</version>
+			<artifactId>gtfs2matsim</artifactId>
+			<version>master-33809c4f0f-1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.matsim</groupId>
+					<artifactId>matsim</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 	</dependencies>
@@ -147,7 +165,7 @@
 			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19</version>
+                <version>2.22.2</version>
                 <configuration>
                     <excludes>
                         <exclude>**/*$*</exclude> <!-- exclude all inner classes -->

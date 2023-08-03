@@ -32,6 +32,7 @@ import org.matsim.api.core.v01.population.Route;
 import org.matsim.core.gbl.Gbl;
 import org.matsim.core.scoring.functions.ModeUtilityParameters;
 import org.matsim.core.scoring.functions.ScoringParameters;
+import org.matsim.core.utils.misc.OptionalTime;
 import org.matsim.core.utils.misc.Time;
 import org.matsim.pt.PtConstants;
 
@@ -58,7 +59,7 @@ public class CharyparNagelLegScoringWithPersonSpecificMarginalUtilityOfMoney imp
 	private boolean nextEnterVehicleIsFirstOfTrip = true;
 	private boolean nextStartPtLegIsFirstOfTrip = true;
 	private boolean currentLegIsPtLeg = false;
-	private double lastActivityEndTime = Time.getUndefinedTime();
+	private OptionalTime lastActivityEndTime = OptionalTime.undefined();
 	private final Set<String> ptModes;
 	private final Set<String> modesAlreadyConsideredForDailyConstants = new HashSet<>();
 	private final double marginalUtilityOfMoney;
@@ -154,7 +155,7 @@ public class CharyparNagelLegScoringWithPersonSpecificMarginalUtilityOfMoney imp
 				this.nextEnterVehicleIsFirstOfTrip  = true ;
 				this.nextStartPtLegIsFirstOfTrip = true ;
 			}
-			this.lastActivityEndTime = event.getTime() ;
+			this.lastActivityEndTime = OptionalTime.defined(event.getTime()) ;
 		}
 
 		if ( event instanceof PersonEntersVehicleEvent && currentLegIsPtLeg ) {
@@ -164,7 +165,7 @@ public class CharyparNagelLegScoringWithPersonSpecificMarginalUtilityOfMoney imp
 			}
 			this.nextEnterVehicleIsFirstOfTrip = false ;
 			// add score of waiting, _minus_ score of travelling (since it is added in the legscoring above):
-			this.score += (event.getTime() - this.lastActivityEndTime) * (this.params.marginalUtilityOfWaitingPt_s - this.params.modeParams.get(TransportMode.pt).marginalUtilityOfTraveling_s) ;
+			this.score += (event.getTime() - this.lastActivityEndTime.seconds()) * (this.params.marginalUtilityOfWaitingPt_s - this.params.modeParams.get(TransportMode.pt).marginalUtilityOfTraveling_s) ;
 		}
 
 		if ( event instanceof PersonDepartureEvent ) {

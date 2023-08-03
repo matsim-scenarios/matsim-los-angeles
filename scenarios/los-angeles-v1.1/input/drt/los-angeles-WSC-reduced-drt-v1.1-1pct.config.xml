@@ -237,14 +237,12 @@
 	</module>
 	<module name="multiModeDrt">
 		<parameterset type="drt">
+			<parameterset type="ExtensiveInsertionSearch"/>
 			<!-- If true, the startLink is changed to last link in the current schedule, so the taxi starts the next day at the link where it stopped operating the day before. False by default. -->
 			<param name="changeStartLinkToLastLinkInSchedule" value="true" />
 			<!-- allows to configure a service area per drt mode.Used with serviceArea Operational Scheme -->
 			<param name="drtServiceAreaShapeFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC_Boundary_SCAG/WSC_Boundary_SCAG.shp" />
 			<!-- Beeline distance factor for DRT. Used in analyis and in plans file. The default value is 1.3. -->
-			<param name="estimatedBeelineDistanceFactor" value="1.3" />
-			<!-- Beeline-speed estimate for DRT. Used in analysis, optimisation constraints and in plans file, [m/s]. The default value is 25 km/h -->
-			<param name="estimatedDrtSpeed" value="8.333333333333334" />
 			<!-- Idle vehicles return to the nearest of all start links. See: DvrpVehicle.getStartLink() -->
 			<param name="idleVehiclesReturnToDepots" value="false" />
 			<!-- Defines the slope of the maxTravelTime estimation function (optimisation constraint), i.e. maxTravelTimeAlpha * estimated_drt_travel_time + maxTravelTimeBeta. Alpha should not be smaller than 1. -->
@@ -273,16 +271,31 @@
 			<param name="vehiclesFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/drt/LA-WSC-drt1-10000veh_1seats.xml.gz" />
 			<!-- Writes out detailed DRT customer stats in each iteration. True by default. -->
 			<param name="writeDetailedCustomerStats" value="true" />
+			<parameterset type="drtSpeedUp" >
+				<param name="fractionOfIterationsSwitchOn" value="0.0" />
+				<param name="fractionOfIterationsSwitchOff" value="0.99" />
+				<param name="intervalDetailedIteration" value="10" />
+<!--				<param name="numberOfThreadsForMobsimDuringSpeedUp" value="8" />-->
+			</parameterset>
+			<parameterset type="drtfare">
+				<!-- Basefare per Trip (fare = positive value) -->
+				<param name="basefare" value="0.0"/>
+				<!-- Minimum fare per trip (paid instead of the sum of base, time and distance fare if that sum would be lower than the minimum fare, fee = positive value). -->
+				<param name="minFarePerTrip" value="4.0"/>
+				<!-- Daily subscription fee (fee = positive value) -->
+				<param name="dailySubscriptionFee" value="0.0"/>
+				<!-- drt fare per meter (fee = positive value) -->
+				<param name="distanceFare_m" value="0.00035"/>
+				<!-- drt fare per hour (fee = positive value) -->
+				<param name="timeFare_h" value="0.0"/>
+			</parameterset>
 		</parameterset>
 		<parameterset type="drt">
+			<parameterset type="ExtensiveInsertionSearch"/>
 			<!-- If true, the startLink is changed to last link in the current schedule, so the taxi starts the next day at the link where it stopped operating the day before. False by default. -->
 			<param name="changeStartLinkToLastLinkInSchedule" value="true" />
 			<!-- allows to configure a service area per drt mode.Used with serviceArea Operational Scheme -->
 			<param name="drtServiceAreaShapeFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/original-data/shp-data/WSC_Boundary_SCAG/WSC_Boundary_SCAG.shp" />
-			<!-- Beeline distance factor for DRT. Used in analyis and in plans file. The default value is 1.3. -->
-			<param name="estimatedBeelineDistanceFactor" value="1.3" />
-			<!-- Beeline-speed estimate for DRT. Used in analysis, optimisation constraints and in plans file, [m/s]. The default value is 25 km/h -->
-			<param name="estimatedDrtSpeed" value="8.333333333333334" />
 			<!-- Idle vehicles return to the nearest of all start links. See: DvrpVehicle.getStartLink() -->
 			<param name="idleVehiclesReturnToDepots" value="false" />
 			<!-- Defines the slope of the maxTravelTime estimation function (optimisation constraint), i.e. maxTravelTimeAlpha * estimated_drt_travel_time + maxTravelTimeBeta. Alpha should not be smaller than 1. -->
@@ -311,6 +324,24 @@
 			<param name="vehiclesFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/us/los-angeles/los-angeles-v1.0/input/drt/LA-WSC-drt2-10000veh_4seats.xml.gz" />
 			<!-- Writes out detailed DRT customer stats in each iteration. True by default. -->
 			<param name="writeDetailedCustomerStats" value="true" />
+			<parameterset type="drtSpeedUp" >
+				<param name="fractionOfIterationsSwitchOn" value="0.0" />
+				<param name="fractionOfIterationsSwitchOff" value="0.99" />
+				<param name="intervalDetailedIteration" value="10" />
+<!--				<param name="numberOfThreadsForMobsimDuringSpeedUp" value="8" />-->
+			</parameterset>
+			<parameterset type="drtfare">
+				<!-- Basefare per Trip (fare = positive value) -->
+				<param name="basefare" value="0.0"/>
+				<!-- Minimum fare per trip (paid instead of the sum of base, time and distance fare if that sum would be lower than the minimum fare, fee = positive value). -->
+				<param name="minFarePerTrip" value="2.0"/>
+				<!-- Daily subscription fee (fee = positive value) -->
+				<param name="dailySubscriptionFee" value="0.0"/>
+				<!-- drt fare per meter (fee = positive value) -->
+				<param name="distanceFare_m" value="0.0001"/>
+				<!-- drt fare per hour (fee = positive value) -->
+				<param name="timeFare_h" value="0.0"/>
+			</parameterset>
 		</parameterset>
 	</module>
 	
@@ -324,46 +355,5 @@
 		<!-- Used for ONLINE estimation of travel times for VrpOptimizer by combining WithinDayTravelTime and DvrpOfflineTravelTimeEstimator. The beta coefficient is provided in seconds and should be either 0 (no online estimation) or positive (mixed online-offline estimation). For 'beta = 0', only the offline estimate is used: 'onlineTT(t) = offlineTT(t)', where 'offlineTT(t)' in the offline estimate for TT at time 't', For 'beta > 0', estimating future TTs at time 't', uses the currently observed TT to correct the offline estimates is made: where 'currentTT' is the currently observed TT, and 'correction = min(1, max(0, 1 - (time - currentTime) / beta))' The rule is that correction decreases linearly from 1 (when 'time = currentTime') to 0 (when 'time = currentTime + beta' For 'time > currentTime + beta' correction is 0, whereas if 'time < currentTime' it is 1. If beta is sufficiently large, 'beta >> 0', only the currently observed TT is used. -->
 		<param name="travelTimeEstimationBeta" value="0.0" />
 	</module>
-	
-	<module name="drtfares">
-		<!-- Define a parameterset for each drt mode where fares should be charged -->
 
-        <parameterset type="drtfare">
-        	<!-- transport mode for which this fare applies. Default: drt -->
-            <param name="mode" value="drt1"/>
-			<!-- Basefare per Trip (fare = positive value) -->
-            <param name="basefare" value="0.0"/>
-            <!-- Minimum fare per trip (paid instead of the sum of base, time and distance fare if that sum would be lower than the minimum fare, fee = positive value). -->
-            <param name="minFarePerTrip" value="4.0"/>
-            <!-- Daily subscription fee (fee = positive value) -->
-            <param name="dailySubscriptionFee" value="0.0"/>
-			<!-- drt fare per meter (fee = positive value) -->
-            <param name="distanceFare_m" value="0.00035"/>
-			<!-- drt fare per hour (fee = positive value) -->
-            <param name="timeFare_h" value="0.0"/>
-        </parameterset>
-        
-        <parameterset type="drtfare">
-        	<!-- transport mode for which this fare applies. Default: drt -->
-            <param name="mode" value="drt2"/>
-			<!-- Basefare per Trip (fare = positive value) -->
-            <param name="basefare" value="0.0"/>
-            <!-- Minimum fare per trip (paid instead of the sum of base, time and distance fare if that sum would be lower than the minimum fare, fee = positive value). -->
-            <param name="minFarePerTrip" value="2.0"/>
-            <!-- Daily subscription fee (fee = positive value) -->
-            <param name="dailySubscriptionFee" value="0.0"/>
-			<!-- drt fare per meter (fee = positive value) -->
-            <param name="distanceFare_m" value="0.0001"/>
-			<!-- drt fare per hour (fee = positive value) -->
-            <param name="timeFare_h" value="0.0"/>
-        </parameterset>
-	</module>
-	
-	<module name="drtSpeedUp" >
-		<param name="fractionOfIterationSwitchOn" value="0.0" />
-		<param name="fractionOfIterationsSwitchOff" value="0.99" />
-		<param name="intervalDetailedIteration" value="10" />
-		<param name="numberOfThreadsForMobsimDuringSpeedUp" value="8" />
-		<param name="modes" value="drt1,drt2" />
-	</module>
 </config>

@@ -42,6 +42,7 @@ import org.matsim.core.scoring.functions.CharyparNagelMoneyScoring;
 import org.matsim.core.scoring.functions.ScoringParameters;
 import org.matsim.core.scoring.functions.ScoringParametersForPerson;
 import org.matsim.core.scoring.functions.SubpopulationScoringParameters;
+import org.matsim.core.utils.misc.OptionalTime;
 
 /**
 * @author ikaddoura
@@ -76,8 +77,8 @@ public class LosAngelesPlanScoringFunctionFactory implements ScoringFunctionFact
 
 		SumScoringFunction sumScoringFunction = new SumScoringFunction();
 				
-		Map<String, Double> type2minOpenTime = new HashMap<>();
-		Map<String, Double> type2maxClosingTime = new HashMap<>();
+		Map<String, OptionalTime> type2minOpenTime = new HashMap<>();
+		Map<String, OptionalTime> type2maxClosingTime = new HashMap<>();
 		Set<String> baseTypes = new HashSet<>();
 		
 		// get the earliest opening time and latest closing time for each person and each (base) activity type
@@ -90,29 +91,29 @@ public class LosAngelesPlanScoringFunctionFactory implements ScoringFunctionFact
 				if (act.getAttributes().getAttribute("initialStartTime") != null) {
 					double startTime = (double) act.getAttributes().getAttribute("initialStartTime");
 					if (type2minOpenTime.get(baseType) == null) {
-						type2minOpenTime.put(baseType, startTime);
+						type2minOpenTime.put(baseType, OptionalTime.defined(startTime));
 					} else {
-						if (type2minOpenTime.get(baseType) > startTime) {
-							type2minOpenTime.put(baseType, startTime);
+						if (type2minOpenTime.get(baseType).seconds() > startTime) {
+							type2minOpenTime.put(baseType, OptionalTime.defined(startTime));
 						}
 					}
 				}
 				if (act.getAttributes().getAttribute("initialEndTime") != null) {
 					double endTime = (double) act.getAttributes().getAttribute("initialEndTime");
 					if (type2maxClosingTime.get(baseType) == null) {
-						type2maxClosingTime.put(baseType, endTime);
+						type2maxClosingTime.put(baseType, OptionalTime.defined(endTime));
 					} else {
-						if (type2maxClosingTime.get(baseType) < endTime) {
-							type2maxClosingTime.put(baseType, endTime);
+						if (type2maxClosingTime.get(baseType).seconds() < endTime) {
+							type2maxClosingTime.put(baseType, OptionalTime.defined(endTime));
 						}
 					}
 				}
 			}
 		}
 		
-		Map<String, double[]> baseType2openingInterval = new HashMap<>();
+		Map<String, OptionalTime[]> baseType2openingInterval = new HashMap<>();
 		for (String actType : baseTypes ) {
-			baseType2openingInterval.put(actType, new double[]{type2minOpenTime.getOrDefault(actType, -1.), type2maxClosingTime.getOrDefault(actType, -1.)});
+			baseType2openingInterval.put(actType, new OptionalTime[]{type2minOpenTime.getOrDefault(actType, OptionalTime.undefined()), type2maxClosingTime.getOrDefault(actType, OptionalTime.undefined())});
 		}
 		sumScoringFunction.addScoringFunction(new CharyparNagelActivityScoring( parameters, new PersonSpecificActivityTypeOpeningIntervalCalculator(baseType2openingInterval)));
 		
