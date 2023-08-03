@@ -108,18 +108,34 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>
-   		 	<groupId>commons-io</groupId>
-    			<artifactId>commons-io</artifactId>
-    			<version>2.7</version>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.7</version>
 		</dependency>
-	
+
+		<!--		<dependency>-->
+		<!--			<groupId>com.github.matsim-org</groupId>-->
+		<!--			<artifactId>GTFS2MATSim</artifactId>-->
+		<!--			<version>20cc145c34</version>-->
+		<!--		</dependency>-->
+
 		<dependency>
 			<groupId>com.github.matsim-org</groupId>
-			<artifactId>GTFS2MATSim</artifactId>
-			<version>20cc145c34</version>
+			<artifactId>gtfs2matsim</artifactId>
+			<version>master-33809c4f0f-1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.matsim</groupId>
+					<artifactId>matsim</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 	</dependencies>
